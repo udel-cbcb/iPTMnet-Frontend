@@ -1,0 +1,26 @@
+{
+  "name": "iptmnet_website",
+  "version": "1.0.0",
+  "description": "Web frontent for the iPTMnet service",
+  "main": "index.js",
+  "author": "Sachin Gavali",
+  "license": "MIT",
+  "dependencies": {
+    "ace-css": "1.1",
+    "css-loader": "^0.28.11",
+    "elm-webpack-loader": "^4.5.0",
+    "file-loader": "^1.1.11",
+    "font-awesome": "4",
+    "style-loader": "^0.21.0",
+    "url-loader": "^1.0.1",
+    "webpack": "^4.6.0",
+    "webpack-dev-server": "^3.1.3"
+  },
+  "scripts": {
+    "build": "webpack",
+    "client": "webpack-dev-server --port 3000"
+  },
+  "devDependencies": {
+    "webpack-cli": "^2.0.15"
+  }
+}
