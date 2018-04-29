@@ -1,38 +1,29 @@
 module Main exposing (..)
 import Html.Styled exposing (..)
-import Home
-
--- MODEL
-
-
-type alias Model =
-    String
-
+-- import Home
+import Entry
+import Model exposing (..)
+import Msgs exposing (Msg)
+import Commands exposing (..)
 
 init : ( Model, Cmd Msg )
 init =
-    ( "Hello", Cmd.none )
-
-
-
--- MESSAGES
-
-
-type Msg
-    = NoOp
-
+    ( Model.initialModel, fetchInfo)
 
 -- VIEW
 view : Model -> Html Msg
-view model = Home.view   
+view model = Entry.view model   
 
 
 -- UPDATE
 update : Msg -> Model -> ( Model, Cmd Msg )
 update msg model =
     case msg of
-        NoOp ->
+        Msgs.NoOp ->
             ( model, Cmd.none )
+        Msgs.OnFetchInfo response -> 
+            ( { model | info = response}, Cmd.none)
+        
 
 
 -- SUBSCRIPTIONS
