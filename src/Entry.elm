@@ -7,7 +7,7 @@ import Msgs exposing (..)
 import RemoteData exposing (WebData)
 
 view : Model -> Html Msg
-view model =  div [] []
+view model =  info model.info
 
 
 info: WebData (Info) -> Html Msg
