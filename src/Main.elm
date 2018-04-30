@@ -1,19 +1,31 @@
 module Main exposing (..)
-import Html.Styled exposing (..)
--- import Home
+import Html exposing (..)
+import Html.Styled exposing (toUnstyled)
+import Home
 import Entry
 import Model exposing (..)
 import Msgs exposing (Msg)
 import Commands exposing (..)
+import Navigation
+import Routing
 
-init : ( Model, Cmd Msg )
-init =
-    ( Model.initialModel, fetchInfo)
+init : Navigation.Location -> ( Model, Cmd Msg )
+init location =
+    Commands.handleRoute (Model.initialModel Routing.HomeRoute) location
+
 
 -- VIEW
 view : Model -> Html Msg
-view model = Entry.view model   
-
+view model = 
+    case model.route of
+        Routing.HomeRoute -> 
+            Home.view model
+            |> toUnstyled
+        Routing.EntryRoute id ->
+            Entry.view model
+            |> toUnstyled
+        Routing.NotFoundRoute ->
+            div [] []
 
 -- UPDATE
 update : Msg -> Model -> ( Model, Cmd Msg )
@@ -23,6 +35,10 @@ update msg model =
             ( model, Cmd.none )
         Msgs.OnFetchInfo response -> 
             ( { model | info = response}, Cmd.none)
+        Msgs.ChangeLocation path -> 
+            ( model, Navigation.newUrl path)
+        Msgs.OnLocationChange location ->
+            Commands.handleRoute model location
         
 
 
@@ -34,7 +50,7 @@ subscriptions model =
 -- MAIN
 main : Program Never Model Msg
 main =
-    program
+    Navigation.program Msgs.OnLocationChange
         { init = init
         , view = view
         , update = update

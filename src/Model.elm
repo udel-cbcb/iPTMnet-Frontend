@@ -1,14 +1,17 @@
 module Model exposing (..)
 import RemoteData exposing (WebData)
+import Routing
 
 type alias Model =
     {
+        route: Routing.Route,
         info: WebData (Info)        
     }
 
-initialModel : Model
-initialModel = 
+initialModel : Routing.Route -> Model
+initialModel route = 
     { 
+        route = route,
         info = RemoteData.Loading
     }
 
