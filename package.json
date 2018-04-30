@@ -18,7 +18,7 @@
   },
   "scripts": {
     "build": "webpack --mode=development",
-    "client": "webpack-dev-server --port 3000"
+    "start": "webpack-dev-server --port 3000"
   },
   "devDependencies": {
     "webpack-cli": "^2.0.15"
