@@ -1,8 +1,8 @@
 module Commands exposing (..)
 
 import Http
-import Json.Decode as Decode
-import Json.Decode.Pipeline exposing (decode, required)
+import Json.Decode exposing (..)
+import Json.Decode.Pipeline exposing (..)
 import Msgs exposing (Msg)
 import Model exposing (Info)
 import RemoteData
@@ -10,6 +10,7 @@ import Routing
 import Model
 import Navigation
 import String.Interpolate exposing(interpolate)
+
 fetchInfo: String -> Cmd Msg
 fetchInfo id = 
     Http.get (fetchInfoUrl id) infoDecoder
@@ -20,10 +21,14 @@ fetchInfoUrl : String -> String
 fetchInfoUrl id =
     interpolate "http://aws3.proteininformationresource.org/{0}/info" [id]
 
-infoDecoder: Decode.Decoder Info
+infoDecoder: Decoder Info
 infoDecoder =
     decode Info
-        |> required "uniprot_ac" Decode.string
+        |> required "uniprot_ac" string
+        |> required "uniprot_id" string
+        |> required "gene_name" string
+        |> required "protein_name" string
+        |> required "synonyms" (list string)
 
 
 handleRoute : Model.Model -> Navigation.Location -> (Model.Model, Cmd Msg)

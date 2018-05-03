@@ -17,5 +17,9 @@ initialModel route =
 
 type alias Info = 
     {
-       uniprot_ac : String     
+       uniprot_ac : String,
+       uniprot_id : String,
+       gene_name : String,
+       protein_name: String,
+       synonymns: List String     
     }
