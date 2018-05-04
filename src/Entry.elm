@@ -12,6 +12,7 @@ import Views.Sequence
 import Views.Substrate
 import Views.Proteoforms
 import Views.PTMDependentPPI
+import Views.ProteoformPPI
 
 view : Model -> Html Msg
 view model =  
@@ -42,7 +43,8 @@ view model =
                 Views.Sequence.view,
                 Views.Substrate.view,
                 Views.Proteoforms.view model.entryPage.proteoformsData,
-                Views.PTMDependentPPI.view
+                Views.PTMDependentPPI.view model.entryPage.ptmDependentPPIData,
+                Views.ProteoformPPI.view model.entryPage.proteoformPPIData
             ]
         ]
 

@@ -9,6 +9,8 @@ import Commands exposing (..)
 import Navigation
 import Routing
 import Views.Proteoforms
+import Views.PTMDependentPPI
+import Views.ProteoformPPI
 
 init : Navigation.Location -> ( Model, Cmd Msg )
 init location =
@@ -49,6 +51,20 @@ update msg model =
                 |> Model.setEntryPage model
             in
                 ( newModel, Cmd.none)
+        Msgs.OnFetchPTMDependentPPI response -> 
+            let
+                newModel = Views.PTMDependentPPI.decodeResponse response
+                |> Model.setPTMDependentPPIData model.entryPage
+                |> Model.setEntryPage model
+            in
+                ( newModel, Cmd.none)
+        Msgs.OnFetchProteoformPPI response -> 
+            let
+                newModel = Views.ProteoformPPI.decodeResponse response
+                |> Model.setProteoformPPIData model.entryPage
+                |> Model.setEntryPage model
+            in
+                ( newModel, Cmd.none)        
         Msgs.ChangeLocation path -> 
             ( model, Navigation.newUrl path)
         Msgs.OnLocationChange location ->

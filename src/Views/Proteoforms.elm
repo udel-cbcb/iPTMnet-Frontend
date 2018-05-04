@@ -32,7 +32,6 @@ view data =
                 ]
             ],
             renderView data             
-
         ]
 
 renderView: ProteoformsData -> Html Msg
@@ -47,7 +46,7 @@ renderView data =
         Error ->
             text data.error
 
-decodeResponse: WebData (List (Proteoform Entity Source)) -> ProteoformsData 
+decodeResponse: WebData (List (Proteoform Enzyme Source)) -> ProteoformsData 
 decodeResponse response = 
     case response of
         RemoteData.NotAsked ->
@@ -80,7 +79,7 @@ decodeResponse response =
 
 
 
-renderProteoformTable: List (Proteoform Entity Source) -> Html Msg
+renderProteoformTable: List (Proteoform Enzyme Source) -> Html Msg
 renderProteoformTable proteoformList =
         div [id "proteoforms_table", css [
             displayFlex,
@@ -138,7 +137,7 @@ renderProteoformTable proteoformList =
         
         ]
 
-proteoformRow: (Proteoform Entity Source) -> Html Msg
+proteoformRow: (Proteoform Enzyme Source) -> Html Msg
 proteoformRow proteoform = 
     div [css [
         displayFlex,
@@ -182,7 +181,7 @@ proteoformRow proteoform =
         ]
     ]
 
-buildEnzyme: Entity -> List (Html Msg)
+buildEnzyme: Enzyme -> List (Html Msg)
 buildEnzyme entity = 
     if String.length(entity.label) /= 0 then
         [

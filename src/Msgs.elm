@@ -8,7 +8,9 @@ import Navigation
 -- MESSAGES
 type Msg
     = NoOp
-    | OnFetchInfo (WebData (Info))
-    | OnFetchProteoform (WebData (List (Proteoform Entity Source)))
     | ChangeLocation String
     | OnLocationChange Navigation.Location
+    | OnFetchInfo (WebData (Info))
+    | OnFetchProteoform (WebData (List (Proteoform Enzyme Source)))
+    | OnFetchPTMDependentPPI (WebData (List (PTMDependentPPI Entity Source)))
+    | OnFetchProteoformPPI (WebData (List (ProteoformPPI Protein Source)))

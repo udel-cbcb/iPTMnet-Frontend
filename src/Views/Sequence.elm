@@ -11,5 +11,27 @@ view =
         h4 [css [
             fontSize (px 20),
             fontWeight normal
-        ]] [text "Interactive Sequence View"]
+        ]] [text "Interactive Sequence View"],
+
+                div [id "proteoformppi_table", css [
+            displayFlex,
+            flexDirection column,
+            fontSize (px 13),
+            borderWidth (px 1),
+            borderStyle solid,
+            borderColor (hex "#d9dadb")
+        ]][
+            -- header
+            div [id "proteoformppi_table_header", css [
+                displayFlex,
+                flexDirection row,
+                backgroundColor (hex "#eff1f2"),
+                paddingTop (px 5),
+                paddingBottom (px 5),
+                fontWeight bold,
+                Css.height (px 100)
+            ]] []
+        
+        ]
+
     ]
