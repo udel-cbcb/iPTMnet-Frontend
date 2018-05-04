@@ -1,4 +1,4 @@
-module Views.Proteoforms exposing (view)
+module Views.Proteoforms exposing (view, decodeResponse)
 import Html.Styled exposing (..)
 import Css exposing (..)
 import Html.Styled.Attributes exposing (..)
@@ -9,34 +9,75 @@ import String.Interpolate exposing (interpolate)
 import String.Extra exposing (..)
 
 -- returns the substrate view
-view: WebData (List (Proteoform Entity Source)) -> Html Msg 
-view response = 
+view: ProteoformsData -> Html Msg 
+view data = 
         div [id "proteoforms", css [marginTop (px 20)] ][
-            
-            h4 [css [
-                fontSize (px 20),
-                fontWeight normal
-            ]][text "Proteoforms"],
-            
-            decodeResponse response
+            div [css [
+                        displayFlex,
+                        flexDirection row,
+                        paddingTop (px 10),
+                        paddingBottom (px 10)
+                     ]]
+                [
+                span [css [
+                    fontSize (px 20)
+                ]][text "Proteoforms"],
+                div [id "proteforms_search" ,css [
+                                                    marginLeft auto,
+                                                    alignSelf center
+                                                ]]
+                [
+                    span [css [marginRight (px 10), fontSize (px 12)]] [text "Search:"],
+                    input [] []
+                ]
+            ],
+            renderView data             
 
         ]
 
+renderView: ProteoformsData -> Html Msg
+renderView data =
+    case data.status of
+        NotAsked ->
+            text "No yet requested"
+        Loading ->
+            text "Loading"
+        Success ->
+            renderProteoformTable data.data
+        Error ->
+            text data.error
 
-decodeResponse: WebData (List (Proteoform Entity Source)) -> Html Msg 
+decodeResponse: WebData (List (Proteoform Entity Source)) -> ProteoformsData 
 decodeResponse response = 
     case response of
         RemoteData.NotAsked ->
-            text ""
+            {
+                status = NotAsked,
+                error = "",
+                data = []
+            }
 
         RemoteData.Loading ->
-             text "Loading"
+            {
+                status = Loading,
+                error = "",
+                data = []
+            }
 
         RemoteData.Success proteoformsList ->
-            renderProteoformTable proteoformsList
+            {
+                status = Success,
+                error = "",
+                data = proteoformsList
+            }
 
         RemoteData.Failure error ->
-            text (toString error)
+            {
+                status = Error,
+                error = (toString error),
+                data = []
+            }
+
 
 
 renderProteoformTable: List (Proteoform Entity Source) -> Html Msg
@@ -66,8 +107,8 @@ renderProteoformTable proteoformList =
                 [
                     text "PRO ID (Short Label)"
                 ],
-                div [css [flex (num 2),
-                          marginRight (px 20)         
+                div [css [flex (num 1.5),
+                          marginRight (px 10)         
                          ]] 
                 [
                     text "Sites"
@@ -78,7 +119,7 @@ renderProteoformTable proteoformList =
                 [
                     text "PTM Enzymes"
                 ],
-                div [css [flex (num 1),
+                div [css [flex (num 0.5),
                           marginRight (px 20)
                          ]]
                 [
@@ -117,17 +158,18 @@ proteoformRow proteoform =
             a [href (interpolate "http://purl.obolibrary.org/obo/{0}" [(replace ":" "_" proteoform.pro_id )]), Html.Styled.Attributes.target "_blank"] [text proteoform.pro_id],
             span [] [text (interpolate " ({0})" [proteoform.label])]
         ],
-        div [css [flex (num 2),
-                  marginRight (px 20)         
+        div [css [flex (num 1.5),
+                  marginRight (px 10),
+                  Css.property "word-wrap" "breakword"         
                  ]]
         [
-            text (String.join "," proteoform.sites)
+            text (String.join ", " proteoform.sites)
         ],
         div [css [flex (num 2),
                   marginRight (px 20)         
                  ]] (buildEnzyme proteoform.ptm_enzyme)
         ,
-        div [css [flex (num 1),
+        div [css [flex (num 0.5),
                   marginRight (px 20)
                  ]] [
             a [href (interpolate "{0}/{1}" [proteoform.source.url,(replace ":" "_" proteoform.pro_id )]), Html.Styled.Attributes.target "_blank"] [text proteoform.source.name]

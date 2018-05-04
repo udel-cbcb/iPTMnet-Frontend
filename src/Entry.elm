@@ -27,21 +27,21 @@ view model =
                 flexDirection column,
                 alignItems center,
                 backgroundColor (hex "ecececff"),
-                flexGrow (num 1)
+                flex (num 1)
             ]][
                 text "Display"
             ],
             div [id "content", css [
                 displayFlex,
                 flexDirection column,
-                flexGrow (num 4),
+                flex (num 4),
                 paddingLeft (px 40),
                 paddingRight (px 40)
             ]][
                 Views.Info.view model.entryPage.info,
                 Views.Sequence.view,
                 Views.Substrate.view,
-                Views.Proteoforms.view model.entryPage.proteoforms,
+                Views.Proteoforms.view model.entryPage.proteoformsData,
                 Views.PTMDependentPPI.view
             ]
         ]

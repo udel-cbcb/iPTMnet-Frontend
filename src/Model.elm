@@ -4,6 +4,13 @@ import Routing
 import Json.Decode exposing (..)
 import Json.Decode.Pipeline exposing (..)
 
+type RequestState = 
+    NotAsked
+    | Loading
+    | Error
+    | Success
+
+
 type alias Model =
     {
         route: Routing.Route,
@@ -13,7 +20,14 @@ type alias Model =
 type alias EntryPage = 
     {
         info: WebData (Info),
-        proteoforms: WebData (List (Proteoform Entity Source))
+        proteoformsData: ProteoformsData
+    }
+
+type alias ProteoformsData = 
+    {
+        status: RequestState,
+        error: String,
+        data: List (Proteoform Entity Source)
     }
 
 setEntryPage : Model -> EntryPage -> Model
@@ -24,10 +38,13 @@ setInfo : EntryPage -> WebData(Info) -> EntryPage
 setInfo entryPage newInfo =
     { entryPage | info = newInfo }
 
-setProteoforms : EntryPage -> WebData (List (Proteoform Entity Source)) -> EntryPage
-setProteoforms entryPage newProteoforms =
-    { entryPage | proteoforms = newProteoforms }
+setProteoforms : ProteoformsData -> List (Proteoform Entity Source) -> ProteoformsData
+setProteoforms proteoformsData newProteoforms =
+    { proteoformsData | data = newProteoforms, status = Success }
 
+setProteoformsData: EntryPage -> ProteoformsData -> EntryPage
+setProteoformsData entryPage newProteoformsData = 
+    { entryPage | proteoformsData = newProteoformsData}
 
 initialModel : Routing.Route -> Model
 initialModel route = 
@@ -35,7 +52,11 @@ initialModel route =
         route = route,
         entryPage = {
             info = RemoteData.Loading,
-            proteoforms = RemoteData.Loading
+            proteoformsData = {
+                status = NotAsked,
+                error = "",
+                data = []
+            }
         }
     }
 
@@ -143,3 +164,4 @@ proteoformDecoder =
 proteoformListDecoder: Decoder (List (Proteoform Entity Source ))
 proteoformListDecoder = 
     list proteoformDecoder
+

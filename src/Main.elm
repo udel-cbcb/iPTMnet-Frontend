@@ -8,6 +8,7 @@ import Msgs exposing (Msg)
 import Commands exposing (..)
 import Navigation
 import Routing
+import Views.Proteoforms
 
 init : Navigation.Location -> ( Model, Cmd Msg )
 init location =
@@ -41,12 +42,11 @@ update msg model =
                         |> Model.setEntryPage model
             in
                 ( newModel, Cmd.none)
-        Msgs.OnFetchProteoform newProteoforms -> 
+        Msgs.OnFetchProteoform response -> 
             let
-                newModel = 
-                    newProteoforms
-                        |> Model.setProteoforms model.entryPage
-                        |> Model.setEntryPage model
+                newModel = Views.Proteoforms.decodeResponse response
+                |> Model.setProteoformsData model.entryPage
+                |> Model.setEntryPage model
             in
                 ( newModel, Cmd.none)
         Msgs.ChangeLocation path -> 
