@@ -1,8 +1,6 @@
 module Commands exposing (..)
 
 import Http
-import Json.Decode exposing (..)
-import Json.Decode.Pipeline exposing (..)
 import Msgs exposing (Msg)
 import Model exposing (Info)
 import RemoteData
@@ -13,23 +11,15 @@ import String.Interpolate exposing(interpolate)
 
 fetchInfo: String -> Cmd Msg
 fetchInfo id = 
-    Http.get (fetchInfoUrl id) infoDecoder
+    Http.get (interpolate "http://aws3.proteininformationresource.org/{0}/info" [id]) Model.infoDecoder
     |> RemoteData.sendRequest
     |> Cmd.map Msgs.OnFetchInfo
 
-fetchInfoUrl : String -> String
-fetchInfoUrl id =
-    interpolate "http://aws3.proteininformationresource.org/{0}/info" [id]
-
-infoDecoder: Decoder Info
-infoDecoder =
-    decode Info
-        |> required "uniprot_ac" string
-        |> required "uniprot_id" string
-        |> required "gene_name" string
-        |> required "protein_name" string
-        |> required "synonyms" (list string)
-
+fetchProteoforms: String -> Cmd Msg
+fetchProteoforms id = 
+    Http.get (interpolate "http://aws3.proteininformationresource.org/{0}/proteoforms" [id]) Model.proteoformListDecoder
+    |> RemoteData.sendRequest
+    |> Cmd.map Msgs.OnFetchProteoform
 
 handleRoute : Model.Model -> Navigation.Location -> (Model.Model, Cmd Msg)
 handleRoute model location =
@@ -42,6 +32,6 @@ handleRoute model location =
             Routing.HomeRoute -> 
                 (Model.initialModel currentRoute, Cmd.none )
             Routing.EntryRoute id ->
-                (Model.initialModel currentRoute, fetchInfo id)
+                (Model.initialModel currentRoute, Cmd.batch [fetchInfo id, fetchProteoforms id])
             Routing.NotFoundRoute ->
                 (Model.initialModel currentRoute, Cmd.none )

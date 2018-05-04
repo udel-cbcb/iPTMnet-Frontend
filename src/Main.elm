@@ -33,8 +33,22 @@ update msg model =
     case msg of
         Msgs.NoOp ->
             ( model, Cmd.none )
-        Msgs.OnFetchInfo response -> 
-            ( { model | info = response}, Cmd.none)
+        Msgs.OnFetchInfo newInfo ->
+            let
+                newModel = 
+                    newInfo
+                        |> Model.setInfo model.entryPage
+                        |> Model.setEntryPage model
+            in
+                ( newModel, Cmd.none)
+        Msgs.OnFetchProteoform newProteoforms -> 
+            let
+                newModel = 
+                    newProteoforms
+                        |> Model.setProteoforms model.entryPage
+                        |> Model.setEntryPage model
+            in
+                ( newModel, Cmd.none)
         Msgs.ChangeLocation path -> 
             ( model, Navigation.newUrl path)
         Msgs.OnLocationChange location ->

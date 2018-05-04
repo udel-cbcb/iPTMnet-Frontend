@@ -1,13 +1,14 @@
 module Msgs exposing (..)
 
 import RemoteData exposing (WebData)
-import Model exposing (Info)
+import Model exposing (..)
 import Navigation
-import UrlParser
+
 
 -- MESSAGES
 type Msg
     = NoOp
     | OnFetchInfo (WebData (Info))
+    | OnFetchProteoform (WebData (List (Proteoform Entity Source)))
     | ChangeLocation String
     | OnLocationChange Navigation.Location
