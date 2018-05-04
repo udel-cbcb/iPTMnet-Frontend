@@ -43,27 +43,51 @@ renderProteoformTable: List (Proteoform Entity Source) -> Html Msg
 renderProteoformTable proteoformList =
         div [id "proteoforms_table", css [
             displayFlex,
-            flexDirection column
+            flexDirection column,
+            fontSize (px 13),
+            borderWidth (px 1),
+            borderStyle solid,
+            borderColor (hex "#d9dadb")
         ]][
             -- header
             div [id "proteoforms_table_header", css [
                 displayFlex,
                 flexDirection row,
                 backgroundColor (hex "#eff1f2"),
-                padding (px 10)
+                paddingTop (px 5),
+                paddingBottom (px 5),
+                fontWeight bold
             ]] [
-                div [css [flex (num 2)]] [
+                div [css [flex (num 2),
+                          marginLeft (px 5),
+                          marginRight (px 20),
+                          paddingLeft (px 5)
+                    ]]
+                [
                     text "PRO ID (Short Label)"
                 ],
-                div [css [flex (num 1)]] [
+                div [css [flex (num 2),
+                          marginRight (px 20)         
+                         ]] 
+                [
                     text "Sites"
-                ],div [css [flex (num 2)]] [
+                ],
+                div [css [flex (num 2),
+                     marginRight (px 20)         
+                    ]]
+                [
                     text "PTM Enzymes"
                 ],
-                div [css [flex (num 1)]] [
+                div [css [flex (num 1),
+                          marginRight (px 20)
+                         ]]
+                [
                     text "Source"
                 ],
-                div [css [flex (num 1)]] [
+                div [css [flex (num 1),
+                          marginRight (px 20)
+                         ]]
+                [
                     text "PMID"
                 ]
             ],
@@ -78,24 +102,54 @@ proteoformRow proteoform =
     div [css [
         displayFlex,
         flexDirection row,
-        padding (px 5)
+        paddingTop (px 5),
+        paddingBottom (px 2),
+        hover [
+            backgroundColor (hex "#f4f4f4")
+        ]
     ]] [
-        div [css [flex (num 2)]] [
-            input [type_ "checkbox"][],
+        div [css [flex (num 2),
+                  marginLeft (px 5),
+                  marginRight (px 20)
+                 ]] 
+        [
+            input [type_ "checkbox", css[marginLeft (px 5), marginRight (px 10)]][],
             a [href (interpolate "http://purl.obolibrary.org/obo/{0}" [(replace ":" "_" proteoform.pro_id )]), Html.Styled.Attributes.target "_blank"] [text proteoform.pro_id],
             span [] [text (interpolate " ({0})" [proteoform.label])]
         ],
-        div [css [flex (num 1)]] [
-            text "Sites"
+        div [css [flex (num 2),
+                  marginRight (px 20)         
+                 ]]
+        [
+            text (String.join "," proteoform.sites)
         ],
-        div [css [flex (num 2)]] [
-            text "PTM Enzymes"
+        div [css [flex (num 2),
+                  marginRight (px 20)         
+                 ]] (buildEnzyme proteoform.ptm_enzyme)
+        ,
+        div [css [flex (num 1),
+                  marginRight (px 20)
+                 ]] [
+            a [href (interpolate "{0}/{1}" [proteoform.source.url,(replace ":" "_" proteoform.pro_id )]), Html.Styled.Attributes.target "_blank"] [text proteoform.source.name]
         ],
-        div [css [flex (num 1)]] [
-            text "Source"
-        ],
-        div [css [flex (num 1)]] [
+        div [css [flex (num 1),
+                  marginRight (px 20)
+                 ]] 
+        [
             text "PMID"
         ]
     ]
+
+buildEnzyme: Entity -> List (Html Msg)
+buildEnzyme entity = 
+    if String.length(entity.label) /= 0 then
+        [
+            a [href (interpolate "http://purl.obolibrary.org/obo/{0}" [(replace ":" "_" entity.pro_id )]), Html.Styled.Attributes.target "_blank"] [text entity.pro_id],
+            span [] [text (interpolate " ({0})" [entity.label])]
+        ]
+    else
+        [
+
+        ]
+
 
