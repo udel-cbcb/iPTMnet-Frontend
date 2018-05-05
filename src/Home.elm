@@ -60,7 +60,7 @@ view model =
             p [] [text "iPTMnet is a bioinformatics resource for integrated understanding of protein post-translational modifications (PTMs) in systems biology context."],
             p [] [text "It connects multiple disparate bioinformatics tools and systems text mining, data mining, analysis and visualization tools, and databases and ontologies into an integrated cross-cutting research resource to address the knowledge gaps in exploring and discovering PTM networks."],
             ul [] [
-                li[][a [href "/entry", onLinkClick (ChangeLocation "/entry") ] [text "Browse"]],
+                li[][a [href "/entry", onLinkClick (ChangeLocation "/entry/Q15796") ] [text "Browse"]],
                 li[][a [href "/stats"] [text "Statistics"]],
                 li[][a [href "/info"] [text "Project Info"]],
                 li[][a [href "/help"] [text "Help"]],

@@ -33,6 +33,15 @@ fetchProteoformsPPI id =
     |> RemoteData.sendRequest
     |> Cmd.map Msgs.OnFetchProteoformPPI
 
+
+fetchSubstrates: String -> Cmd Msg
+fetchSubstrates id = 
+    Http.get (interpolate "http://aws3.proteininformationresource.org/{0}/substrate" [id]) Model.substrateTableDecoder
+    |> RemoteData.sendRequest
+    |> Cmd.map Msgs.OnFetchSubstrates
+
+
+
 handleRoute : Model.Model -> Navigation.Location -> (Model.Model, Cmd Msg)
 handleRoute model location =
         -- parse to location to get the route and update the model       
@@ -47,6 +56,8 @@ handleRoute model location =
                 (Model.initialModel currentRoute, Cmd.batch [fetchInfo id,
                                                              fetchProteoforms id,
                                                              fetchPTMDependentPPI id,
-                                                             fetchProteoformsPPI id])
+                                                             fetchProteoformsPPI id,
+                                                             fetchSubstrates id
+                                                             ])
             Routing.NotFoundRoute ->
                 (Model.initialModel currentRoute, Cmd.none )

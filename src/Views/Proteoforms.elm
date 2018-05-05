@@ -143,7 +143,7 @@ proteoformRow proteoform =
         displayFlex,
         flexDirection row,
         paddingTop (px 5),
-        paddingBottom (px 2),
+        paddingBottom (px 5),
         hover [
             backgroundColor (hex "#f4f4f4")
         ]

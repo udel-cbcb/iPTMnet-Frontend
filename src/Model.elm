@@ -3,6 +3,7 @@ import RemoteData exposing (WebData)
 import Routing
 import Json.Decode exposing (..)
 import Json.Decode.Pipeline exposing (..)
+import Dict exposing (..)
 
 type RequestState = 
     NotAsked
@@ -19,10 +20,18 @@ type alias Model =
 
 type alias EntryPage = 
     {
-        info: WebData (Info),
+        infoData: InfoData,
         proteoformsData: ProteoformsData,
         ptmDependentPPIData: PTMDependentPPIData,
-        proteoformPPIData: ProteoformPPIData
+        proteoformPPIData: ProteoformPPIData,
+        substrateData: SubstrateData
+    }
+
+type alias InfoData = 
+    {
+        status: RequestState,
+        error: String,
+        data: Info    
     }
 
 type alias ProteoformsData = 
@@ -46,13 +55,20 @@ type alias ProteoformPPIData =
         data: List(ProteoformPPI Protein Source)
     }
 
+type alias SubstrateData = 
+    {
+        status: RequestState,
+        error: String,
+        data: Dict String (List (Substrate Source SubstrateEnzyme))
+    }
+
 setEntryPage : Model -> EntryPage -> Model
 setEntryPage model newEntryPage = 
     { model | entryPage = newEntryPage}
 
-setInfo : EntryPage -> WebData(Info) -> EntryPage
+setInfo : EntryPage -> InfoData -> EntryPage
 setInfo entryPage newInfo =
-    { entryPage | info = newInfo }
+    { entryPage | infoData = newInfo }
 
 setProteoforms : ProteoformsData -> List (Proteoform Enzyme Source) -> ProteoformsData
 setProteoforms proteoformsData newProteoforms =
@@ -70,12 +86,20 @@ setProteoformPPIData: EntryPage -> ProteoformPPIData -> EntryPage
 setProteoformPPIData entryPage newData = 
     { entryPage | proteoformPPIData = newData}
 
+setSubstrateData: EntryPage -> SubstrateData -> EntryPage
+setSubstrateData entryPage newData = 
+    { entryPage | substrateData = newData }
+
 initialModel : Routing.Route -> Model
 initialModel route = 
     { 
         route = route,
         entryPage = {
-            info = RemoteData.Loading,
+            infoData = {
+                status = NotAsked,
+                error = "",
+                data = emptyInfo
+            },
             proteoformsData = {
                 status = NotAsked,
                 error = "",
@@ -90,6 +114,11 @@ initialModel route =
                 status = NotAsked,
                 error = "",
                 data = []
+            },
+            substrateData = {
+                status = NotAsked,
+                error = "",
+                data = Dict.empty
             }
         }
     }
@@ -161,6 +190,19 @@ enzymeDecoder =
         |> optional "pro_id" string ""
         |> optional "label" string ""
 
+type alias SubstrateEnzyme = 
+    {
+        id: String,
+        enz_type: String,
+        name: String
+    }
+
+substrateEnzymeDecoder: Decoder SubstrateEnzyme
+substrateEnzymeDecoder =
+    decode SubstrateEnzyme
+        |> optional "id" string ""
+        |> optional "enz_type" string ""
+        |> optional "name" string ""
 
 type alias Source = 
     {
@@ -271,3 +313,57 @@ proteoformPPIDecoder =
 proteoformPPIListDecoder: Decoder (List (ProteoformPPI Protein Source))
 proteoformPPIListDecoder = 
     list proteoformPPIDecoder
+
+
+type alias Substrate sourceDecoder substrateEnzymeDecoder = 
+    {
+        residue: String,
+        site: String,
+        ptm_type: String,
+        score: Int,
+        sources: (List sourceDecoder),
+        enzymes: (List substrateEnzymeDecoder),
+        pmids: (List String)
+    }
+
+substrateDecoder: Decoder (Substrate Source SubstrateEnzyme)
+substrateDecoder = 
+    decode Substrate
+        |> optional "residue" string ""
+        |> optional "site" string ""
+        |> optional "ptm_type" string ""
+        |> required "score" int
+        |> required "sources" (list sourceDecoder)
+        |> required "enzymes" (list substrateEnzymeDecoder)
+        |> required "pmids" (list string)
+
+substrateListDecoder: Decoder (List (Substrate Source SubstrateEnzyme))
+substrateListDecoder = 
+    list substrateDecoder
+
+substrateTableDecoder: Decoder (Dict String (List (Substrate Source SubstrateEnzyme)) )
+substrateTableDecoder =
+    dict substrateListDecoder
+
+
+emptyInfo: Info
+emptyInfo = 
+                {
+                    uniprot_ac = "",
+                    uniprot_id = "",
+                    gene_name = "",
+                    protein_name = "",
+                    synonymns = [],
+                    organism = {
+                        taxon_code = "",
+                        species = "",
+                        common_name = ""
+                    },
+                    pro = {
+                        id = "",
+                        name = "",
+                        definition = "",
+                        short_label = "",
+                        category = ""
+                    }  
+                }

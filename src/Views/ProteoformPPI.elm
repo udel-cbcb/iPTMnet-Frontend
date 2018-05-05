@@ -110,15 +110,15 @@ proteoformPPIRow proteoformPPI =
         displayFlex,
         flexDirection row,
         paddingTop (px 5),
-        paddingBottom (px 2),
+        paddingBottom (px 5),
         hover [
             backgroundColor (hex "#f4f4f4")
         ]
     ]] [
                 div [css [flex (num 2),
-                          marginLeft (px 5),
+                          marginLeft (px 0),
                           marginRight (px 10),
-                          paddingLeft (px 20)
+                          paddingLeft (px 5)
                     ]]
                 [
                     input [type_ "checkbox", css[marginLeft (px 5), marginRight (px 10)]][],

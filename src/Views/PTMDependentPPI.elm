@@ -6,7 +6,7 @@ import Msgs exposing (..)
 import Model exposing (..)
 import RemoteData exposing (WebData)
 import String.Interpolate exposing (interpolate)
-import String.Extra exposing (..)
+
 
 -- returns the substrate view
 view: PTMDependentPPIData -> Html Msg 
@@ -123,7 +123,7 @@ ptmDependentPPIRow ptmdependentppi =
         displayFlex,
         flexDirection row,
         paddingTop (px 5),
-        paddingBottom (px 2),
+        paddingBottom (px 5),
         hover [
             backgroundColor (hex "#f4f4f4")
         ]

@@ -8,9 +8,11 @@ import Msgs exposing (Msg)
 import Commands exposing (..)
 import Navigation
 import Routing
+import Views.Info
 import Views.Proteoforms
 import Views.PTMDependentPPI
 import Views.ProteoformPPI
+import Views.Substrate
 
 init : Navigation.Location -> ( Model, Cmd Msg )
 init location =
@@ -36,10 +38,9 @@ update msg model =
     case msg of
         Msgs.NoOp ->
             ( model, Cmd.none )
-        Msgs.OnFetchInfo newInfo ->
+        Msgs.OnFetchInfo response ->
             let
-                newModel = 
-                    newInfo
+                newModel = Views.Info.decodeResponse response
                         |> Model.setInfo model.entryPage
                         |> Model.setEntryPage model
             in
@@ -62,6 +63,13 @@ update msg model =
             let
                 newModel = Views.ProteoformPPI.decodeResponse response
                 |> Model.setProteoformPPIData model.entryPage
+                |> Model.setEntryPage model
+            in
+                ( newModel, Cmd.none)
+        Msgs.OnFetchSubstrates response -> 
+            let
+                newModel = Views.Substrate.decodeResponse response
+                |> Model.setSubstrateData model.entryPage
                 |> Model.setEntryPage model
             in
                 ( newModel, Cmd.none)        
