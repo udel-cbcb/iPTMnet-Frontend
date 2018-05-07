@@ -93,7 +93,10 @@ renderSubstrateTable substrateDict =
                 ]
             ],
             -- rows
-            case Dict.get "Q15796" substrateDict of 
+            case Dict.get ( Dict.keys substrateDict
+                            |> List.head 
+                            |> Maybe.withDefault "" 
+                          ) substrateDict of 
                 Just substrates -> 
                     div [] (List.map substrateRow substrates) 
                 Nothing -> 

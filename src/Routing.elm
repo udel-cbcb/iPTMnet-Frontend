@@ -5,6 +5,7 @@ import Navigation
 type Route
     = HomeRoute
     | EntryRoute String
+    | SearchRoute String
     | NotFoundRoute
 
 
@@ -16,6 +17,7 @@ matchers =
     UrlParser.oneOf
         [ UrlParser.map HomeRoute UrlParser.top
         , UrlParser.map EntryRoute (s "entry" </> string)
+        , UrlParser.map SearchRoute (s "search" </> string)
         ]
 
 

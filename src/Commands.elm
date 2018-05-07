@@ -40,6 +40,12 @@ fetchSubstrates id =
     |> RemoteData.sendRequest
     |> Cmd.map Msgs.OnFetchSubstrates
 
+fetchSearchResults: String -> Cmd Msg
+fetchSearchResults query_params = 
+    Http.get (interpolate "http://aws3.proteininformationresource.org/search?{0}" [query_params]) Model.searchResultListDecoder
+    |> RemoteData.sendRequest
+    |> Cmd.map Msgs.OnFetchSearchResults
+
 
 
 handleRoute : Model.Model -> Navigation.Location -> (Model.Model, Cmd Msg)
@@ -59,5 +65,7 @@ handleRoute model location =
                                                              fetchProteoformsPPI id,
                                                              fetchSubstrates id
                                                              ])
+            Routing.SearchRoute queryString -> 
+                (Model.initialModel currentRoute, fetchSearchResults queryString )
             Routing.NotFoundRoute ->
                 (Model.initialModel currentRoute, Cmd.none )

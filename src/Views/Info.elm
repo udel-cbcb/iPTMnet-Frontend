@@ -7,7 +7,6 @@ import Msgs exposing (..)
 import RemoteData exposing (WebData)
 import String.Interpolate exposing (interpolate)
 import String
-import Dict exposing (..)
 
 -- css
 geneInfoTableCSS: List Style

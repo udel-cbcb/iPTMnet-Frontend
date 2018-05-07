@@ -1,4 +1,4 @@
-module Home exposing (..)
+module Page.Home exposing (..)
 import Html.Styled exposing (..)
 import Css exposing (..)
 import Html.Styled.Attributes exposing (..)
@@ -6,6 +6,7 @@ import Model exposing (..)
 import Msgs exposing (..)
 import Html.Styled.Events exposing (onClick,onWithOptions)
 import Json.Decode as Decode
+import String.Interpolate exposing (interpolate)
 
 {-|
 When clicking a link we want to prevent the default browser behaviour which is to load a new page.
@@ -21,6 +22,10 @@ onLinkClick message =
     in
         onWithOptions "click" options (Decode.succeed message)
 
+buildSearchUrl: HomePage -> String
+buildSearchUrl homePage =
+    interpolate "/search/search_term={0}&term_type=All&role=Enzyme%20or%20Substrate" [homePage.searchInput]
+
 
 view : Model -> Html Msg
 view model =
@@ -35,8 +40,7 @@ view model =
 
         div [id "header", css [
             Css.height (px 100),
-            alignSelf stretch,
-            backgroundColor (hex "#4169E1")
+            alignSelf stretch
             ]] [],
         
         div [id "body", css [
@@ -129,18 +133,23 @@ view model =
                     paddingRight (px 10),
                     paddingTop (px 5),
                     paddingBottom (px 5)
-                    ]] [],
+                    ],
+                    Html.Styled.Events.onInput Msgs.OnHomePageSearchInputChange
+                    ] [],
                 button [
                     css[flexGrow (num 1),
-                    marginRight (px 10)
-                    ]][text "Submit"],
+                        marginRight (px 10)
+                       ],
+                    onClick (ChangeLocation (buildSearchUrl model.homePage))
+                    
+                    ][text "Submit"],
                 button [
                     css[flexGrow (num 1)
                     ]][text "Reset"]
             ] 
         ],
         
-        -- Search iPTMnET
+        -- Search rlimsp
          div [id "search_rlimsp_section", css [
                     backgroundColor (hex "#eee"),
                     borderWidth (px 1),
@@ -198,7 +207,7 @@ view model =
         div [id "footer", css [
             Css.height (px 100),
             alignSelf stretch,
-            backgroundColor (hex "#4169E1")
+            backgroundColor (hex "#f2f2f2")
         ]] []
 
     ]

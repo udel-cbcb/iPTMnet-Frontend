@@ -1,4 +1,4 @@
-module Entry exposing (..)
+module Page.Entry exposing (..)
 import Html.Styled exposing (..)
 import Css exposing (..)
 import Html.Styled.Attributes exposing (..)

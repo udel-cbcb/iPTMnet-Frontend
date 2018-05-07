@@ -1,5 +1,4 @@
 module Model exposing (..)
-import RemoteData exposing (WebData)
 import Routing
 import Json.Decode exposing (..)
 import Json.Decode.Pipeline exposing (..)
@@ -15,9 +14,132 @@ type RequestState =
 type alias Model =
     {
         route: Routing.Route,
+        searchPage: SearchPage,
+        homePage: HomePage,
         entryPage: EntryPage        
     }
 
+initialModel : Routing.Route -> Model
+initialModel route = 
+    { 
+        route = route,
+        homePage = {
+            searchInput = ""
+        },
+        searchPage = {
+            query_params = "",
+            searchData = {
+                status = NotAsked,
+                error = "",
+                data = []
+            }
+        },
+        entryPage = {
+            infoData = {
+                status = NotAsked,
+                error = "",
+                data = emptyInfo
+            },
+            proteoformsData = {
+                status = NotAsked,
+                error = "",
+                data = []
+            },
+            ptmDependentPPIData = {
+                status = NotAsked,
+                error = "",
+                data = []
+            },
+            proteoformPPIData = {
+                status = NotAsked,
+                error = "",
+                data = []
+            },
+            substrateData = {
+                status = NotAsked,
+                error = "",
+                data = Dict.empty
+            }
+        }
+    }
+
+-- Home page
+
+type alias HomePage = 
+    {
+        searchInput: String
+    }
+
+setHomePage : Model -> HomePage -> Model
+setHomePage model newHomePage = 
+    { model | homePage = newHomePage}
+
+setSearchInput: HomePage -> String -> HomePage
+setSearchInput homePage newInput =
+    { homePage | searchInput = newInput }
+
+-- Search page
+type alias SearchPage = 
+    {
+        query_params : String,
+        searchData: SearchData
+    }
+
+type alias SearchData = 
+    {
+        status: RequestState,
+        error: String,
+        data: List (SearchResult Organism)    
+    }
+
+type alias SearchResult organismDecoder = 
+    {
+        iptm_id:String,
+        protein_name: String,
+        gene_name: String,
+        synonyms: (List String),
+        organism: organismDecoder,
+        substrate_role: Bool,
+        substrate_num: Int,
+        enzyme_role: Bool,
+        enzyme_num: Int,
+        ptm_dependent_ppi_role: Bool,
+        ptm_dependent_ppi_num: Int,
+        sites: Int,
+        isoforms: Int   
+    }
+
+searchResultDecoder: Decoder (SearchResult Organism)
+searchResultDecoder =
+    decode SearchResult
+        |> required "iptm_id" string
+        |> required "protein_name" string
+        |> optional "gene_name" string ""
+        |> required "synonyms" (list string)
+        |> required "organism" organismDecoder
+        |> required "substrate_role" bool
+        |> required "substrate_num" int
+        |> required "enzyme_role" bool
+        |> required "enzyme_num" int
+        |> required "ptm_dependent_ppi_role" bool
+        |> required "ptm_dependent_ppi_num" int
+        |> required "sites" int
+        |> required "isoforms" int
+
+searchResultListDecoder: Decoder (List (SearchResult Organism))
+searchResultListDecoder =
+    list searchResultDecoder
+
+
+setSearchPage : Model -> SearchPage -> Model
+setSearchPage model newSearchPage = 
+    { model | searchPage = newSearchPage}
+
+setSearchData : SearchPage -> SearchData -> SearchPage
+setSearchData searchPage newData =
+    { searchPage | searchData = newData }
+
+-- Entry page
 
 type alias EntryPage = 
     {
@@ -91,38 +213,6 @@ setSubstrateData: EntryPage -> SubstrateData -> EntryPage
 setSubstrateData entryPage newData = 
     { entryPage | substrateData = newData }
 
-initialModel : Routing.Route -> Model
-initialModel route = 
-    { 
-        route = route,
-        entryPage = {
-            infoData = {
-                status = NotAsked,
-                error = "",
-                data = emptyInfo
-            },
-            proteoformsData = {
-                status = NotAsked,
-                error = "",
-                data = []
-            },
-            ptmDependentPPIData = {
-                status = NotAsked,
-                error = "",
-                data = []
-            },
-            proteoformPPIData = {
-                status = NotAsked,
-                error = "",
-                data = []
-            },
-            substrateData = {
-                status = NotAsked,
-                error = "",
-                data = Dict.empty
-            }
-        }
-    }
 
 type alias Info = 
     {

@@ -1,8 +1,7 @@
 module Main exposing (..)
 import Html exposing (..)
 import Html.Styled exposing (toUnstyled)
-import Home
-import Entry
+import Page.Entry
 import Model exposing (..)
 import Msgs exposing (Msg)
 import Commands exposing (..)
@@ -13,6 +12,8 @@ import Views.Proteoforms
 import Views.PTMDependentPPI
 import Views.ProteoformPPI
 import Views.Substrate
+import Page.Home
+import Page.Search
 
 init : Navigation.Location -> ( Model, Cmd Msg )
 init location =
@@ -24,13 +25,17 @@ view : Model -> Html Msg
 view model = 
     case model.route of
         Routing.HomeRoute -> 
-            Home.view model
+            Page.Home.view model
             |> toUnstyled
         Routing.EntryRoute id ->
-            Entry.view model
+            Page.Entry.view model
+            |> toUnstyled
+        Routing.SearchRoute queryString ->
+            Page.Search.view model
             |> toUnstyled
         Routing.NotFoundRoute ->
             div [] []
+        
 
 -- UPDATE
 update : Msg -> Model -> ( Model, Cmd Msg )
@@ -38,6 +43,24 @@ update msg model =
     case msg of
         Msgs.NoOp ->
             ( model, Cmd.none )
+
+        -- Home Page
+        Msgs.OnHomePageSearchInputChange newContent ->
+            let newModel = Model.setSearchInput model.homePage newContent
+                           |> Model.setHomePage model
+            in
+                (newModel, Cmd.none)
+
+        -- Search Page
+        Msgs.OnFetchSearchResults response -> 
+            let
+                newModel = Page.Search.decodeResponse response
+                |> Model.setSearchData model.searchPage
+                |> Model.setSearchPage model
+            in
+                ( newModel, Cmd.none)         
+
+        -- Entry Page
         Msgs.OnFetchInfo response ->
             let
                 newModel = Views.Info.decodeResponse response
@@ -77,6 +100,7 @@ update msg model =
             ( model, Navigation.newUrl path)
         Msgs.OnLocationChange location ->
             Commands.handleRoute model location
+
         
 
 
