@@ -18,6 +18,7 @@ type alias Model =
         entryPage: EntryPage        
     }
 
+
 type alias EntryPage = 
     {
         infoData: InfoData,
