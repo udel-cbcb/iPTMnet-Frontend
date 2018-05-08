@@ -6,16 +6,16 @@ import Model exposing (..)
 import Msgs exposing (..)
 import RemoteData exposing (WebData)
 import String.Interpolate exposing (interpolate)
-
+import Views.Navbar
 
 view : Model -> Html Msg
 view model =  
             div [id "page",css [
-            Css.property "height" "100%",
             displayFlex,
-            flexDirection column            ]] 
+            flexDirection column]] 
             [  
-        
+
+            Views.Navbar.view,
 
             div [id "search_table", css [
                 displayFlex,
@@ -29,7 +29,8 @@ view model =
                     backgroundColor (hex "#eff1f2"),
                     paddingTop (px 5),
                     paddingBottom (px 5),
-                    fontWeight bold
+                    fontWeight bold,
+                    alignItems center
                 ]] [
                     div [css [flex (num 2),
                             marginLeft (px 5),
