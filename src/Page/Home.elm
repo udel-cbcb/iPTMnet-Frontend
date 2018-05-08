@@ -52,7 +52,7 @@ view model =
         div [ id "main_section", css [
                     backgroundColor (hex "#eee"),
                     Css.width (px 900),
-                    padding (px 10),
+                    padding (px 25),
                     displayFlex,
                     flexDirection row
                 ]
@@ -146,7 +146,26 @@ view model =
                 button [
                     css[flexGrow (num 1)
                     ]][text "Reset"]
-            ] 
+            ],
+            div [css[displayFlex,
+                     flexDirection row,
+                     fontSize (px 13),
+                     marginTop (px 10),
+                     marginBottom (px 10),
+                     justifyContent spaceBetween
+                    ]] [
+                div [] [
+                    a [href "#", css[marginLeft (px 5), marginRight (px 20)]] [text "PTM type"],
+                    a [href "#", css[marginRight (px 20)]] [text "Has Role"],
+                    a [href "#"] [text "Restrict by Organism"]
+                ],
+                div [][
+                    a [href "/entry/Q15796", css[marginRight (px 20)]] [text "Sample Report"],
+                    a [href "#", css[marginRight (px 20)]] [text "Batch Retrieval (New)"]
+                ]
+                    
+            ]
+             
         ],
         
         -- Search rlimsp
@@ -191,6 +210,11 @@ view model =
                         button [
                             css[flexGrow (num 1)
                             ]][text "Reset"]
+                    ],
+                    div [] [
+                        input [type_ "checkbox"][],
+                        span [] [text " Exclude review papers "],
+                        a [href "#"] [text "Restrict by Organism"]
                     ] 
                 ],
                 img [src "images/rlimsp.jpg", css[
