@@ -7,8 +7,6 @@ module.exports = {
     ]
   },
 
-  mode: 'development',
-
   output: {
     path: path.resolve(__dirname + '/dist'),
     filename: '[name].js',
@@ -44,13 +42,7 @@ module.exports = {
     ],
 
     noParse: /\.elm$/,
-  },
-
-  devServer: {
-    inline: true,
-    stats: { colors: true },
-    historyApiFallback: true
-  },
+  }
 
 
 };
