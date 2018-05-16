@@ -1,1 +1,1 @@
-docker build --no-cache . -t udelcbcb/iptmnet_website:0.1
+docker build --no-cache . -t udelcbcb/iptmnet_website:0.2
