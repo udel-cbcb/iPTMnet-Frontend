@@ -4,9 +4,9 @@ import Css exposing (..)
 import Html.Styled.Attributes exposing (..)
 import Model exposing (..)
 import Msgs exposing (..)
-import String.Interpolate exposing (interpolate)
 import Views.Navbar
-import Html.Styled.Events exposing (..)
+import FileReader exposing (NativeFile)
+import String.Interpolate exposing (interpolate)
 
 tableItemCSS: List Style
 tableItemCSS =
@@ -100,17 +100,17 @@ view model =
                                 marginTop (px 15)
                             ]
                         ][
-                            button [
+                            input [
                                 id "btn_browse", 
+                                type_ "file",
+                                multiple False,
+                                FileReader.onFileChange Msgs.OnFileChange |> Html.Styled.Attributes.fromUnstyled,
                                 css [
                                     margin (px 5)]
-                                    ] [text "Browse"],
-                            div [
-                                id "div_file_name", 
-                                css [
-                                    margin (px 5)]
-                                    ] [text "No file selected"]
+                                    ] [text "Browse"]
                         ],
+                        
+                        div [css [marginLeft (px 5)]][text (interpolate "Contains {0} kinases" [toString (List.length model.batchPage.kinases)])],
 
                         -- output
                         div [

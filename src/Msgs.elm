@@ -4,6 +4,7 @@ import RemoteData exposing (WebData)
 import Model exposing (..)
 import Navigation
 import Dict exposing (..)
+import FileReader exposing (NativeFile)
 
 -- MESSAGES
 type Msg
@@ -17,4 +18,6 @@ type Msg
     | OnFetchSubstrates (WebData (Dict String (List (Substrate Source SubstrateEnzyme))))
     | OnHomePageSearchInputChange String
     | OnFetchSearchResults (WebData (List (SearchResult Organism)))
+    | OnFileChange (List NativeFile)
+    | OnFileContent (Result FileReader.Error String)
 

@@ -8,6 +8,9 @@ import Routing
 import Model
 import Navigation
 import String.Interpolate exposing(interpolate)
+import FileReader exposing (NativeFile)
+import Task
+
 
 fetchInfo: String -> Cmd Msg
 fetchInfo id = 
@@ -46,6 +49,10 @@ fetchSearchResults query_params =
     |> RemoteData.sendRequest
     |> Cmd.map Msgs.OnFetchSearchResults
 
+getFileContents : NativeFile -> Cmd Msg
+getFileContents nf =
+    FileReader.readAsTextFile nf.blob
+    |> Task.attempt Msgs.OnFileContent
 
 
 handleRoute : Model.Model -> Navigation.Location -> (Model.Model, Cmd Msg)

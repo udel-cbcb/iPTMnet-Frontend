@@ -16,6 +16,7 @@ import Page.Home
 import Page.Search
 import Page.Batch
 
+
 init : Navigation.Location -> ( Model, Cmd Msg )
 init location =
     Commands.handleRoute (Model.initialModel Routing.HomeRoute) location
@@ -105,7 +106,31 @@ update msg model =
         Msgs.OnLocationChange location ->
             Commands.handleRoute model location
 
-        
+        -- Batch
+        Msgs.OnFileChange file ->
+            case file of
+                -- Only handling case of a single file
+                [ f ] ->
+                    let 
+                        _ = Debug.log "msg" f
+                    in
+                        (model, Commands.getFileContents f)
+
+                _ ->
+                    (model, Cmd.none)
+
+        Msgs.OnFileContent res ->
+            case res of
+                Ok content ->
+                    let 
+                        kinases = Model.toKinaseList content
+                        newModel = Model.setKinases model.batchPage kinases
+                                   |> Model.setBatchPage model  
+                    in
+                        ( newModel , Cmd.none )
+
+                Err err ->
+                    Debug.crash (toString err)
 
 
 -- SUBSCRIPTIONS

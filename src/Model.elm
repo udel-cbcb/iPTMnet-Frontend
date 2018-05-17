@@ -3,6 +3,9 @@ import Routing
 import Json.Decode exposing (..)
 import Json.Decode.Pipeline exposing (..)
 import Dict exposing (..)
+import Json.Encode
+import Csv
+import Array
 
 type RequestState = 
     NotAsked
@@ -16,16 +19,19 @@ type alias Model =
         route: Routing.Route,
         searchPage: SearchPage,
         homePage: HomePage,
-        entryPage: EntryPage        
+        entryPage: EntryPage,
+        batchPage: BatchPage        
     }
 
 initialModel : Routing.Route -> Model
 initialModel route = 
     { 
         route = route,
+
         homePage = {
             searchInput = ""
         },
+
         searchPage = {
             query_params = "",
             searchData = {
@@ -34,6 +40,7 @@ initialModel route =
                 data = []
             }
         },
+
         entryPage = {
             infoData = {
                 status = NotAsked,
@@ -60,6 +67,10 @@ initialModel route =
                 error = "",
                 data = Dict.empty
             }
+        },
+
+        batchPage = {
+            kinases = []
         }
     }
 
@@ -140,7 +151,6 @@ setSearchData searchPage newData =
     { searchPage | searchData = newData }
 
 -- Entry page
-
 type alias EntryPage = 
     {
         infoData: InfoData,
@@ -436,7 +446,6 @@ substrateTableDecoder: Decoder (Dict String (List (Substrate Source SubstrateEnz
 substrateTableDecoder =
     dict substrateListDecoder
 
-
 emptyInfo: Info
 emptyInfo = 
                 {
@@ -458,3 +467,82 @@ emptyInfo =
                         category = ""
                     }  
                 }
+
+
+-- Batch Page
+
+type alias Kinase =
+ {
+     substrate_ac: String,
+     site_residue: String,
+     site_position: Int
+ }
+
+toKinaseList : String -> List Kinase
+toKinaseList csv_string =
+    Csv.splitWith "\t" csv_string
+    |> List.map toKinase
+
+toKinase : (List String) -> Kinase
+toKinase values =
+    let
+        values_arr = Array.fromList values
+        
+        -- substrate ac
+        sub_ac = case Array.get 0 values_arr of
+            Just value ->
+                value
+            Nothing ->
+                ""
+
+        -- site residue
+        residue = case Array.get 1 values_arr of
+            Just value ->
+                value
+            Nothing ->
+                ""
+        
+        -- site position
+        position = case Array.get 2 values_arr of
+            Just value ->
+                case String.toInt value of
+                    Ok int_val ->
+                        int_val
+                    Err _ ->
+                        0
+            Nothing ->
+                0
+
+    in 
+        {
+            substrate_ac = sub_ac,
+            site_residue = residue,
+            site_position = position
+        }
+
+kinaseListToJsonString : (List Kinase) -> String
+kinaseListToJsonString kinases =
+    Json.Encode.list (List.map kinaseToJson kinases)
+    |> toString 
+
+kinaseToJson : Kinase -> Json.Encode.Value
+kinaseToJson kinase = 
+    Json.Encode.object [
+        ("substrate_ac",Json.Encode.string kinase.substrate_ac),
+        ("site_residue",Json.Encode.string kinase.site_residue),
+        ("site_position",Json.Encode.int kinase.site_position)
+    ]
+
+type alias BatchPage = 
+ {
+     kinases: List (Kinase)
+ }
+
+setBatchPage: Model -> BatchPage -> Model
+setBatchPage model newBatchPage = 
+    { model | batchPage = newBatchPage }
+
+setKinases: BatchPage -> (List Kinase) -> BatchPage
+setKinases batchPage newKinases =
+    { batchPage | kinases = newKinases }
+
