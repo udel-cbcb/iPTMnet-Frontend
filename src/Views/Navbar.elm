@@ -22,7 +22,8 @@ view =
                         flexDirection row,
                         Css.property "width" "100%",
                         backgroundColor (hex "#71A1CF"),
-                        padding (px 5),
+                        paddingTop (px 5),
+                        paddingBottom (px 5),
                         alignItems center
                     ]
                 ] [
@@ -49,7 +50,7 @@ view =
                                 option [value "name"] [text "Protein/Gene Name"],
                                 option [value "pmid"] [text "PMID"]
                             ],
-                        input [css [fontSize (px 13)], placeholder "Search"] []
+                        input [css [fontSize (px 13),marginRight (px 10)], placeholder "Search"] []
                     ]
 
                 ]

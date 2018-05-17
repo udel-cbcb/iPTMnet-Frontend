@@ -67,5 +67,7 @@ handleRoute model location =
                                                              ])
             Routing.SearchRoute queryString -> 
                 (Model.initialModel currentRoute, fetchSearchResults queryString )
+            Routing.BatchRoute ->
+                (Model.initialModel currentRoute, Cmd.none )
             Routing.NotFoundRoute ->
                 (Model.initialModel currentRoute, Cmd.none )

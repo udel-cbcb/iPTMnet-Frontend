@@ -14,6 +14,7 @@ import Views.ProteoformPPI
 import Views.Substrate
 import Page.Home
 import Page.Search
+import Page.Batch
 
 init : Navigation.Location -> ( Model, Cmd Msg )
 init location =
@@ -33,6 +34,9 @@ view model =
         Routing.SearchRoute queryString ->
             Page.Search.view model
             |> toUnstyled
+        Routing.BatchRoute ->
+            Page.Batch.view model
+            |> toUnstyled 
         Routing.NotFoundRoute ->
             div [] []
         

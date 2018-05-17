@@ -6,6 +6,7 @@ type Route
     = HomeRoute
     | EntryRoute String
     | SearchRoute String
+    | BatchRoute 
     | NotFoundRoute
 
 
@@ -18,6 +19,7 @@ matchers =
         [ UrlParser.map HomeRoute UrlParser.top
         , UrlParser.map EntryRoute (s "entry" </> string)
         , UrlParser.map SearchRoute (s "search" </> string)
+        , UrlParser.map BatchRoute (s "batch")
         ]
 
 

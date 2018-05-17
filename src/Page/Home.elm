@@ -161,7 +161,7 @@ view model =
                 ],
                 div [][
                     a [href "/entry/Q15796", css[marginRight (px 20)]] [text "Sample Report"],
-                    a [href "#", css[marginRight (px 20)]] [text "Batch Retrieval (New)"]
+                    a [href "/batch", css[marginRight (px 20)]] [text "Batch Retrieval (New)"]
                 ]
                     
             ]
