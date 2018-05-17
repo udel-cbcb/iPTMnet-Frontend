@@ -20,4 +20,8 @@ type Msg
     | OnFetchSearchResults (WebData (List (SearchResult Organism)))
     | OnFileChange (List NativeFile)
     | OnFileContent (Result FileReader.Error String)
+    | OnFetchBatchEnzymes  (WebData (List (BatchEnzyme Entity Source)))
+    | OnFetchBatchPTMPPI  (WebData (List (BatchPTMPPI Entity Source)))
+    | SwitchBatchOutput Model.Output
+
 

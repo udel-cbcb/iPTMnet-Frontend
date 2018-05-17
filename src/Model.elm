@@ -70,12 +70,22 @@ initialModel route =
         },
 
         batchPage = {
-            kinases = []
+            kinases = [],
+            outputType = Enzymes,
+            batchEnzymeData = {
+                status = NotAsked,
+                error = "",
+                data = []
+            },
+            batchPTMPPIData = {
+                status = NotAsked,
+                error = "",
+                data = []
+            }
         }
     }
 
 -- Home page
-
 type alias HomePage = 
     {
         searchInput: String
@@ -470,12 +480,36 @@ emptyInfo =
 
 
 -- Batch Page
+type Output = Enzymes
+              | PTMPPI
+
+type alias BatchPage = 
+ {
+     kinases: List (Kinase),
+     outputType: Output,
+     batchEnzymeData : BatchEnzymeData,
+     batchPTMPPIData : BatchPTMPPIData 
+ }
+
+type alias BatchEnzymeData = 
+    {
+        status: RequestState,
+        error: String,
+        data: List (BatchEnzyme Entity Source)    
+    }
+
+type alias BatchPTMPPIData = 
+    {
+        status: RequestState,
+        error: String,
+        data: List (BatchPTMPPI Entity Source)    
+    }
 
 type alias Kinase =
  {
      substrate_ac: String,
      site_residue: String,
-     site_position: Int
+     site_position: String
  }
 
 toKinaseList : String -> List Kinase
@@ -505,13 +539,9 @@ toKinase values =
         -- site position
         position = case Array.get 2 values_arr of
             Just value ->
-                case String.toInt value of
-                    Ok int_val ->
-                        int_val
-                    Err _ ->
-                        0
+                value
             Nothing ->
-                0
+                ""
 
     in 
         {
@@ -520,23 +550,13 @@ toKinase values =
             site_position = position
         }
 
-kinaseListToJsonString : (List Kinase) -> String
-kinaseListToJsonString kinases =
-    Json.Encode.list (List.map kinaseToJson kinases)
-    |> toString 
-
 kinaseToJson : Kinase -> Json.Encode.Value
 kinaseToJson kinase = 
     Json.Encode.object [
         ("substrate_ac",Json.Encode.string kinase.substrate_ac),
         ("site_residue",Json.Encode.string kinase.site_residue),
-        ("site_position",Json.Encode.int kinase.site_position)
+        ("site_position",Json.Encode.string kinase.site_position)
     ]
-
-type alias BatchPage = 
- {
-     kinases: List (Kinase)
- }
 
 setBatchPage: Model -> BatchPage -> Model
 setBatchPage model newBatchPage = 
@@ -545,4 +565,76 @@ setBatchPage model newBatchPage =
 setKinases: BatchPage -> (List Kinase) -> BatchPage
 setKinases batchPage newKinases =
     { batchPage | kinases = newKinases }
+
+
+setBatchOutput: BatchPage -> Output -> BatchPage
+setBatchOutput batchPage newOutput =
+    { batchPage | outputType = newOutput }
+
+setBatchEnzymeData: BatchPage -> BatchEnzymeData -> BatchPage
+setBatchEnzymeData batchPage newData = 
+    { batchPage | batchEnzymeData = newData }
+
+setBatchPTMPPIData: BatchPage -> BatchPTMPPIData -> BatchPage
+setBatchPTMPPIData batchPage newData = 
+    { batchPage | batchPTMPPIData = newData }
+
+-- Batch Result Enzymes
+type alias BatchEnzyme entityDecoder sourceDecoder= 
+    {
+        ptm_type : String,
+        substrate : entityDecoder,
+        site: String,
+        site_position: Int,
+        enzyme: entityDecoder,
+        score: Int,
+        source: (List sourceDecoder),
+        pmids: (List String)
+    }
+
+batchEnzymeDecoder: Decoder (BatchEnzyme Entity Source)
+batchEnzymeDecoder =
+    decode BatchEnzyme 
+    |> required "ptm_type" string
+    |> required "substrate" entityDecoder
+    |> required "site" string
+    |> required "site_position" int
+    |> required "enzyme" entityDecoder
+    |> required "score" int
+    |> required "source" (list sourceDecoder)
+    |> required "pmids" (list string)
+
+batchEnzymeListDecoder: Decoder (List (BatchEnzyme Entity Source))
+batchEnzymeListDecoder = 
+    list batchEnzymeDecoder
+
+
+-- Batch Result PTMPPI
+type alias BatchPTMPPI entityDecoder sourceDecoder = 
+    {
+        ptm_type: String,
+        substrate: entityDecoder,
+        site: String,
+        site_position: Int,
+        interactant: entityDecoder,
+        association_type: String,
+        source: (List sourceDecoder),
+        pmid: String
+    }
+
+batchPTMPPIDecoder: Decoder (BatchPTMPPI Entity Source)
+batchPTMPPIDecoder =
+    decode BatchPTMPPI
+    |> required "ptm_type" string
+    |> required "substrate" entityDecoder
+    |> required "site" string
+    |> required "site_position" int
+    |> required "interactant" entityDecoder
+    |> required "association_type" string
+    |> required "source" (list sourceDecoder)
+    |> required "pmids" string
+
+batchPTMPPIListDecoder: Decoder (List (BatchPTMPPI Entity Source))
+batchPTMPPIListDecoder = 
+    list batchPTMPPIDecoder
 

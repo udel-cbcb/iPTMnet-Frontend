@@ -15,6 +15,7 @@ import Views.Substrate
 import Page.Home
 import Page.Search
 import Page.Batch
+import Page.BatchResult
 
 
 init : Navigation.Location -> ( Model, Cmd Msg )
@@ -37,7 +38,10 @@ view model =
             |> toUnstyled
         Routing.BatchRoute ->
             Page.Batch.view model
-            |> toUnstyled 
+            |> toUnstyled
+        Routing.BatchResultRoute ->
+            Page.BatchResult.view model
+            |> toUnstyled
         Routing.NotFoundRoute ->
             div [] []
         
@@ -131,6 +135,31 @@ update msg model =
 
                 Err err ->
                     Debug.crash (toString err)
+
+        -- Batch Results
+        Msgs.OnFetchBatchEnzymes response ->
+            let 
+                newModel = 
+                    Page.BatchResult.decodeEnzymeResponse response
+                    |> Model.setBatchEnzymeData model.batchPage
+                    |> Model.setBatchPage model
+            in
+                (newModel, Cmd.none)
+
+        Msgs.OnFetchBatchPTMPPI response ->
+            let 
+                _ = Debug.log "ptm_ppi" response
+            in
+                (model, Cmd.none)
+
+        Msgs.SwitchBatchOutput output ->
+            let 
+                newModel = Model.setBatchOutput model.batchPage output
+                           |> Model.setBatchPage model 
+            in
+                (newModel, Cmd.none) 
+
+            
 
 
 -- SUBSCRIPTIONS
