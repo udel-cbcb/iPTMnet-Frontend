@@ -23,5 +23,8 @@ type Msg
     | OnFetchBatchEnzymes  (WebData (List (BatchEnzyme Entity Source)))
     | OnFetchBatchPTMPPI  (WebData (List (BatchPTMPPI Entity Source)))
     | SwitchBatchOutput Model.Output
+    | OnBatchInputChanged String
+    | OnBatchInputExampleClicked
+    | OnBatchClearClicked
 
 

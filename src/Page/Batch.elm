@@ -66,9 +66,16 @@ view model =
                         ]] [
                             
                             -- text area
-                            textarea [ id "ta_substrates", css [
-                                Css.height (px 400)
-                            ]][],
+                            textarea [ 
+                                id "ta_substrates",
+                                css [
+                                    Css.height (px 400)
+                                ],
+                                onInput Msgs.OnBatchInputChanged,
+                                value model.batchPage.inputText                                 
+                            ][
+                                
+                            ],
                             
                             -- examples
                             div [ 
@@ -83,15 +90,19 @@ view model =
                                 button [
                                     id "btn_clear", 
                                     css [
-                                        margin (px 5)]
-                                        ] [text "Clear"],
+                                        margin (px 5)
+                                        ],
+                                    onClick Msgs.OnBatchClearClicked
+                                    ]
+                                    [text "Clear"],
                                 button [ 
                                     id "btn_examples",
                                     css [
-                                        margin (px 5),
-                                        marginLeft auto
-                                        ]
-                                        ] [text "Input examples"]
+                                            margin (px 5),
+                                            marginLeft auto
+                                        ],
+                                    onClick Msgs.OnBatchInputExampleClicked
+                                    ] [text "Input examples"]
                             ],
 
                             -- input

@@ -81,7 +81,8 @@ initialModel route =
                 status = NotAsked,
                 error = "",
                 data = []
-            }
+            },
+            inputText = ""
         }
     }
 
@@ -488,7 +489,8 @@ type alias BatchPage =
      kinases: List (Kinase),
      outputType: Output,
      batchEnzymeData : BatchEnzymeData,
-     batchPTMPPIData : BatchPTMPPIData 
+     batchPTMPPIData : BatchPTMPPIData,
+     inputText : String 
  }
 
 type alias BatchEnzymeData = 
@@ -562,8 +564,8 @@ setBatchPage: Model -> BatchPage -> Model
 setBatchPage model newBatchPage = 
     { model | batchPage = newBatchPage }
 
-setKinases: BatchPage -> (List Kinase) -> BatchPage
-setKinases batchPage newKinases =
+setKinases: (List Kinase) -> BatchPage -> BatchPage
+setKinases newKinases batchPage =
     { batchPage | kinases = newKinases }
 
 
@@ -578,6 +580,11 @@ setBatchEnzymeData batchPage newData =
 setBatchPTMPPIData: BatchPage -> BatchPTMPPIData -> BatchPage
 setBatchPTMPPIData batchPage newData = 
     { batchPage | batchPTMPPIData = newData }
+
+setBatchInputText: String -> BatchPage -> BatchPage
+setBatchInputText newText batchPage = 
+    { batchPage | inputText = newText }
+
 
 -- Batch Result Enzymes
 type alias BatchEnzyme entityDecoder sourceDecoder= 
