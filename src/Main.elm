@@ -139,7 +139,6 @@ update msg model =
         
         Msgs.OnBatchInputChanged newContent ->
             let 
-                _ = Debug.log "msg" "InputChanged"
                 kinases = Model.toKinaseList newContent
                 newModel = Model.setKinases kinases model.batchPage 
                            |> Model.setBatchInputText newContent
@@ -149,7 +148,6 @@ update msg model =
         
         Msgs.OnBatchInputExampleClicked ->
             let 
-                _ = Debug.log "msg" "example_clicked"
                 exampleInput = "Q15796\tK\t19\nQ15796\tT\t8\nP04637\tK\t120\nP04637\tS\t149\nP04637\tS\t378\nP04637\tS\t392\nP42356\tS\t199"
 
                 newModel = Model.setBatchInputText exampleInput model.batchPage
@@ -160,8 +158,8 @@ update msg model =
 
         Msgs.OnBatchClearClicked ->
             let 
-                _ = Debug.log "msg" "clear_clicked"
                 newModel = Model.setBatchInputText " " model.batchPage
+                           |> Model.setKinases []
                            |> Model.setBatchPage model
             in
                 (newModel, Cmd.none) 
