@@ -40,7 +40,8 @@ initialModel route =
                 status = NotAsked,
                 error = "",
                 data = []
-            }
+            },
+            showErrorMsg = False
         },
 
         entryPage = {
@@ -111,7 +112,8 @@ setHomePageAdvancedSearchVisibility is_visible homePage =
 type alias SearchPage = 
     {
         query_params : String,
-        searchData: SearchData
+        searchData: SearchData,
+        showErrorMsg: Bool
     }
 
 type alias SearchData = 
@@ -167,6 +169,11 @@ setSearchPage model newSearchPage =
 setSearchData : SearchPage -> SearchData -> SearchPage
 setSearchData searchPage newData =
     { searchPage | searchData = newData }
+
+setSearchShowErrorMsg: Bool -> SearchPage -> SearchPage
+setSearchShowErrorMsg newValue searchPage =
+    { searchPage | showErrorMsg = newValue }
+
 
 -- Entry page
 type alias EntryPage = 
@@ -275,9 +282,9 @@ type alias Organism =
 organismDecoder: Decoder Organism
 organismDecoder = 
     decode Organism
-        |> required "taxon_code" string
-        |> required "species" string
-        |> required "common_name" string
+        |> optional "taxon_code" string ""
+        |> optional "species" string ""
+        |> optional "common_name" string ""
 
 type alias PRO = 
     {

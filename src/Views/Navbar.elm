@@ -42,7 +42,8 @@ view model =
                 ][
                     div [
                         id "nav_home",
-                        css navigationItem
+                        css navigationItem,
+                        onClick (ChangeLocation "/")
                     ][
                         text "iPTMnet"
                     ],

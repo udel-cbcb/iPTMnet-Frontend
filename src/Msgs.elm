@@ -27,5 +27,6 @@ type Msg
     | OnBatchInputChanged String
     | OnBatchInputExampleClicked
     | OnBatchClearClicked
+    | OnSearchResultErrorButtonClicked
 
 

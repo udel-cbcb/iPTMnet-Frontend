@@ -75,7 +75,14 @@ update msg model =
                 |> Model.setSearchData model.searchPage
                 |> Model.setSearchPage model
             in
-                ( newModel, Cmd.none)         
+                ( newModel, Cmd.none)
+
+        Msgs.OnSearchResultErrorButtonClicked ->
+            let
+                newModel = Model.setSearchShowErrorMsg (not model.searchPage.showErrorMsg) model.searchPage
+                           |> Model.setSearchPage model
+            in
+                ( newModel, Cmd.none)      
 
         -- Entry Page
         Msgs.OnFetchInfo response ->

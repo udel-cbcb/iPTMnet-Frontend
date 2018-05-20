@@ -2,6 +2,7 @@ module Page.Search exposing (..)
 import Html.Styled exposing (..)
 import Css exposing (..)
 import Html.Styled.Attributes exposing (..)
+import Html.Styled.Events exposing (..)
 import Model exposing (..)
 import Msgs exposing (..)
 import RemoteData exposing (WebData)
@@ -24,7 +25,15 @@ view model =
 
                 Views.Navbar.view model,
 
-                viewError "This is an very very w rgtr  rtyr5tyrt  5tyry5  45t 5ry  e45tr5ty very very error message" False,            
+                (case model.searchPage.searchData.status of 
+                NotAsked ->
+                    div [] []
+                Loading ->
+                    viewLoading
+                Error ->
+                    viewError model.searchPage.searchData.error model.searchPage.showErrorMsg Msgs.OnSearchResultErrorButtonClicked
+                Success ->
+                    viewSearchTable model),            
 
                 div[
                     id "filler",
@@ -37,9 +46,118 @@ view model =
 
         ]
 
+viewLoading: Html Msg 
+viewLoading = 
+    div [
+        id "div_loading_view_container",
+        css [
+            displayFlex,
+            flexDirection row,
+            alignSelf center,
+            flexGrow (num 5),
+            alignItems center
+        ]
+    ] [
+        div [
+            id "div_loading_view",
+            css [
+                displayFlex,
+                flexDirection column,
+                alignItems center
+            ]
+        ][
+            div [
+                id "loading_icon",
+                        css [
+                            Css.width (px 100),
+                            Css.height (px 100),
+                            Css.property "-webkit-animation" "spin 0.8s linear infinite",
+                            Css.property "-moz-animation" "spin 0.8s linear infinite"
+                        ]
+                ][
+                    div [
+                            css [
+                                margin auto
+                            ]
+                        ] [
+                            Ionicon.loadC 100 Colors.emptyIcon |> Html.Styled.fromUnstyled
+                    ]
+            ],
+            div [
+                id "loading_label",
+                css [
+                    color Colors.emptyText,
+                    fontSize (Css.em 1.5),
+                    Css.fontWeight bold
+                ]
+            ][
+                text "Loading results.."
+            ]
+        ]
+    ]
 
-viewError: String -> Bool-> Html Msg 
-viewError errorMsg isMsgVisible = 
+
+viewEmpty: Html Msg 
+viewEmpty = 
+    div [
+        id "div_empty_view_container",
+        css [
+            displayFlex,
+            flexDirection row,
+            alignSelf center,
+            flexGrow (num 5),
+            alignItems center
+        ]
+    ] [
+        div [
+            id "div_empty_view",
+            css [
+                displayFlex,
+                flexDirection column,
+                alignItems center
+            ]
+        ][
+            div [
+                id "empty_icon",
+                        css [
+                            displayFlex,
+                            flexDirection column,
+                            alignItems center
+                        ]
+                ][
+                    div [
+                            css [
+                                margin auto
+                            ]
+                        ] [
+                            Ionicon.coffee 150 Colors.emptyIcon |> Html.Styled.fromUnstyled
+                    ]
+            ],
+            div [
+                id "empty_label",
+                css [
+                    color Colors.emptyText,
+                    fontSize (Css.em 2),
+                    Css.fontWeight bold
+                ]
+            ][
+                text "No results found!"
+            ],
+
+            div [
+                id "error_label_1",
+                css [
+                    color Colors.emptyText,
+                    fontSize (Css.em 1.1)
+                ]
+            ][
+                text "Try searching for a different protein or changing advanced options"
+            ]
+        ]
+    ]
+
+viewError: String -> Bool-> Msg -> Html Msg 
+viewError errorMsg isMsgVisible erroButtonMsg = 
     div [
         id "div_error_container",
         css [
@@ -108,7 +226,8 @@ viewError errorMsg isMsgVisible =
                     hover [
                         cursor pointer
                     ]
-                ]
+                ],
+                onClick erroButtonMsg
             ][
                 div [
                     css [
@@ -150,8 +269,10 @@ viewError errorMsg isMsgVisible =
                 id "error_msg",
                 css ([
                     color Colors.errorCodeIconBackground,
-                    paddingTop (px 10),
-                    maxWidth (Css.em 20)
+                    marginTop (px 10),
+                    marginBottom (px 20),
+                    marginLeft (px 20),
+                    marginRight (px 20)
                 ] ++ Model.isVisible isMsgVisible)
             ][
                 text errorMsg
@@ -267,7 +388,7 @@ searchResultRow searchResult =
                         ]]
                     [
                         input [type_ "checkbox", css[marginLeft (px 5), marginRight (px 15)]][],
-                        a [href (interpolate "/entry/{0}" [searchResult.iptm_id] )] [text (interpolate "iPTM:{0}" [searchResult.iptm_id])]
+                        a [href (interpolate "/entry/{0}" [searchResult.iptm_id] )] [text (interpolate "iPTM:{0}/{1}" [searchResult.iptm_id])]
                     ],
                     div [css [flex (num 3),
                             marginRight (px 10)         
@@ -321,9 +442,7 @@ searchResultRow searchResult =
                             ]]
                     [
                         text (toString searchResult.isoforms)
-                    ]                  
-
-
+                    ]
                 ]
 
 viewSubstrateRole : Bool -> Int -> Html Msg

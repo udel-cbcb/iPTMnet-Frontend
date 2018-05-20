@@ -89,6 +89,12 @@ errorCodeIconBackground = hex "#ff1616ff"
 errorButtonBackground: Css.Color
 errorButtonBackground = hex "#ffbdbdff"
 
+emptyIcon: Color.Color
+emptyIcon = Color.rgb 174 174 174
+
+emptyText: Css.Color
+emptyText = hex "#aeaeaeff"
+
 
 
 
