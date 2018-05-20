@@ -8,19 +8,42 @@ import Model exposing (..)
 import Dict exposing (..)
 import String.Interpolate exposing (interpolate)
 import String.Extra exposing (..)
+import Views.Error
+import Views.Loading
 
 -- returns the substrate view
-view: SubstrateData -> String -> String -> Html Msg 
-view  data entryID geneName =
-    div [id "substrates", css [marginTop (px 20)] ][
-        h4 [css [
-            fontSize (px 20),
-            fontWeight normal
-        ]] [text (interpolate "{0} ({1}) as Substrate" [entryID, geneName])],
+view: SubstrateData -> String -> String -> Bool -> Html Msg 
+view  data entryID geneName showErrorMsg =
+    case data.status of
+        NotAsked ->
+            text "No yet requested"
+        Loading ->
+            viewWithSection Views.Loading.view entryID geneName
+        Success ->
+            viewWithSection (renderSubstrateTable data.data) entryID geneName
+        Error ->
+            viewWithSection (Views.Error.view data.error showErrorMsg Msgs.OnSubstrateErrorButtonClicked) entryID geneName
 
-        renderView data
+viewWithSection: (Html Msg) -> String -> String -> Html Msg
+viewWithSection childView entryID geneName =
+        div [
+                id "substrates",
+                css [
+                    marginTop (px 20),
+                    displayFlex,
+                    flexDirection column,
+                    alignItems center
+                ]][
+                    h4 [css [
+                        fontSize (Css.em 1.5),
+                        fontWeight normal,
+                        alignSelf stretch
+                    ]] [text (interpolate "Substrate" [entryID, geneName])],
 
-    ]
+                childView
+            
+        ]
+
 
 renderView: SubstrateData -> Html Msg
 renderView data =
@@ -39,19 +62,22 @@ renderSubstrateTable substrateDict =
         div [id "proteoforms_table", css [
             displayFlex,
             flexDirection column,
-            fontSize (px 13),
+            fontSize (Css.em 0.88),
             borderWidth (px 1),
             borderStyle solid,
-            borderColor (hex "#d9dadb")
+            borderColor (hex "#d9dadb"),
+            alignSelf stretch
         ]][
             -- header
-            div [id "proteoforms_table_header", css [
-                displayFlex,
-                flexDirection row,
-                backgroundColor (hex "#eff1f2"),
-                paddingTop (px 5),
-                paddingBottom (px 5),
-                fontWeight bold
+            div [
+                id "proteoforms_table_header",
+                css [
+                    displayFlex,
+                    flexDirection row,
+                    backgroundColor (hex "#eff1f2"),
+                    paddingTop (px 5),
+                    paddingBottom (px 5),
+                    fontWeight bold
             ]] [
                 div [css [flex (num 1),
                           marginLeft (px 20),

@@ -118,11 +118,11 @@ view model =
                     paddingLeft (px 40),
                     paddingRight (px 40)
                 ]][
-                    Views.Info.view model.entryPage.infoData,
+                    Views.Info.view model.entryPage.infoData model.entryPage.showInfoErrorMsg,
                     Views.Sequence.view,
-                    Views.Substrate.view model.entryPage.substrateData model.entryPage.infoData.data.uniprot_ac model.entryPage.infoData.data.gene_name ,
-                    Views.Proteoforms.view model.entryPage.proteoformsData,
-                    Views.PTMDependentPPI.view model.entryPage.ptmDependentPPIData,
+                    Views.Substrate.view model.entryPage.substrateData model.entryPage.infoData.data.uniprot_ac model.entryPage.infoData.data.gene_name model.entryPage.showSubstrateErrorMsg,
+                    Views.Proteoforms.view model.entryPage.proteoformsData model.entryPage.showProteoformsErrorMsg,
+                    Views.PTMDependentPPI.view model.entryPage.ptmDependentPPIData model.entryPage.showPTMDepPPIErrorMsg,
                     Views.ProteoformPPI.view model.entryPage.proteoformPPIData
                 ]
             ]

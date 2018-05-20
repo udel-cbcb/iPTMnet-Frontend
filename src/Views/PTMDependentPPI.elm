@@ -6,55 +6,70 @@ import Msgs exposing (..)
 import Model exposing (..)
 import RemoteData exposing (WebData)
 import String.Interpolate exposing (interpolate)
+import Views.Loading
+import Views.Error
 
 
 -- returns the substrate view
-view: PTMDependentPPIData -> Html Msg 
-view data = 
-        div [id "ptm_dependent_ppi", css [marginTop (px 20)] ][
-            div [css [
-                        displayFlex,
-                        flexDirection row,
-                        paddingTop (px 10),
-                        paddingBottom (px 10)
-                     ]]
-                [
-                span [css [
-                    fontSize (px 20)
-                ]][text "PTM Dependent PPI"],
-                div [id "ptm_dependent_ppi_search" ,css [
-                                                    marginLeft auto,
-                                                    alignSelf center
-                                                ]]
-                [
-                    span [css [marginRight (px 10), fontSize (px 12)]] [text "Search:"],
-                    input [] []
-                ]
-            ],
-            renderView data             
-        ]
-
-renderView: PTMDependentPPIData -> Html Msg
-renderView data =
+view: PTMDependentPPIData -> Bool -> Html Msg 
+view data showErrorMsg = 
     case data.status of
         NotAsked ->
-            text "No yet requested"
+            div [][]
         Loading ->
-            text "Loading"
+            viewWithSection Views.Loading.view
         Success ->
-            renderProteoformTable data.data
+            case (List.length data.data) of
+            0 -> div [][]
+            _ ->  viewWithSection (renderPTMTable data.data)
         Error ->
-            text data.error
+            viewWithSection (Views.Error.view data.error showErrorMsg Msgs.OnPTMDepPPIErrorButtonClicked)
 
-renderProteoformTable: List (PTMDependentPPI Entity Source) -> Html Msg
-renderProteoformTable ptmDependentPPIList =
+viewWithSection: (Html Msg) -> Html Msg
+viewWithSection childView =
+    div [
+        id "ptm_dependent_ppi",
+        css [
+                displayFlex,
+                flexDirection column,
+                marginTop (px 30),
+                alignItems center
+            ]]
+            [
+                div [css [
+                            displayFlex,
+                            flexDirection row,
+                            paddingTop (px 10),
+                            paddingBottom (px 10),
+                            alignItems center,
+                            alignSelf stretch
+                        ]]
+                [
+                    span [css [
+                        fontSize (Css.em 1.5)
+                    ]][text "PTM Dependent PPI"],
+                    div [id "ptm_dep_ppi__search" ,css [
+                                                        marginLeft auto,
+                                                        alignSelf center
+                                                    ]]
+                    [
+                        span [css [marginRight (px 10), fontSize (Css.em 1)]] [text "Search:"],
+                        input [] []
+                    ]
+                ],
+                childView             
+            ]
+
+renderPTMTable: List (PTMDependentPPI Entity Source) -> Html Msg
+renderPTMTable ptmDependentPPIList =
         div [id "ptmdependentppi_table", css [
             displayFlex,
             flexDirection column,
-            fontSize (px 13),
+            fontSize (Css.em 0.88),
             borderWidth (px 1),
             borderStyle solid,
-            borderColor (hex "#d9dadb")
+            borderColor (hex "#d9dadb"),
+            alignSelf stretch
         ]][
             -- header
             div [id "ptmdependentppi_table_header", css [

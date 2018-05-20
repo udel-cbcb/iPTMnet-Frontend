@@ -7,13 +7,15 @@ import Msgs exposing (..)
 import RemoteData exposing (WebData)
 import String.Interpolate exposing (interpolate)
 import String
+import Views.Error
+import Views.Loading
 
 -- css
 geneInfoTableCSS: List Style
 geneInfoTableCSS = 
     [
         marginTop (px 20),
-        fontSize (px 13),
+        fontSize (Css.em 0.9),
         displayFlex,
         flexDirection column
     ]
@@ -22,7 +24,7 @@ proInfoTableCSS: List Style
 proInfoTableCSS = 
     [
         marginTop (px 40),
-        fontSize (px 13),
+        fontSize (Css.em 0.9),
         displayFlex,
         flexDirection column
     ]
@@ -59,85 +61,96 @@ tableValueCSS =
 
 
 -- returns the info views
-view: InfoData -> Html Msg
-view data = 
-    case data.status of
-        NotAsked ->
-            text ""
-
-        Loading ->
-            text "Loading..."
-
-        Success ->
-            
-            div [id "info"] [
-                h2[ css [
-                    borderBottomWidth (px 1),
-                    borderBottomStyle solid,
-                    borderBottomColor (rgb 225 225 232),
-                    paddingBottom (px 10),
-                    fontSize (px 30),
-                    fontWeight normal
-                ]] [text (interpolate "iPTMnet Report for {0} ({1})" [data.data.uniprot_ac, data.data.gene_name])],
-
-                h4 [css [
-                    fontSize (px 20),
-                    fontWeight normal
-
-                ]] [text "Protein information"],
-
-                div [id "info_table", css geneInfoTableCSS ] [
-                    div [css tableRowCSS] [
-                        span [css tableKeysCSS] [text "UniProt AC / UniProt ID"],
-                        span [css tableValueCSS]
-                              [a [href (interpolate "http://www.uniprot.org/uniprot/{0}" [data.data.uniprot_ac] ), Html.Styled.Attributes.target "_blank"] [text data.data.uniprot_ac],
-                               text (interpolate " / {0}" [data.data.uniprot_id] )] 
-                    ],
-                    div [css tableRowCSS] [
-                        span [css tableKeysCSS] [text "Protein Name"],
-                        span [css tableValueCSS] [text data.data.protein_name] 
-                    ],
-                    div [css tableRowCSS] [
-                        span [css tableKeysCSS] [text "Gene Name"],
-                        span [css tableValueCSS] [text (interpolate "Name: {0} " [data.data.gene_name]),
-                               br[][],
-                               text (interpolate "Synonyms: {0} " [String.join "," data.data.synonymns])] 
-                    ],
-                    div [css tableRowCSS] [
-                        span [css tableKeysCSS] [text "Organism"],
-                        span [css tableValueCSS,align "left"] [text (interpolate "{0} ({1})" [data.data.organism.species,data.data.organism.common_name])] 
-                    ]
+view: InfoData -> Bool -> Html Msg
+view data isErrorVisible =
+    div [
+            id "info",
+                css [
+                    displayFlex,
+                    flexDirection column,
+                    alignItems center
+                ]
+            ][
+                h2[ 
+                    css [
+                        borderBottomWidth (px 1),
+                        borderBottomStyle solid,
+                        borderBottomColor (rgb 225 225 232),
+                        paddingBottom (px 10),
+                        fontSize (Css.em 2.5),
+                        fontWeight normal,
+                        alignSelf stretch
+                    ]] [
+                        text (interpolate "iPTMnet Report for {0} ({1})" [data.data.uniprot_ac, data.data.gene_name])
                 ],
 
-               div [id "pro_table", css proInfoTableCSS] [
-                    div [css tableRowCSS] [
-                        span [css tableKeysCSS] [text "PRO ID"],
-                        span [css tableValueCSS] [
-                            a [href (interpolate "http://purl.obolibrary.org/obo/PR_{0}" [data.data.uniprot_ac] ), Html.Styled.Attributes.target "_blank"] [text (data.data.pro.id)]] 
-                    ],
-                    div [css tableRowCSS] [
-                        span [css tableKeysCSS] [text "PRO Name"],
-                        span [css tableValueCSS] [text data.data.pro.name] 
-                    ],
-                    div [css tableRowCSS] [
-                        span [css tableKeysCSS] [text "Definition"],
-                        span [css tableValueCSS] [text data.data.pro.definition] 
-                    ],
-                    div [css tableRowCSS] [
-                        span [css tableKeysCSS] [text "Short Label"],
-                        span [css tableValueCSS] [text data.data.pro.short_label] 
-                    ],
-                    div [css tableRowCSS] [
-                        span [css tableKeysCSS] [text "Category"],
-                        span [css tableValueCSS] [text data.data.pro.category] 
+            case data.status of
+                NotAsked ->
+                    text ""
+
+                Loading ->
+                    Views.Loading.view
+                    
+                Success ->
+                    div [
+                        css [
+                            alignSelf stretch
+                        ]
+                    ][
+                        div [id "info_table", css geneInfoTableCSS ] [
+                            div [css tableRowCSS] [
+                                span [css tableKeysCSS] [text "UniProt AC / UniProt ID"],
+                                span [css tableValueCSS]
+                                    [a [href (interpolate "http://www.uniprot.org/uniprot/{0}" [data.data.uniprot_ac] ), Html.Styled.Attributes.target "_blank"] [text data.data.uniprot_ac],
+                                    text (interpolate " / {0}" [data.data.uniprot_id] )] 
+                            ],
+                            div [css tableRowCSS] [
+                                span [css tableKeysCSS] [text "Protein Name"],
+                                span [css tableValueCSS] [text data.data.protein_name] 
+                            ],
+                            div [css tableRowCSS] [
+                                span [css tableKeysCSS] [text "Gene Name"],
+                                span [css tableValueCSS] [text (interpolate "Name: {0} " [data.data.gene_name]),
+                                    br[][],
+                                    text (interpolate "Synonyms: {0} " [String.join "," data.data.synonymns])] 
+                            ],
+                            div [css tableRowCSS] [
+                                span [css tableKeysCSS] [text "Organism"],
+                                span [css tableValueCSS,align "left"] [text (interpolate "{0} ({1})" [data.data.organism.species,data.data.organism.common_name])] 
+                            ]
+                        ],
+
+                    div [id "pro_table", css proInfoTableCSS] [
+                            div [css tableRowCSS] [
+                                span [css tableKeysCSS] [text "PRO ID"],
+                                span [css tableValueCSS] [
+                                    a [href (interpolate "http://purl.obolibrary.org/obo/PR_{0}" [data.data.uniprot_ac] ), Html.Styled.Attributes.target "_blank"] [text (data.data.pro.id)]] 
+                            ],
+                            div [css tableRowCSS] [
+                                span [css tableKeysCSS] [text "PRO Name"],
+                                span [css tableValueCSS] [text data.data.pro.name] 
+                            ],
+                            div [css tableRowCSS] [
+                                span [css tableKeysCSS] [text "Definition"],
+                                span [css tableValueCSS] [text data.data.pro.definition] 
+                            ],
+                            div [css tableRowCSS] [
+                                span [css tableKeysCSS] [text "Short Label"],
+                                span [css tableValueCSS] [text data.data.pro.short_label] 
+                            ],
+                            div [css tableRowCSS] [
+                                span [css tableKeysCSS] [text "Category"],
+                                span [css tableValueCSS] [text data.data.pro.category] 
+                            ]
+
+                        ]
                     ]
 
-                ]
+                Error ->
+                    (Views.Error.view data.error isErrorVisible Msgs.OnInfoErrorButtonClicked)
 
             ]
 
-        error ->
-            text data.error
 
 decodeResponse: WebData Info -> InfoData 
 decodeResponse response = 

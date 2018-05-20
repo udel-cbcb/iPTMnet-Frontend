@@ -124,6 +124,30 @@ update msg model =
             ( model, Navigation.newUrl path)
         Msgs.OnLocationChange location ->
             Commands.handleRoute model location
+        Msgs.OnInfoErrorButtonClicked ->
+            let 
+                newModel = Model.setShowInfoErrorMsg (not model.entryPage.showInfoErrorMsg) model.entryPage
+                          |> Model.setEntryPage model
+            in
+            (newModel, Cmd.none)
+        Msgs.OnSubstrateErrorButtonClicked ->
+            let 
+                newModel = Model.setShowSubstrateErrorMsg (not model.entryPage.showSubstrateErrorMsg) model.entryPage
+                          |> Model.setEntryPage model
+            in
+            (newModel, Cmd.none)
+        Msgs.OnProteoformsErrorButtonClicked ->
+            let 
+                newModel = Model.setShowProteoformsErrorMsg (not model.entryPage.showProteoformsErrorMsg) model.entryPage
+                          |> Model.setEntryPage model
+            in
+            (newModel, Cmd.none)
+        Msgs.OnPTMDepPPIErrorButtonClicked ->
+            let 
+                newModel = Model.setShowPTMDepPPIErrorMsg (not model.entryPage.showPTMDepPPIErrorMsg) model.entryPage
+                          |> Model.setEntryPage model
+            in
+            (newModel, Cmd.none)
 
         -- Batch
         Msgs.OnFileChange file ->

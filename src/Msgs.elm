@@ -28,5 +28,9 @@ type Msg
     | OnBatchInputExampleClicked
     | OnBatchClearClicked
     | OnSearchResultErrorButtonClicked
+    | OnInfoErrorButtonClicked
+    | OnSubstrateErrorButtonClicked
+    | OnProteoformsErrorButtonClicked
+    | OnPTMDepPPIErrorButtonClicked
 
 

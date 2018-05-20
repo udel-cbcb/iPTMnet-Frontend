@@ -18,6 +18,7 @@ view model isInNavbar =
                                                                                                         Css.paddingTop (px 20),
                                                                                                         Css.paddingBottom (px 40),
                                                                                                         Css.width (Css.em 80),
+                                                                                                        marginTop (px 0),
                                                                                                         marginLeft auto,
                                                                                                         marginRight auto
                                                                                                     ]

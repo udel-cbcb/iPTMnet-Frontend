@@ -276,7 +276,8 @@ viewError errorMsg isMsgVisible erroButtonMsg =
                     marginTop (px 10),
                     marginBottom (px 20),
                     marginLeft (px 20),
-                    marginRight (px 20)
+                    marginRight (px 20),
+                    textAlign center
                 ] ++ Model.isVisible isMsgVisible)
             ][
                 text errorMsg

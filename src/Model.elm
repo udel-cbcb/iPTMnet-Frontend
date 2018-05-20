@@ -50,16 +50,19 @@ initialModel route =
                 error = "",
                 data = emptyInfo
             },
+            showInfoErrorMsg = False,
             proteoformsData = {
                 status = NotAsked,
                 error = "",
                 data = []
             },
+            showProteoformsErrorMsg = False,
             ptmDependentPPIData = {
                 status = NotAsked,
                 error = "",
                 data = []
             },
+            showPTMDepPPIErrorMsg = False,
             proteoformPPIData = {
                 status = NotAsked,
                 error = "",
@@ -69,7 +72,8 @@ initialModel route =
                 status = NotAsked,
                 error = "",
                 data = Dict.empty
-            }
+            },
+            showSubstrateErrorMsg = False
         },
 
         batchPage = {
@@ -179,10 +183,14 @@ setSearchShowErrorMsg newValue searchPage =
 type alias EntryPage = 
     {
         infoData: InfoData,
+        showInfoErrorMsg: Bool,
         proteoformsData: ProteoformsData,
+        showProteoformsErrorMsg: Bool,
         ptmDependentPPIData: PTMDependentPPIData,
+        showPTMDepPPIErrorMsg: Bool,
         proteoformPPIData: ProteoformPPIData,
-        substrateData: SubstrateData
+        substrateData: SubstrateData,
+        showSubstrateErrorMsg: Bool
     }
 
 type alias InfoData = 
@@ -247,6 +255,22 @@ setProteoformPPIData entryPage newData =
 setSubstrateData: EntryPage -> SubstrateData -> EntryPage
 setSubstrateData entryPage newData = 
     { entryPage | substrateData = newData }
+
+setShowInfoErrorMsg: Bool -> EntryPage -> EntryPage
+setShowInfoErrorMsg newValue entryPage = 
+    { entryPage | showInfoErrorMsg = newValue}
+
+setShowSubstrateErrorMsg: Bool -> EntryPage -> EntryPage
+setShowSubstrateErrorMsg newValue entryPage = 
+    { entryPage | showSubstrateErrorMsg = newValue}
+
+setShowProteoformsErrorMsg: Bool -> EntryPage -> EntryPage
+setShowProteoformsErrorMsg newValue entryPage = 
+    { entryPage | showProteoformsErrorMsg = newValue}
+
+setShowPTMDepPPIErrorMsg: Bool -> EntryPage -> EntryPage
+setShowPTMDepPPIErrorMsg newValue entryPage = 
+    { entryPage | showPTMDepPPIErrorMsg = newValue}
 
 
 type alias Info = 

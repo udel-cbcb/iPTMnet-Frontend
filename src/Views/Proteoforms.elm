@@ -7,44 +7,59 @@ import RemoteData exposing (WebData)
 import Model exposing (..)
 import String.Interpolate exposing (interpolate)
 import String.Extra exposing (..)
+import Views.Loading 
+import Views.Error
 
 -- returns the substrate view
-view: ProteoformsData -> Html Msg 
-view data = 
-        div [id "proteoforms", css [marginTop (px 20)] ][
-            div [css [
-                        displayFlex,
-                        flexDirection row,
-                        paddingTop (px 10),
-                        paddingBottom (px 10)
-                     ]]
-                [
-                span [css [
-                    fontSize (px 20)
-                ]][text "Proteoforms"],
-                div [id "proteforms_search" ,css [
-                                                    marginLeft auto,
-                                                    alignSelf center
-                                                ]]
-                [
-                    span [css [marginRight (px 10), fontSize (px 12)]] [text "Search:"],
-                    input [] []
-                ]
-            ],
-            renderView data             
-        ]
-
-renderView: ProteoformsData -> Html Msg
-renderView data =
+view: ProteoformsData -> Bool -> Html Msg 
+view data showErrorMsg= 
     case data.status of
         NotAsked ->
-            text "No yet requested"
+            div [][]
         Loading ->
-            text "Loading"
+            viewWithSection Views.Loading.view
         Success ->
-            renderProteoformTable data.data
+            case (List.length data.data) of
+            0 -> div [][]
+            _ ->  viewWithSection (renderProteoformTable data.data)
         Error ->
-            text data.error
+            viewWithSection (Views.Error.view data.error showErrorMsg Msgs.OnProteoformsErrorButtonClicked)
+        
+
+viewWithSection: (Html Msg) -> Html Msg
+viewWithSection childView =
+    div [
+        id "proteoforms",
+        css [
+                displayFlex,
+                flexDirection column,
+                marginTop (px 30),
+                alignItems center
+            ]]
+            [
+                div [css [
+                            displayFlex,
+                            flexDirection row,
+                            paddingTop (px 10),
+                            paddingBottom (px 10),
+                            alignItems center,
+                            alignSelf stretch
+                        ]]
+                [
+                    span [css [
+                        fontSize (Css.em 1.5)
+                    ]][text "Proteoforms"],
+                    div [id "proteforms_search" ,css [
+                                                        marginLeft auto,
+                                                        alignSelf center
+                                                    ]]
+                    [
+                        span [css [marginRight (px 10), fontSize (Css.em 1)]] [text "Search:"],
+                        input [] []
+                    ]
+                ],
+                childView             
+            ]
 
 decodeResponse: WebData (List (Proteoform Enzyme Source)) -> ProteoformsData 
 decodeResponse response = 
@@ -84,10 +99,11 @@ renderProteoformTable proteoformList =
         div [id "proteoforms_table", css [
             displayFlex,
             flexDirection column,
-            fontSize (px 13),
+            fontSize (Css.em 0.88),
             borderWidth (px 1),
             borderStyle solid,
-            borderColor (hex "#d9dadb")
+            borderColor (hex "#d9dadb"),
+            alignSelf stretch
         ]][
             -- header
             div [id "proteoforms_table_header", css [

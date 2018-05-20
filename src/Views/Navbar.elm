@@ -26,7 +26,8 @@ view model =
             id "nav_bar_container",
             css [
                 position sticky,
-                Css.property "top" "0px"
+                Css.property "top" "0px",
+                boxShadow4 (px 0) (px 4) (px 8) (hex "#83838354")
             ]
         ][
             div [
