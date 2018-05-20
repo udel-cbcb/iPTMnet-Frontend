@@ -33,7 +33,11 @@ view model =
                 Error ->
                     viewError model.searchPage.searchData.error model.searchPage.showErrorMsg Msgs.OnSearchResultErrorButtonClicked
                 Success ->
-                    viewSearchTable model),            
+                    case (List.length model.searchPage.searchData.data) of
+                    0 ->
+                        viewEmpty
+                    _ ->
+                        viewSearchTable model),            
 
                 div[
                     id "filler",
