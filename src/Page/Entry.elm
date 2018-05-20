@@ -11,6 +11,7 @@ import Views.Proteoforms
 import Views.PTMDependentPPI
 import Views.ProteoformPPI
 import Views.Navbar
+import Views.Footer
 
 -- css
 sideBarItemCSS: List Style
@@ -33,7 +34,9 @@ view model =
 
         div [id "page",css [
             displayFlex,
-            flexDirection column]] 
+            flexDirection column,
+            Css.property "min-height" "100%"
+            ]] 
             [  
 
             Views.Navbar.view model,
@@ -116,7 +119,8 @@ view model =
                     flexDirection column,
                     flex (num 4),
                     paddingLeft (px 40),
-                    paddingRight (px 40)
+                    paddingRight (px 40),
+                    paddingBottom (px 40)
                 ]][
                     Views.Info.view model.entryPage.infoData model.entryPage.showInfoErrorMsg,
                     Views.Sequence.view,
@@ -125,7 +129,17 @@ view model =
                     Views.PTMDependentPPI.view model.entryPage.ptmDependentPPIData model.entryPage.showPTMDepPPIErrorMsg,
                     Views.ProteoformPPI.view model.entryPage.proteoformPPIData model.entryPage.showProteoformsPPIErrorMsg
                 ]
-            ]
+            ],
+
+            div[
+                        id "filler",
+                        css [
+                            alignSelf stretch
+                        ]
+                    ][],
+
+                    Views.Footer.view
+
 
         ]
 
