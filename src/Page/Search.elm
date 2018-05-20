@@ -10,6 +10,7 @@ import Views.Navbar
 import Ionicon.Ios
 import Colors
 import Views.Footer exposing (..)
+import Ionicon
 
 view : Model -> Html Msg
 view model =  
@@ -23,7 +24,144 @@ view model =
 
                 Views.Navbar.view model,
 
-                div [id "search_table", css [
+                viewError "This is an very very w rgtr  rtyr5tyrt  5tyry5  45t 5ry  e45tr5ty very very error message" False,            
+
+                div[
+                    id "filler",
+                    css [
+                        flexGrow (num 1)
+                    ]]
+                [],
+
+                Views.Footer.view        
+
+        ]
+
+
+viewError: String -> Bool-> Html Msg 
+viewError errorMsg isMsgVisible = 
+    div [
+        id "div_error_container",
+        css [
+            displayFlex,
+            flexDirection row,
+            alignSelf center,
+            flexGrow (num 5),
+            alignItems center
+        ]
+    ] [
+        div [
+            id "div_error",
+            css [
+                displayFlex,
+                flexDirection column,
+                alignItems center
+            ]
+        ][
+            div [
+                id "error_icon",
+                        css [
+                            displayFlex,
+                            flexDirection column,
+                            alignItems center
+                        ]
+                ][
+                    div [
+                            css [
+                                margin auto
+                            ]
+                        ] [
+                            Ionicon.network 150 Colors.errorIcon |> Html.Styled.fromUnstyled
+                    ]
+            ],
+            div [
+                id "error_label",
+                css [
+                    color Colors.errorText,
+                    fontSize (Css.em 2),
+                    Css.fontWeight bold
+                ]
+            ][
+                text "Whoops!"
+            ],
+
+            div [
+                id "error_label_1",
+                css [
+                    color Colors.errorText,
+                    fontSize (Css.em 1.2)
+                ]
+            ][
+                text "Looks like something went wrong"
+            ],
+
+            div [
+                id "btn_error",
+                css [
+                    displayFlex,
+                    flexDirection row,
+                    alignItems center,
+                    Css.height (px 30),
+                    backgroundColor Colors.errorButtonBackground,
+                    borderRadius (px 5),
+                    marginTop (px 10),
+                    hover [
+                        cursor pointer
+                    ]
+                ]
+            ][
+                div [
+                    css [
+                        paddingLeft (px 10),
+                        paddingRight (px 10),
+                        color Colors.errorCodeIconBackground,
+                        fontSize (Css.em 0.95)
+                    ]
+                ][
+                    text "ERROR"
+                ],
+                div [
+                    id "error_code",
+                            css [
+                                displayFlex,
+                                flexDirection column,
+                                alignItems center,
+                                paddingLeft (px 5),
+                                paddingRight (px 5),
+                                Css.property "height" "100%",
+                                backgroundColor Colors.errorCodeIconBackground,
+                                borderTopRightRadius (px 5),
+                                borderBottomRightRadius (px 5)
+                            ]
+                    ][
+                        div [
+                                css [
+                                    marginTop (px 6),
+                                    paddingLeft (px 5),
+                                    paddingRight (px 5)
+                                ]
+                            ] [
+                                Ionicon.code 16 Colors.errorCodeIcon |> Html.Styled.fromUnstyled
+                        ]
+                ]
+            ],
+
+            div [
+                id "error_msg",
+                css ([
+                    color Colors.errorCodeIconBackground,
+                    paddingTop (px 10),
+                    maxWidth (Css.em 20)
+                ] ++ Model.isVisible isMsgVisible)
+            ][
+                text errorMsg
+            ]
+        ]
+    ]
+
+viewSearchTable : Model -> Html Msg
+viewSearchTable model =  
+    div [id "search_table", css [
                     displayFlex,
                     flexDirection column,
                     fontSize (Css.em 0.9)
@@ -105,18 +243,8 @@ view model =
                     -- rows
                     div [] (List.map searchResultRow (Debug.log "search_results" model.searchPage.searchData.data))               
 
-                ],
+                ]
 
-                div[
-                    id "filler",
-                    css [
-                        flexGrow (num 1)
-                    ]]
-                [],
-
-                Views.Footer.view        
-
-        ]
 
 searchResultRow: (SearchResult Organism) -> Html Msg
 searchResultRow searchResult = 

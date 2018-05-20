@@ -74,4 +74,21 @@ advancedSearchExpandBackground = hex "#ffffffff"
 checkMark: Color.Color
 checkMark = Color.darkGreen
 
+errorIcon: Color.Color
+errorIcon = Color.rgb 155 155 155
+
+errorText: Css.Color
+errorText = hex "#9b9b9bff"
+
+errorCodeIcon: Color.Color
+errorCodeIcon = Color.white
+
+errorCodeIconBackground: Css.Color
+errorCodeIconBackground = hex "#ff1616ff"
+
+errorButtonBackground: Css.Color
+errorButtonBackground = hex "#ffbdbdff"
+
+
+
 
