@@ -21,7 +21,8 @@
         "krisajenkins/remotedata": "4.4.0 <= v < 5.0.0",
         "lukewestby/elm-string-interpolate": "1.0.2 <= v < 2.0.0",
         "rtfeldman/elm-css": "13.1.1 <= v < 14.0.0",
-        "simonh1000/file-reader": "1.6.0 <= v < 2.0.0"
+        "simonh1000/file-reader": "1.6.0 <= v < 2.0.0",
+        "j-panasiuk/elm-ionicons": "1.0.0 <= v < 2.0.0"
     },
     "dependency-sources": {
         "gummesson/elm-csv":  {

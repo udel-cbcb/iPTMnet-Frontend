@@ -36,7 +36,7 @@ view model =
             flexDirection column]] 
             [  
 
-            Views.Navbar.view,
+            Views.Navbar.view model,
 
             div [id "content",css [
                 displayFlex,

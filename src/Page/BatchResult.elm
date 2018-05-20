@@ -5,7 +5,6 @@ import Html.Styled.Attributes exposing (..)
 import Model exposing (..)
 import Msgs exposing (..)
 import RemoteData exposing (WebData)
-import String.Interpolate exposing (interpolate)
 import Views.Navbar
 
 view : Model -> Html Msg
@@ -15,7 +14,7 @@ view model =
             flexDirection column]] 
             [  
 
-            Views.Navbar.view,
+            Views.Navbar.view model,
 
             case model.batchPage.outputType of
                 Model.Enzymes ->

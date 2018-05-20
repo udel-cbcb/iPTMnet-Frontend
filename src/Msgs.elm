@@ -17,6 +17,7 @@ type Msg
     | OnFetchProteoformPPI (WebData (List (ProteoformPPI Protein Source)))
     | OnFetchSubstrates (WebData (Dict String (List (Substrate Source SubstrateEnzyme))))
     | OnHomePageSearchInputChange String
+    | OnAdvancedSearchVisibilityChange Bool
     | OnFetchSearchResults (WebData (List (SearchResult Organism)))
     | OnFileChange (List NativeFile)
     | OnFileContent (Result FileReader.Error String)

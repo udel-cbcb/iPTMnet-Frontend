@@ -6,6 +6,7 @@ import Dict exposing (..)
 import Json.Encode
 import Csv
 import Array
+import Css exposing (property)
 
 type RequestState = 
     NotAsked
@@ -29,7 +30,8 @@ initialModel route =
         route = route,
 
         homePage = {
-            searchInput = ""
+            searchInput = "",
+            advancedSearchVisibility = False
         },
 
         searchPage = {
@@ -89,7 +91,8 @@ initialModel route =
 -- Home page
 type alias HomePage = 
     {
-        searchInput: String
+        searchInput: String,
+        advancedSearchVisibility: Bool
     }
 
 setHomePage : Model -> HomePage -> Model
@@ -99,6 +102,10 @@ setHomePage model newHomePage =
 setSearchInput: HomePage -> String -> HomePage
 setSearchInput homePage newInput =
     { homePage | searchInput = newInput }
+
+setHomePageAdvancedSearchVisibility: Bool -> HomePage -> HomePage
+setHomePageAdvancedSearchVisibility is_visible homePage =
+    {homePage | advancedSearchVisibility = is_visible}
 
 -- Search page
 type alias SearchPage = 
@@ -645,3 +652,13 @@ batchPTMPPIListDecoder: Decoder (List (BatchPTMPPI Entity Source))
 batchPTMPPIListDecoder = 
     list batchPTMPPIDecoder
 
+isVisible : Bool -> List Css.Style
+isVisible is_visible =
+    case is_visible of
+    True -> [
+              Css.property "visibility" "visible"   
+            ]
+    False -> [
+              Css.property "visibility" "visible",   
+              Css.property "display" "none"  
+            ]

@@ -7,6 +7,11 @@ import Msgs exposing (..)
 import Html.Styled.Events exposing (onClick,onWithOptions)
 import Json.Decode as Decode
 import String.Interpolate exposing (interpolate)
+import Colors exposing (..)
+import Styles.Home exposing (..)
+import Ionicon
+import Views.AdvancedSearch exposing (..)
+import Views.Footer exposing (..)
 
 {-|
 When clicking a link we want to prevent the default browser behaviour which is to load a new page.
@@ -26,212 +31,471 @@ buildSearchUrl: HomePage -> String
 buildSearchUrl homePage =
     interpolate "/search/search_term={0}&term_type=All&role=Enzyme%20or%20Substrate" [homePage.searchInput]
 
-
 view : Model -> Html Msg
 view model =
+
         div [id "page",css [
-            Css.property "height" "100%",
+            Css.property "min-height" "100%",
             displayFlex,
             flexDirection column,
             alignItems center,
-            flex (num 1)
+            flex (num 1),
+            backgroundColor Colors.pageBackground
             ]
         ] [
 
         div [id "header", css [
-            Css.height (px 100),
+            displayFlex,
+            flexDirection column,
             alignSelf stretch
-            ]] [],
+            ]] [
+                div [
+                    id "header_image",
+                    css [
+                        Css.height (px 0),
+                        backgroundColor (hex "#f2f2f2")
+                    ]
+                ][
+                    
+                ],
+
+                div [
+                    id "home_page_navigation",
+                    css [
+                        Css.height (px 40),
+                        backgroundColor Colors.navigationBackground,
+                        displayFlex,
+                        flexDirection row,
+                        alignItems center
+                    ]
+                ][
+                    div [
+                        id "nav_home",
+                        css navigationItem
+                    ][
+                        text "iPTMnet"
+                    ],
+                    div [
+                        id "seperator",
+                        css Styles.Home.navigationSeperator
+                    ][],
+                    div [
+                        id "nav_browse",
+                        css navigationItem
+                    ][
+                        text "Browse"
+                    ],
+                    div [
+                        id "seperator",
+                        css [
+                            Css.property "height" "50%",
+                            Css.width (px 1),
+                            backgroundColor Colors.navigationSeperator
+                        ]
+                    ][],
+                    div [
+                        id "nav_stats",
+                        css navigationItem
+                    ][
+                        text "Statistics"
+                    ],
+                    div [
+                        id "seperator",
+                        css Styles.Home.navigationSeperator
+                    ][],
+                    div [
+                        id "nav_help",
+                        css navigationItem
+                    ][
+                        text "Help"
+                    ],
+                    div [
+                        id "seperator",
+                        css Styles.Home.navigationSeperator
+                    ][],
+                    div [
+                        id "nav_license",
+                        css navigationItem
+                    ][
+                        text "License"
+                    ],
+                    div [
+                        id "seperator",
+                        css Styles.Home.navigationSeperator
+                    ][],
+                    div [
+                        id "nav_citation",
+                        css navigationItem
+                    ][
+                        text "Citation"
+                    ],
+                    div [
+                        id "seperator",
+                        css Styles.Home.navigationSeperator
+                    ][],
+                    div [
+                        id "nav_about",
+                        css navigationItem
+                    ][
+                        text "About"
+                    ],
+                    div [
+                        id "seperator",
+                        css Styles.Home.navigationSeperator
+                    ][]
+                ]
+
+            ],
         
         div [id "body", css [
             displayFlex,
             flexDirection column,
             alignItems center,
-            flexGrow (num 1)
-            ]] [
-        div [ id "main_section", css [
-                    backgroundColor (hex "#eee"),
-                    Css.width (px 900),
-                    padding (px 25),
+            flexGrow (num 1),
+            paddingTop (px 20),
+            overflow auto            
+            ]] [   
+                
+
+            div [
+                id "search_section",
+                css [
                     displayFlex,
-                    flexDirection row
+                    flexDirection column,
+                    alignItems center,
+                    paddingTop (px 100),
+                    paddingBottom (px 100)
                 ]
             ] [
-                        
-            div [id "iptmnet_description", css []]
-            [ 
-            h2 [] [text "iPTMnet"],
-            p [] [text "iPTMnet is a bioinformatics resource for integrated understanding of protein post-translational modifications (PTMs) in systems biology context."],
-            p [] [text "It connects multiple disparate bioinformatics tools and systems text mining, data mining, analysis and visualization tools, and databases and ontologies into an integrated cross-cutting research resource to address the knowledge gaps in exploring and discovering PTM networks."],
-            ul [] [
-                li[][a [href "/entry", onLinkClick (ChangeLocation "/entry/Q15796") ] [text "Browse"]],
-                li[][a [href "/stats"] [text "Statistics"]],
-                li[][a [href "/info"] [text "Project Info"]],
-                li[][a [href "/help"] [text "Help"]],
-                li[][a [href "/license"] [text "License"]],
-                li[][a [href "/citation"] [text "Citation"]]
-                ] 
-            ],
-         
-            div [id "nsf-grant", css [
-                    displayFlex,
-                    flexDirection column,
-                    alignItems center
-            ] ] [
-                -- nsf
-                div [css [
-                    displayFlex,
-                    flexDirection row,
-                    alignItems center
-                ]] [
-                    img [src "images/nsf.png", css[
-                        padding (px 5)
-                        ]][],
-                    a [css [fontSize (px 13)], href "http://nsf.gov/awardsearch/showAward.do?AwardNumber=1062520"] [text "NSF grants ABI-1062520"]
+                div [
+                    id "dv_title",
+                    css [
+                        fontSize (Css.em 5),
+                        marginTop (Css.em 0.1)
+                    ]
+                ][
+                    text "iPTMnet"
                 ],
-                span [css [fontSize (px 13)]] [text "NIH/NIGMS grants U01GM120953"], 
-                img [src "images/logo.png", css[
-                    Css.maxWidth (px 250),
-                    padding (px 10)
-                ]][]
-            ]
-        ],
-            
-         -- Search iPTMnET
-         div [id "search_iptmnet_section", css [
-                    backgroundColor (hex "#eee"),
-                    backgroundColor (hex "#eee"),
-                    borderWidth (px 1),
-                    borderStyle solid,
-                    borderColor (rgb 225 225 232),
-                    borderRadius (px 4),
-                    Css.width (px 900),
-                    margin (px 20),
-                    padding (px 10),
-                    displayFlex,
-                    flexDirection column
-                ] ]
-            [ 
-            h4 [] [text "Search for proteins in iPTMnet database"],
-            div [id "search_iptmnet", css [
-                    displayFlex,
-                    flexDirection row,
-                    justifyContent flexStart,
-                    marginBottom (px 10)
-                ]] [
-                select [css[flexGrow (num 0.5)]][
-                    option [value "all"] [text "All"],
-                    option [value "uniprot"] [text "Uniprot AC/ID"],
-                    option [value "name"] [text "Protein/Gene Name"],
-                    option [value "pmid"] [text "PMID"]
-                ],
-                input [maxlength 200, placeholder "Search",css[
-                    flexGrow (num 7.5),
-                    marginLeft (px 10),
-                    marginRight (px 10),
-                    paddingLeft (px 10),
-                    paddingRight (px 10),
-                    paddingTop (px 5),
-                    paddingBottom (px 5)
+
+                div [
+                    id "div_grants",
+                    css [
+                        marginTop (px 5),
+                        displayFlex,
+                        flexDirection row,
+                        alignItems center,
+                        fontSize (Css.em 1)
+                    ]
+                ] [
+                    -- label
+                    div [
+                        id "div_nsf-label"
+                    ][
+                        text "NSF Grants : "
                     ],
-                    Html.Styled.Events.onInput Msgs.OnHomePageSearchInputChange
-                    ] [],
-                button [
-                    css[flexGrow (num 1),
-                        marginRight (px 10)
-                       ],
-                    onClick (ChangeLocation (buildSearchUrl model.homePage))
-                    
-                    ][text "Submit"],
-                button [
-                    css[flexGrow (num 1)
-                    ]][text "Reset"]
-            ],
-            div [css[displayFlex,
-                     flexDirection row,
-                     fontSize (px 13),
-                     marginTop (px 10),
-                     marginBottom (px 10),
-                     justifyContent spaceBetween
-                    ]] [
-                div [] [
-                    a [href "#", css[marginLeft (px 5), marginRight (px 20)]] [text "PTM type"],
-                    a [href "#", css[marginRight (px 20)]] [text "Has Role"],
-                    a [href "#"] [text "Restrict by Organism"]
+                    a [
+                        href "#",
+                        css[
+                            marginLeft (px 10),
+                            fontSize (Css.em 0.85),
+                            link [
+                                color Colors.miscText
+                            ],
+                            visited [
+                                color Colors.miscText
+                            ]
+                        ]]
+                        [
+                            text "ABI-1062520"
+                    ],
+
+                    a [
+                        href "#",
+                        css[
+                            marginLeft (px 10),
+                            fontSize (Css.em 0.85),
+                            link [
+                                color Colors.miscText
+                            ],
+                            visited [
+                                color Colors.miscText
+                            ]
+                        ]]
+                        [
+                            text "U01GM120953"
+                    ]
+
                 ],
-                div [][
-                    a [href "/entry/Q15796", css[marginRight (px 20)]] [text "Sample Report"],
-                    a [href "/batch", css[marginRight (px 20)]] [text "Batch Retrieval (New)"]
-                ]
-                    
-            ]
-             
-        ],
-        
-        -- Search rlimsp
-         div [id "search_rlimsp_section", css [
-                    backgroundColor (hex "#eee"),
-                    borderWidth (px 1),
-                    borderStyle solid,
-                    borderColor (rgb 225 225 232),
-                    borderRadius (px 4),
-                    Css.width (px 900),
-                    margin (px 20),
-                    padding (px 10),
-                    displayFlex,
-                    flexDirection row
-                ] ]
-            [
-                div [css[
-                    displayFlex,
-                    flexDirection column,
-                    flexGrow (num 80)
-                ]] [
-                    h4 [] [text "Search phosphorylation information in the literature"],
-                    span [css[fontSize (px 14)]] [text "Enter Keywords (accepts Boolean operators (AND, OR, NOT))"],
-                    div [id "search_rlimsp", css [
+
+                div [
+                    id "dv_search",
+                    css [
+                        displayFlex,
+                        flexDirection row,
+                        alignItems center,
+                        Css.height (px 50),
+                        marginTop (px 60),
+                        boxShadow4 (px 0) (px 3) (px 10) (hex "#83838354"),
+                        focus [
+                            boxShadow4 (px 4) (px 6) (px 12) (hex "#83838354")
+                        ],
+                        hover [
+                            boxShadow4 (px 4) (px 6) (px 12) (hex "#83838354")
+                        ]
+                    ]
+                ][
+                   div [
+                        id "div_advanced_search_icon",
+                        css [
+                            Css.property "height" "105%",
+                            Css.property "width" "50px",
+                            backgroundColor Colors.selectBackground,
+                            displayFlex,
+                            flexDirection column,
+                            alignItems center,
+                            hover [
+                                cursor pointer,
+                                backgroundColor Colors.selectBackgroundHover
+                            ]
+                        ],
+                        onClick (Msgs.OnAdvancedSearchVisibilityChange (not model.homePage.advancedSearchVisibility))
+                    ]
+                    [
+                        div [
+                            css [
+                                margin auto
+                            ]
+                        ][
+                            Ionicon.gearA 20 Colors.dropDownIconColor |> Html.Styled.fromUnstyled
+                        ]
+                    ],
+
+                   input [
+                        id "input_search_term",
+                        Html.Styled.Events.onInput Msgs.OnHomePageSearchInputChange,
+                        css [
+                            Css.width (px 400),
+                            Css.property "height" "98%",
+                            backgroundColor Colors.searchBoxColor,
+                            paddingLeft (px 30),
+                            paddingRight (px 30),
+                            borderStyle none,
+                            fontSize (px 16),
+                            focus [
+                                outline none
+                            ]
+                        ],
+                        placeholder "Search for protein in iPTMnet database"
+                    ][
+
+                    ],
+
+                    div 
+                    [
+                        id "div_search_term_type",
+                        css [
                             displayFlex,
                             flexDirection row,
-                            justifyContent flexStart,
-                            marginBottom (px 10)
-                        ]] [
-                        input [maxlength 200, placeholder "Search",css[
-                            flexGrow (num 7.5),
-                            marginRight (px 10),
-                            paddingLeft (px 10),
-                            paddingRight (px 10),
-                            paddingTop (px 5),
-                            paddingBottom (px 5)
-                            ]] [],
-                        button [
-                            css[flexGrow (num 1),
-                            marginRight (px 10)
-                            ]][text "Submit"],
-                        button [
-                            css[flexGrow (num 1)
-                            ]][text "Reset"]
-                    ],
-                    div [] [
-                        input [type_ "checkbox"][],
-                        span [] [text " Exclude review papers "],
-                        a [href "#"] [text "Restrict by Organism"]
-                    ] 
+                            alignItems center,
+                            Css.property "height" "105%",
+                            Css.width (px 164),
+                            backgroundColor Colors.selectBackground,
+                            boxShadow4 (px 0) (px 3) (px 5) (hex "#83838354"),
+                            hover [
+                                    cursor pointer,
+                                    backgroundColor Colors.selectBackgroundHover
+                            ]
+                        ]
+                    ]
+                    [
+                        select [
+                            id "select_search_term_type",
+                            css[
+                                borderStyle none,
+                                backgroundColor Colors.transparent,
+                                color selectText,
+                                fontSize (px 14),
+                                paddingLeft (px 10),
+                                paddingRight (px 10),
+                                Css.property "height" "100%",
+                                Css.property "-webkit-appearance" "none",
+                                Css.property "-moz-appearance" "none",
+                                margin (px 0),
+                                focus [
+                                    outline none
+                                ],
+                                hover [
+                                    cursor pointer
+                                ]
+                            ]][
+                                option [value "all",css[color Colors.infoText]][text "All"],
+                                option [value "uniprot",css[color Colors.infoText]] [text "Uniprot AC/ID"],
+                                option [value "name",css[color Colors.infoText]] [text "Protein/Gene Name"],
+                                option [value "pmid",css[color Colors.infoText]] [text "PMID"]
+                        ],
+                        div [
+                            id "div_dropdown_icon",
+                            css [
+                                paddingLeft (px 2),
+                                paddingRight (px 2)
+                            ]
+                        ] [
+                            Ionicon.arrowDownB 12 Colors.dropDownIconColor |> Html.Styled.fromUnstyled
+                        ]
+                    ]
                 ],
-                img [src "images/rlimsp.jpg", css[
-                    maxHeight (px 60),
-                    padding (px 10)
-                ]][] 
-        ],
 
-    
-        div[id "filler",css [alignSelf stretch ]][]
+                -- advanced search
+                Views.AdvancedSearch.view model False,
 
-        ], -- end all
+                -- misc
+                    div [
+                        id "div_misc",
+                        css [
+                            displayFlex,
+                            flexDirection row,
+                            alignSelf stretch,
+                            marginTop (px 25),
+                            fontSize (Css.em 0.9),
+                            paddingLeft (px 10),
+                            color Colors.miscText
+                        ]
+                    ] [
+                        a [
+                            href "#",
+                            css[
+                                marginRight (px 20),
+                                link [
+                                    color Colors.miscText
+                                ],
+                                visited [
+                                    color Colors.miscText
+                                ]
+                            ]]
+                            [
+                                text "Advanced search"
+                        ],
+                        a [
+                            href "/entry/Q15796",
+                            Html.Styled.Attributes.target "_blank",
+                            css[
+                                marginRight (px 20),
+                                link [
+                                    color Colors.miscText
+                                ],
+                                visited [
+                                    color Colors.miscText
+                                ]
+                            ]]
+                            [
+                                text "Sample Report"
+                        ],
+                        a [
+                            href "/batch",
+                            Html.Styled.Attributes.target "_blank",
+                            css[
+                                marginLeft auto,
+                                marginRight (px 20),
+                                link [
+                                    color Colors.miscText
+                                ],
+                                visited [
+                                    color Colors.miscText
+                                ]
+                            ]]
+                            [
+                                text "Batch retrieval (New)"
+                        ]
+                    ],
 
-        div [id "footer", css [
-            Css.height (px 100),
-            alignSelf stretch,
-            backgroundColor (hex "#f2f2f2")
-        ]] []
+                -- search button
+                    div [
+                        id "div_buttons",
+                        css [
+                            displayFlex,
+                            flexDirection row,
+                            alignItems center,
+                            marginTop (px 70)
+                        ]
+                    ][
+                        button [
+                            id "btn_search",
+                            onClick (ChangeLocation (buildSearchUrl model.homePage)),
+                            css [
+                                backgroundColor Colors.searchButton,
+                                Css.width (px 100),
+                                fontSize (Css.em 1),
+                                paddingTop (px 10),
+                                paddingBottom (px 10),
+                                borderStyle none,
+                                borderRadius (px 25),
+                                color Colors.searchButtonText,
+                                focus [
+                                    outline none
+                                ],
+                                hover [
+                                    cursor pointer,
+                                    backgroundColor Colors.searchButtonHover
+                                ]
+                            ]                            
+                        ][
+                            text "Search"
+                        ],
+
+                        button [
+                            id "btn_reset",
+                            css [
+                                backgroundColor Colors.transparent,
+                                Css.width (px 100),
+                                fontSize (Css.em 1),
+                                paddingTop (px 10),
+                                paddingBottom (px 10),
+                                marginLeft (px 40),
+                                borderStyle solid,
+                                borderColor Colors.searchButton,
+                                borderRadius (px 25),
+                                borderWidth (px 1),
+                                color Colors.resetButtonText,
+                                focus [
+                                    outline none
+                                ],
+                                hover [
+                                    cursor pointer,
+                                    color Colors.resetButtonTextHover,
+                                    backgroundColor Colors.resetButtonHover
+                                ]
+                            ]                            
+                        ][
+                            text "Reset"
+                        ]
+
+                    ],
+
+                    -- info
+                    div [
+                        id "div_info",
+                        css [
+                            displayFlex,
+                            Css.width (px 680),
+                            marginTop (px 30),
+                            flexDirection column,
+                            alignItems center,
+                            fontSize (Css.em 1),
+                            color Colors.infoText
+                        ]
+                    ][
+                        p [] [text "iPTMnet is a bioinformatics resource for integrated understanding of protein post-translational modifications (PTMs) in systems biology context."],
+                        p [] [text "It connects multiple disparate bioinformatics tools and systems of text mining, data mining, analysis and visualization tools, and databases and ontologies into an integrated cross-cutting research resource to address the knowledge gaps in exploring and discovering PTM networks."]
+                    ]
+
+            ],
+
+            div[
+                id "filler",css [alignSelf stretch ]]
+            []
+
+            ],
+
+            Views.Footer.view 
 
     ]

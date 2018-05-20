@@ -8,7 +8,7 @@ import Msgs exposing (..)
 import Views.Navbar
 import FileReader exposing (NativeFile)
 import String.Interpolate exposing (interpolate)
-import Commands
+
 
 tableItemCSS: List Style
 tableItemCSS =
@@ -29,7 +29,7 @@ view model =
             [  
             
                 -- header
-                Views.Navbar.view,
+                Views.Navbar.view model,
 
                 -- content
                 div [id "content", css [

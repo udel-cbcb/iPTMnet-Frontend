@@ -61,6 +61,13 @@ update msg model =
             in
                 (newModel, Cmd.none)
 
+        Msgs.OnAdvancedSearchVisibilityChange is_visible ->
+            let 
+                newModel = Model.setHomePageAdvancedSearchVisibility is_visible model.homePage
+                          |> Model.setHomePage model
+            in
+                (newModel, Cmd.none)
+
         -- Search Page
         Msgs.OnFetchSearchResults response -> 
             let
@@ -130,6 +137,7 @@ update msg model =
                     let 
                         kinases = Model.toKinaseList content
                         newModel = Model.setKinases kinases model.batchPage
+                                   |> Model.setBatchInputText content 
                                    |> Model.setBatchPage model  
                     in
                         ( newModel , Cmd.none )
