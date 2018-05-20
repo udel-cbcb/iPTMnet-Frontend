@@ -123,7 +123,7 @@ view model =
                     Views.Substrate.view model.entryPage.substrateData model.entryPage.infoData.data.uniprot_ac model.entryPage.infoData.data.gene_name model.entryPage.showSubstrateErrorMsg,
                     Views.Proteoforms.view model.entryPage.proteoformsData model.entryPage.showProteoformsErrorMsg,
                     Views.PTMDependentPPI.view model.entryPage.ptmDependentPPIData model.entryPage.showPTMDepPPIErrorMsg,
-                    Views.ProteoformPPI.view model.entryPage.proteoformPPIData
+                    Views.ProteoformPPI.view model.entryPage.proteoformPPIData model.entryPage.showProteoformsPPIErrorMsg
                 ]
             ]
 

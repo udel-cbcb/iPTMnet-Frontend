@@ -148,6 +148,13 @@ update msg model =
                           |> Model.setEntryPage model
             in
             (newModel, Cmd.none)
+        Msgs.OnProteoformsPPIErrorButtonClicked ->
+            let 
+                newModel = Model.setShowProteoformsPPIErrorMsg (not model.entryPage.showProteoformsPPIErrorMsg) model.entryPage
+                          |> Model.setEntryPage model
+            in
+            (newModel, Cmd.none)
+        
 
         -- Batch
         Msgs.OnFileChange file ->

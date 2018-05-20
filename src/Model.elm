@@ -68,6 +68,7 @@ initialModel route =
                 error = "",
                 data = []
             },
+            showProteoformsPPIErrorMsg = False,
             substrateData = {
                 status = NotAsked,
                 error = "",
@@ -189,6 +190,7 @@ type alias EntryPage =
         ptmDependentPPIData: PTMDependentPPIData,
         showPTMDepPPIErrorMsg: Bool,
         proteoformPPIData: ProteoformPPIData,
+        showProteoformsPPIErrorMsg: Bool,
         substrateData: SubstrateData,
         showSubstrateErrorMsg: Bool
     }
@@ -271,6 +273,11 @@ setShowProteoformsErrorMsg newValue entryPage =
 setShowPTMDepPPIErrorMsg: Bool -> EntryPage -> EntryPage
 setShowPTMDepPPIErrorMsg newValue entryPage = 
     { entryPage | showPTMDepPPIErrorMsg = newValue}
+
+setShowProteoformsPPIErrorMsg: Bool -> EntryPage -> EntryPage
+setShowProteoformsPPIErrorMsg newValue entryPage = 
+    { entryPage | showProteoformsPPIErrorMsg = newValue}
+
 
 
 type alias Info = 
