@@ -20,7 +20,7 @@ sideBarItemCSS =
         padding (px 10),
         paddingTop (px 7),
         paddingBottom (px 7),
-        fontSize (px 13),
+        fontSize (Css.em 0.88),
         flex (num 1),
         hover [
             backgroundColor (hex "#0000000D")
@@ -58,10 +58,10 @@ view model =
                         Css.property "width" "20%"
                     ]] [
                         div [css [
-                            backgroundColor (hex "ecececff"),
                             displayFlex,
                             flexDirection column,
-                            margin (px 20)
+                            margin (px 20),
+                            backgroundColor (hex "ecececff")
                         ]]
                     [
                         div [css [fontWeight bold, padding (px 10)]] [

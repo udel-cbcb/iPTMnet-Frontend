@@ -28,7 +28,7 @@ view data showErrorMsg=
 viewWithSection: (Html Msg) -> Html Msg
 viewWithSection childView =
     div [
-        id "proteoforms",
+        id "proteoforms_ppi",
         css [
                 displayFlex,
                 flexDirection column,
@@ -47,8 +47,8 @@ viewWithSection childView =
                 [
                     span [css [
                         fontSize (Css.em 1.5)
-                    ]][text "Proteoforms"],
-                    div [id "proteforms_search" ,css [
+                    ]][text "ProteoformsPPI"],
+                    div [id "proteforms_ppi_search" ,css [
                                                         marginLeft auto,
                                                         alignSelf center
                                                     ]]
@@ -138,8 +138,8 @@ proteoformPPIRow proteoformPPI =
     div [css [
         displayFlex,
         flexDirection row,
-        paddingTop (px 5),
-        paddingBottom (px 5),
+        paddingTop (px 10),
+        paddingBottom (px 10),
         hover [
             backgroundColor (hex "#f4f4f4")
         ]

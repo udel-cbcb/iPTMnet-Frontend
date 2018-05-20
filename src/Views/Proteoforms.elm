@@ -110,8 +110,8 @@ renderProteoformTable proteoformList =
                 displayFlex,
                 flexDirection row,
                 backgroundColor (hex "#eff1f2"),
-                paddingTop (px 5),
-                paddingBottom (px 5),
+                paddingTop (px 10),
+                paddingBottom (px 10),
                 fontWeight bold
             ]] [
                 div [css [flex (num 2),
@@ -158,8 +158,8 @@ proteoformRow proteoform =
     div [css [
         displayFlex,
         flexDirection row,
-        paddingTop (px 5),
-        paddingBottom (px 5),
+        paddingTop (px 10),
+        paddingBottom (px 10),
         hover [
             backgroundColor (hex "#f4f4f4")
         ]
