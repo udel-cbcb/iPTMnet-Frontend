@@ -12,6 +12,7 @@ import Styles.Home exposing (..)
 import Ionicon
 import Views.AdvancedSearch exposing (..)
 import Views.Footer exposing (..)
+import String.Extra
 
 {-|
 When clicking a link we want to prevent the default browser behaviour which is to load a new page.
@@ -420,7 +421,9 @@ view model =
                     ][
                         button [
                             id "btn_search",
-                            onClick (ChangeLocation (buildSearchUrl model.homePage)),
+                            onClick ( case (String.Extra.clean model.homePage.searchInput) == "" of 
+                                      False -> ChangeLocation (buildSearchUrl model.homePage)
+                                      True -> ChangeLocation "/"),
                             css [
                                 backgroundColor Colors.searchButton,
                                 Css.width (px 100),
