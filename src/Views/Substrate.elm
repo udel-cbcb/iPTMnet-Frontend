@@ -8,19 +8,44 @@ import Model exposing (..)
 import Dict exposing (..)
 import String.Interpolate exposing (interpolate)
 import String.Extra exposing (..)
+import Views.Error
+import Views.Loading
+import Views.Tabs
+
 
 -- returns the substrate view
-view: SubstrateData -> String -> String -> Html Msg 
-view  data entryID geneName =
-    div [id "substrates", css [marginTop (px 20)] ][
-        h4 [css [
-            fontSize (px 20),
-            fontWeight normal
-        ]] [text (interpolate "{0} ({1}) as Substrate" [entryID, geneName])],
+view: SubstrateData -> String -> String -> Bool -> Html Msg 
+view  data entryID geneName showErrorMsg =
+    case data.status of
+        NotAsked ->
+            text "No yet requested"
+        Loading ->
+            viewWithSection Views.Loading.view entryID geneName
+        Success ->
+            viewWithSection (renderSubstrateTable data) entryID geneName
+        Error ->
+            viewWithSection (Views.Error.view data.error showErrorMsg Msgs.OnSubstrateErrorButtonClicked) entryID geneName
 
-        renderView data
+viewWithSection: (Html Msg) -> String -> String -> Html Msg
+viewWithSection childView entryID geneName =
+        div [
+                id "substrates",
+                css [
+                    marginTop (px 20),
+                    displayFlex,
+                    flexDirection column,
+                    alignItems center
+                ]][
+                    h4 [css [
+                        fontSize (Css.em 1.5),
+                        fontWeight normal,
+                        alignSelf stretch
+                    ]] [text (interpolate "Substrate" [entryID, geneName])],
 
-    ]
+                childView
+            
+        ]
+
 
 renderView: SubstrateData -> Html Msg
 renderView data =
@@ -30,28 +55,53 @@ renderView data =
         Loading ->
             text "Loading"
         Success ->
-            renderSubstrateTable data.data
+            renderSubstrateTable data
         Error ->
             text data.error
 
-renderSubstrateTable: Dict String (List (Substrate Source SubstrateEnzyme)) -> Html Msg
-renderSubstrateTable substrateDict =
-        div [id "proteoforms_table", css [
-            displayFlex,
-            flexDirection column,
-            fontSize (px 13),
-            borderWidth (px 1),
-            borderStyle solid,
-            borderColor (hex "#d9dadb")
-        ]][
-            -- header
-            div [id "proteoforms_table_header", css [
+renderSubstrateTable: Model.SubstrateData -> Html Msg
+renderSubstrateTable substrateData =
+        div [
+            id "div_substrate_table_container",
+            css [
                 displayFlex,
-                flexDirection row,
-                backgroundColor (hex "#eff1f2"),
-                paddingTop (px 5),
-                paddingBottom (px 5),
-                fontWeight bold
+                flexDirection column,
+                alignSelf stretch
+            ]
+        ][
+            -- tabs
+            div [
+                id "div_tabs_container",
+                css [
+                    displayFlex,
+                    flexDirection row,
+                    alignItems center,
+                    marginBottom (px 10),
+                    alignSelf stretch    
+                ]
+            ] [
+                Views.Tabs.view substrateData.tabData Msgs.OnSubstrateTabClick
+            ],
+
+            div [id "proteoforms_table", css [
+                displayFlex,
+                flexDirection column,
+                fontSize (Css.em 0.88),
+                borderWidth (px 1),
+                borderStyle solid,
+                borderColor (hex "#d9dadb"),
+                alignSelf stretch
+            ]][
+            -- header
+            div [
+                id "proteoforms_table_header",
+                css [
+                    displayFlex,
+                    flexDirection row,
+                    backgroundColor (hex "#eff1f2"),
+                    paddingTop (px 10),
+                    paddingBottom (px 10),
+                    fontWeight bold
             ]] [
                 div [css [flex (num 1),
                           marginLeft (px 20),
@@ -93,14 +143,13 @@ renderSubstrateTable substrateDict =
                 ]
             ],
             -- rows
-            case Dict.get ( Dict.keys substrateDict
-                            |> List.head 
-                            |> Maybe.withDefault "" 
-                          ) substrateDict of 
+            case Dict.get substrateData.tabData.selectedTab substrateData.data of 
                 Just substrates -> 
                     div [] (List.map substrateRow substrates) 
                 Nothing -> 
                     div [] []
+        ]
+
         ]
 
 substrateRow: Substrate Source SubstrateEnzyme -> Html Msg
@@ -108,8 +157,8 @@ substrateRow substrate =
         div [css [
         displayFlex,
         flexDirection row,
-        paddingTop (px 5),
-        paddingBottom (px 5),
+        paddingTop (px 10),
+        paddingBottom (px 10),
         hover [
             backgroundColor (hex "#f4f4f4")
         ]
@@ -174,28 +223,46 @@ decodeResponse response =
             {
                 status = NotAsked,
                 error = "",
-                data = Dict.empty
+                data = Dict.empty,
+                tabData = {
+                    tabs = ["Substrate 1", "Substrate 2", "Substrate 3"],
+                    selectedTab = ""
+                }
             }
 
         RemoteData.Loading ->
             {
                 status = Loading,
                 error = "",
-                data = Dict.empty
+                data = Dict.empty,
+                tabData = {
+                    tabs = ["Substrate 1", "Substrate 2", "Substrate 3"],
+                    selectedTab = ""
+                }
             }
 
         RemoteData.Success substrateTable ->
             {
                 status = Success,
                 error = "",
-                data = substrateTable
+                data = substrateTable,
+                tabData = {
+                    tabs = Dict.keys substrateTable,
+                    selectedTab = Dict.keys substrateTable
+                                  |> List.head 
+                                  |> Maybe.withDefault ""
+                }
             }
 
         RemoteData.Failure error ->
             {
                 status = Error,
                 error = (toString error),
-                data = Dict.empty
+                data = Dict.empty,
+                tabData = {
+                    tabs = ["Substrate 1", "Substrate 2", "Substrate 3"],
+                    selectedTab = ""
+                }
             }
 
 

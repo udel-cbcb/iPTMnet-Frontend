@@ -14,10 +14,14 @@ import Views.ProteoformPPI
 import Views.Substrate
 import Page.Home
 import Page.Search
+import Page.Batch
+import Page.BatchResult
+
 
 init : Navigation.Location -> ( Model, Cmd Msg )
 init location =
     Commands.handleRoute (Model.initialModel Routing.HomeRoute) location
+
 
 
 -- VIEW
@@ -32,6 +36,12 @@ view model =
             |> toUnstyled
         Routing.SearchRoute queryString ->
             Page.Search.view model
+            |> toUnstyled
+        Routing.BatchRoute ->
+            Page.Batch.view model
+            |> toUnstyled
+        Routing.BatchResultRoute ->
+            Page.BatchResult.view model
             |> toUnstyled
         Routing.NotFoundRoute ->
             div [] []
@@ -51,6 +61,13 @@ update msg model =
             in
                 (newModel, Cmd.none)
 
+        Msgs.OnAdvancedSearchVisibilityChange is_visible ->
+            let 
+                newModel = Model.setHomePageAdvancedSearchVisibility is_visible model.homePage
+                          |> Model.setHomePage model
+            in
+                (newModel, Cmd.none)
+
         -- Search Page
         Msgs.OnFetchSearchResults response -> 
             let
@@ -58,7 +75,14 @@ update msg model =
                 |> Model.setSearchData model.searchPage
                 |> Model.setSearchPage model
             in
-                ( newModel, Cmd.none)         
+                ( newModel, Cmd.none)
+
+        Msgs.OnSearchResultErrorButtonClicked ->
+            let
+                newModel = Model.setSearchShowErrorMsg (not model.searchPage.showErrorMsg) model.searchPage
+                           |> Model.setSearchPage model
+            in
+                ( newModel, Cmd.none)      
 
         -- Entry Page
         Msgs.OnFetchInfo response ->
@@ -91,17 +115,134 @@ update msg model =
                 ( newModel, Cmd.none)
         Msgs.OnFetchSubstrates response -> 
             let
-                newModel = Views.Substrate.decodeResponse response
-                |> Model.setSubstrateData model.entryPage
-                |> Model.setEntryPage model
+                newModel = Model.setSubstrateData model.entryPage (Views.Substrate.decodeResponse response)
+                           |> Model.setEntryPage model
             in
                 ( newModel, Cmd.none)        
         Msgs.ChangeLocation path -> 
             ( model, Navigation.newUrl path)
         Msgs.OnLocationChange location ->
             Commands.handleRoute model location
-
+        Msgs.OnInfoErrorButtonClicked ->
+            let 
+                newModel = Model.setShowInfoErrorMsg (not model.entryPage.showInfoErrorMsg) model.entryPage
+                          |> Model.setEntryPage model
+            in
+            (newModel, Cmd.none)
+        Msgs.OnSubstrateErrorButtonClicked ->
+            let 
+                newModel = Model.setShowSubstrateErrorMsg (not model.entryPage.showSubstrateErrorMsg) model.entryPage
+                          |> Model.setEntryPage model
+            in
+            (newModel, Cmd.none)
+        Msgs.OnSubstrateTabClick clickedTab -> 
+            let 
+                newModel = Model.setSelectedSubstrateTab clickedTab model.entryPage.substrateData.tabData
+                               |> Model.setSubstrateTabData model.entryPage.substrateData
+                               |> Model.setSubstrateData model.entryPage
+                               |> Model.setEntryPage model
+            in
+                (newModel, Cmd.none)
+        Msgs.OnProteoformsErrorButtonClicked ->
+            let 
+                newModel = Model.setShowProteoformsErrorMsg (not model.entryPage.showProteoformsErrorMsg) model.entryPage
+                          |> Model.setEntryPage model
+            in
+            (newModel, Cmd.none)
+        Msgs.OnPTMDepPPIErrorButtonClicked ->
+            let 
+                newModel = Model.setShowPTMDepPPIErrorMsg (not model.entryPage.showPTMDepPPIErrorMsg) model.entryPage
+                          |> Model.setEntryPage model
+            in
+            (newModel, Cmd.none)
+        Msgs.OnProteoformsPPIErrorButtonClicked ->
+            let 
+                newModel = Model.setShowProteoformsPPIErrorMsg (not model.entryPage.showProteoformsPPIErrorMsg) model.entryPage
+                          |> Model.setEntryPage model
+            in
+            (newModel, Cmd.none)
         
+
+        -- Batch
+        Msgs.OnFileChange file ->
+            case file of
+                -- Only handling case of a single file
+                [ f ] ->
+                    let 
+                        _ = Debug.log "msg" f
+                    in
+                        (model, Commands.getFileContents f)
+
+                _ ->
+                    (model, Cmd.none)
+
+        Msgs.OnFileContent res ->
+            case res of
+                Ok content ->
+                    let 
+                        kinases = Model.toKinaseList content
+                        newModel = Model.setKinases kinases model.batchPage
+                                   |> Model.setBatchInputText content 
+                                   |> Model.setBatchPage model  
+                    in
+                        ( newModel , Cmd.none )
+
+                Err err ->
+                    Debug.crash (toString err)
+        
+        Msgs.OnBatchInputChanged newContent ->
+            let 
+                kinases = Model.toKinaseList newContent
+                newModel = Model.setKinases kinases model.batchPage 
+                           |> Model.setBatchInputText newContent
+                           |> Model.setBatchPage model  
+            in
+                ( newModel , Cmd.none )
+        
+        Msgs.OnBatchInputExampleClicked ->
+            let 
+                exampleInput = "Q15796\tK\t19\nQ15796\tT\t8\nP04637\tK\t120\nP04637\tS\t149\nP04637\tS\t378\nP04637\tS\t392\nP42356\tS\t199"
+
+                newModel = Model.setBatchInputText exampleInput model.batchPage
+                           |> Model.setKinases (Model.toKinaseList exampleInput)
+                           |> Model.setBatchPage model
+            in
+                (newModel, Cmd.none) 
+
+        Msgs.OnBatchClearClicked ->
+            let 
+                newModel = Model.setBatchInputText " " model.batchPage
+                           |> Model.setKinases []
+                           |> Model.setBatchPage model
+            in
+                (newModel, Cmd.none) 
+
+        -- Batch Results
+        Msgs.OnFetchBatchEnzymes response ->
+            let 
+                newModel = 
+                    Page.BatchResult.decodeEnzymeResponse response
+                    |> Model.setBatchEnzymeData model.batchPage
+                    |> Model.setBatchPage model
+            in
+                (newModel, Cmd.none)
+
+        Msgs.OnFetchBatchPTMPPI response ->
+            let 
+                _ = Debug.log "ptm_ppi" response
+            in
+                (model, Cmd.none)
+
+        Msgs.SwitchBatchOutput output ->
+            let 
+                newModel = Model.setBatchOutput model.batchPage output
+                           |> Model.setBatchPage model
+                            
+            in
+                (newModel, Cmd.none)
+
+
+            
 
 
 -- SUBSCRIPTIONS

@@ -7,30 +7,58 @@ import RemoteData exposing (WebData)
 import Model exposing (..)
 import String.Interpolate exposing (interpolate)
 import String.Extra exposing (..)
+import Views.Loading
+import Views.Error
 
 -- returns the substrate view
-view: ProteoformPPIData -> Html Msg 
-view data = 
-            div [id "proteoform_ppi", css [marginTop (px 20),paddingBottom (px 80)] ][
-            div [css [
-                        displayFlex,
-                        flexDirection row,
-                        paddingTop (px 10),
-                        paddingBottom (px 10)
-                     ]]
+view: ProteoformPPIData -> Bool -> Html Msg 
+view data showErrorMsg= 
+    case data.status of
+        NotAsked ->
+            div [][]
+        Loading ->
+            viewWithSection Views.Loading.view
+        Success ->
+            case (List.length data.data) of
+            0 -> div [][]
+            _ ->  viewWithSection (renderProteoformPPITable data.data)
+        Error ->
+            viewWithSection (Views.Error.view data.error showErrorMsg Msgs.OnProteoformsPPIErrorButtonClicked)
+
+viewWithSection: (Html Msg) -> Html Msg
+viewWithSection childView =
+    div [
+        id "proteoforms_ppi",
+        css [
+                displayFlex,
+                flexDirection column,
+                marginTop (px 30),
+                alignItems center
+            ]]
+            [
+                div [css [
+                            displayFlex,
+                            flexDirection row,
+                            paddingTop (px 10),
+                            paddingBottom (px 10),
+                            alignItems center,
+                            alignSelf stretch
+                        ]]
                 [
-                span [css [fontSize (px 20)]][text "Proteoform PPI"],
-                div [id "proteoform_ppi_search" ,css [
-                                                    marginLeft auto,
-                                                    alignSelf center
-                                                ]]
-                [
-                    span [css [marginRight (px 10), fontSize (px 12)]] [text "Search:"],
-                    input [] []
-                ]
-            ],
-            renderView data             
-        ]
+                    span [css [
+                        fontSize (Css.em 1.5)
+                    ]][text "ProteoformsPPI"],
+                    div [id "proteforms_ppi_search" ,css [
+                                                        marginLeft auto,
+                                                        alignSelf center
+                                                    ]]
+                    [
+                        span [css [marginRight (px 10), fontSize (Css.em 1)]] [text "Search:"],
+                        input [] []
+                    ]
+                ],
+                childView             
+            ]
 
 
 renderView: ProteoformPPIData -> Html Msg
@@ -51,18 +79,19 @@ renderProteoformPPITable proteoformPPIList =
         div [id "proteoformppi_table", css [
             displayFlex,
             flexDirection column,
-            fontSize (px 13),
+            fontSize (Css.em 0.88),
             borderWidth (px 1),
             borderStyle solid,
-            borderColor (hex "#d9dadb")
+            borderColor (hex "#d9dadb"),
+            alignSelf stretch
         ]][
             -- header
             div [id "proteoformppi_table_header", css [
                 displayFlex,
                 flexDirection row,
                 backgroundColor (hex "#eff1f2"),
-                paddingTop (px 5),
-                paddingBottom (px 5),
+                paddingTop (px 10),
+                paddingBottom (px 10),
                 fontWeight bold
             ]] [
                 div [css [flex (num 2),
@@ -109,8 +138,8 @@ proteoformPPIRow proteoformPPI =
     div [css [
         displayFlex,
         flexDirection row,
-        paddingTop (px 5),
-        paddingBottom (px 5),
+        paddingTop (px 10),
+        paddingBottom (px 10),
         hover [
             backgroundColor (hex "#f4f4f4")
         ]

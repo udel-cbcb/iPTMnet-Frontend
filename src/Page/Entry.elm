@@ -11,6 +11,7 @@ import Views.Proteoforms
 import Views.PTMDependentPPI
 import Views.ProteoformPPI
 import Views.Navbar
+import Views.Footer
 
 -- css
 sideBarItemCSS: List Style
@@ -19,7 +20,7 @@ sideBarItemCSS =
         padding (px 10),
         paddingTop (px 7),
         paddingBottom (px 7),
-        fontSize (px 13),
+        fontSize (Css.em 0.88),
         flex (num 1),
         hover [
             backgroundColor (hex "#0000000D")
@@ -33,10 +34,12 @@ view model =
 
         div [id "page",css [
             displayFlex,
-            flexDirection column]] 
+            flexDirection column,
+            Css.property "min-height" "100%"
+            ]] 
             [  
 
-            Views.Navbar.view,
+            Views.Navbar.view model,
 
             div [id "content",css [
                 displayFlex,
@@ -55,10 +58,10 @@ view model =
                         Css.property "width" "20%"
                     ]] [
                         div [css [
-                            backgroundColor (hex "ecececff"),
                             displayFlex,
                             flexDirection column,
-                            margin (px 20)
+                            margin (px 20),
+                            backgroundColor (hex "ecececff")
                         ]]
                     [
                         div [css [fontWeight bold, padding (px 10)]] [
@@ -116,16 +119,27 @@ view model =
                     flexDirection column,
                     flex (num 4),
                     paddingLeft (px 40),
-                    paddingRight (px 40)
+                    paddingRight (px 40),
+                    paddingBottom (px 40)
                 ]][
-                    Views.Info.view model.entryPage.infoData,
+                    Views.Info.view model.entryPage.infoData model.entryPage.showInfoErrorMsg,
                     Views.Sequence.view,
-                    Views.Substrate.view model.entryPage.substrateData model.entryPage.infoData.data.uniprot_ac model.entryPage.infoData.data.gene_name ,
-                    Views.Proteoforms.view model.entryPage.proteoformsData,
-                    Views.PTMDependentPPI.view model.entryPage.ptmDependentPPIData,
-                    Views.ProteoformPPI.view model.entryPage.proteoformPPIData
+                    Views.Substrate.view model.entryPage.substrateData model.entryPage.infoData.data.uniprot_ac model.entryPage.infoData.data.gene_name model.entryPage.showSubstrateErrorMsg,
+                    Views.Proteoforms.view model.entryPage.proteoformsData model.entryPage.showProteoformsErrorMsg,
+                    Views.PTMDependentPPI.view model.entryPage.ptmDependentPPIData model.entryPage.showPTMDepPPIErrorMsg,
+                    Views.ProteoformPPI.view model.entryPage.proteoformPPIData model.entryPage.showProteoformsPPIErrorMsg
                 ]
-            ]
+            ],
+
+            div[
+                        id "filler",
+                        css [
+                            alignSelf stretch
+                        ]
+                    ][],
+
+                    Views.Footer.view
+
 
         ]
 

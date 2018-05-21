@@ -8,6 +8,9 @@ import Routing
 import Model
 import Navigation
 import String.Interpolate exposing(interpolate)
+import FileReader exposing (NativeFile)
+import Task
+import Json.Encode
 
 fetchInfo: String -> Cmd Msg
 fetchInfo id = 
@@ -46,6 +49,36 @@ fetchSearchResults query_params =
     |> RemoteData.sendRequest
     |> Cmd.map Msgs.OnFetchSearchResults
 
+getFileContents : NativeFile -> Cmd Msg
+getFileContents nf =
+    FileReader.readAsTextFile nf.blob
+    |> Task.attempt Msgs.OnFileContent
+
+fetchBatchData : Model.Output -> (List Model.Kinase) -> Cmd Msg 
+fetchBatchData output kinases =
+    case output of 
+    Model.Enzymes ->
+        fetchBatchEnzymes kinases
+    Model.PTMPPI ->
+        fetchBatchPTMPPI kinases
+
+fetchBatchEnzymes : (List Model.Kinase) -> Cmd Msg
+fetchBatchEnzymes kinases =
+    let 
+        json_body = Json.Encode.list (List.map Model.kinaseToJson kinases)
+    in
+        Http.post "http://aws3.proteininformationresource.org/batch_ptm_enzymes" (Http.jsonBody json_body) Model.batchEnzymeListDecoder 
+        |> RemoteData.sendRequest
+        |> Cmd.map Msgs.OnFetchBatchEnzymes
+
+fetchBatchPTMPPI : (List Model.Kinase) -> Cmd Msg
+fetchBatchPTMPPI kinases =
+    let 
+        json_body = Json.Encode.list (List.map Model.kinaseToJson kinases)
+    in
+        Http.post "http://aws3.proteininformationresource.org/batch_ptm_ppi" (Http.jsonBody json_body) Model.batchPTMPPIListDecoder 
+        |> RemoteData.sendRequest
+        |> Cmd.map Msgs.OnFetchBatchPTMPPI 
 
 
 handleRoute : Model.Model -> Navigation.Location -> (Model.Model, Cmd Msg)
@@ -67,5 +100,9 @@ handleRoute model location =
                                                              ])
             Routing.SearchRoute queryString -> 
                 (Model.initialModel currentRoute, fetchSearchResults queryString )
+            Routing.BatchRoute ->
+                (Model.initialModel currentRoute, Cmd.none )
+            Routing.BatchResultRoute ->
+                (Model.initialModel currentRoute, (fetchBatchData model.batchPage.outputType model.batchPage.kinases) )
             Routing.NotFoundRoute ->
                 (Model.initialModel currentRoute, Cmd.none )

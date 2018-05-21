@@ -3,6 +3,10 @@ import Routing
 import Json.Decode exposing (..)
 import Json.Decode.Pipeline exposing (..)
 import Dict exposing (..)
+import Json.Encode
+import Csv
+import Array
+import Css exposing (property)
 
 type RequestState = 
     NotAsked
@@ -16,58 +20,89 @@ type alias Model =
         route: Routing.Route,
         searchPage: SearchPage,
         homePage: HomePage,
-        entryPage: EntryPage        
+        entryPage: EntryPage,
+        batchPage: BatchPage        
     }
 
 initialModel : Routing.Route -> Model
 initialModel route = 
     { 
         route = route,
+
         homePage = {
-            searchInput = ""
+            searchInput = "",
+            advancedSearchVisibility = False
         },
+
         searchPage = {
             query_params = "",
             searchData = {
                 status = NotAsked,
                 error = "",
                 data = []
-            }
+            },
+            showErrorMsg = False
         },
+
         entryPage = {
             infoData = {
                 status = NotAsked,
                 error = "",
                 data = emptyInfo
             },
+            showInfoErrorMsg = False,
             proteoformsData = {
                 status = NotAsked,
                 error = "",
                 data = []
             },
+            showProteoformsErrorMsg = False,
             ptmDependentPPIData = {
                 status = NotAsked,
                 error = "",
                 data = []
             },
+            showPTMDepPPIErrorMsg = False,
             proteoformPPIData = {
                 status = NotAsked,
                 error = "",
                 data = []
             },
+            showProteoformsPPIErrorMsg = False,
             substrateData = {
                 status = NotAsked,
                 error = "",
-                data = Dict.empty
-            }
+                data = Dict.empty,
+                tabData = {
+                    tabs = ["Substrate 1", "Substrate 2", "Substrate 3"],
+                    selectedTab = ""
+                }
+            },
+            showSubstrateErrorMsg = False
+        },
+
+        batchPage = {
+            kinases = [],
+            outputType = Enzymes,
+            batchEnzymeData = {
+                status = NotAsked,
+                error = "",
+                data = []
+            },
+            batchPTMPPIData = {
+                status = NotAsked,
+                error = "",
+                data = []
+            },
+            inputText = ""
         }
     }
 
 -- Home page
-
 type alias HomePage = 
     {
-        searchInput: String
+        searchInput: String,
+        advancedSearchVisibility: Bool
     }
 
 setHomePage : Model -> HomePage -> Model
@@ -78,11 +113,16 @@ setSearchInput: HomePage -> String -> HomePage
 setSearchInput homePage newInput =
     { homePage | searchInput = newInput }
 
+setHomePageAdvancedSearchVisibility: Bool -> HomePage -> HomePage
+setHomePageAdvancedSearchVisibility is_visible homePage =
+    {homePage | advancedSearchVisibility = is_visible}
+
 -- Search page
 type alias SearchPage = 
     {
         query_params : String,
-        searchData: SearchData
+        searchData: SearchData,
+        showErrorMsg: Bool
     }
 
 type alias SearchData = 
@@ -139,15 +179,24 @@ setSearchData : SearchPage -> SearchData -> SearchPage
 setSearchData searchPage newData =
     { searchPage | searchData = newData }
 
--- Entry page
+setSearchShowErrorMsg: Bool -> SearchPage -> SearchPage
+setSearchShowErrorMsg newValue searchPage =
+    { searchPage | showErrorMsg = newValue }
 
+
+-- Entry page
 type alias EntryPage = 
     {
         infoData: InfoData,
+        showInfoErrorMsg: Bool,
         proteoformsData: ProteoformsData,
+        showProteoformsErrorMsg: Bool,
         ptmDependentPPIData: PTMDependentPPIData,
+        showPTMDepPPIErrorMsg: Bool,
         proteoformPPIData: ProteoformPPIData,
-        substrateData: SubstrateData
+        showProteoformsPPIErrorMsg: Bool,
+        substrateData: SubstrateData,
+        showSubstrateErrorMsg: Bool
     }
 
 type alias InfoData = 
@@ -182,7 +231,14 @@ type alias SubstrateData =
     {
         status: RequestState,
         error: String,
-        data: Dict String (List (Substrate Source SubstrateEnzyme))
+        data: Dict String (List (Substrate Source SubstrateEnzyme)),
+        tabData: TabData
+    }
+
+type alias TabData =
+    {
+        tabs: List String,
+        selectedTab: String
     }
 
 setEntryPage : Model -> EntryPage -> Model
@@ -209,9 +265,37 @@ setProteoformPPIData: EntryPage -> ProteoformPPIData -> EntryPage
 setProteoformPPIData entryPage newData = 
     { entryPage | proteoformPPIData = newData}
 
+setShowInfoErrorMsg: Bool -> EntryPage -> EntryPage
+setShowInfoErrorMsg newValue entryPage = 
+    { entryPage | showInfoErrorMsg = newValue}
+
+setShowSubstrateErrorMsg: Bool -> EntryPage -> EntryPage
+setShowSubstrateErrorMsg newValue entryPage = 
+    { entryPage | showSubstrateErrorMsg = newValue}
+
+setShowProteoformsErrorMsg: Bool -> EntryPage -> EntryPage
+setShowProteoformsErrorMsg newValue entryPage = 
+    { entryPage | showProteoformsErrorMsg = newValue}
+
+setShowPTMDepPPIErrorMsg: Bool -> EntryPage -> EntryPage
+setShowPTMDepPPIErrorMsg newValue entryPage = 
+    { entryPage | showPTMDepPPIErrorMsg = newValue}
+
+setShowProteoformsPPIErrorMsg: Bool -> EntryPage -> EntryPage
+setShowProteoformsPPIErrorMsg newValue entryPage = 
+    { entryPage | showProteoformsPPIErrorMsg = newValue}
+
 setSubstrateData: EntryPage -> SubstrateData -> EntryPage
 setSubstrateData entryPage newData = 
     { entryPage | substrateData = newData }
+
+setSelectedSubstrateTab: String -> TabData -> TabData
+setSelectedSubstrateTab newSelectedTab tabData =
+    { tabData | selectedTab = newSelectedTab}
+
+setSubstrateTabData: SubstrateData -> TabData -> SubstrateData
+setSubstrateTabData substrateData newTabData =
+    { substrateData | tabData = newTabData}
 
 
 type alias Info = 
@@ -247,9 +331,9 @@ type alias Organism =
 organismDecoder: Decoder Organism
 organismDecoder = 
     decode Organism
-        |> required "taxon_code" string
-        |> required "species" string
-        |> required "common_name" string
+        |> optional "taxon_code" string ""
+        |> optional "species" string ""
+        |> optional "common_name" string ""
 
 type alias PRO = 
     {
@@ -436,7 +520,6 @@ substrateTableDecoder: Decoder (Dict String (List (Substrate Source SubstrateEnz
 substrateTableDecoder =
     dict substrateListDecoder
 
-
 emptyInfo: Info
 emptyInfo = 
                 {
@@ -458,3 +541,180 @@ emptyInfo =
                         category = ""
                     }  
                 }
+
+
+-- Batch Page
+type Output = Enzymes
+              | PTMPPI
+
+type alias BatchPage = 
+ {
+     kinases: List (Kinase),
+     outputType: Output,
+     batchEnzymeData : BatchEnzymeData,
+     batchPTMPPIData : BatchPTMPPIData,
+     inputText : String 
+ }
+
+type alias BatchEnzymeData = 
+    {
+        status: RequestState,
+        error: String,
+        data: List (BatchEnzyme Entity Source)    
+    }
+
+type alias BatchPTMPPIData = 
+    {
+        status: RequestState,
+        error: String,
+        data: List (BatchPTMPPI Entity Source)    
+    }
+
+type alias Kinase =
+ {
+     substrate_ac: String,
+     site_residue: String,
+     site_position: String
+ }
+
+toKinaseList : String -> List Kinase
+toKinaseList csv_string =
+    Csv.splitWith "\t" csv_string
+    |> List.map toKinase
+
+toKinase : (List String) -> Kinase
+toKinase values =
+    let
+        values_arr = Array.fromList values
+        
+        -- substrate ac
+        sub_ac = case Array.get 0 values_arr of
+            Just value ->
+                value
+            Nothing ->
+                ""
+
+        -- site residue
+        residue = case Array.get 1 values_arr of
+            Just value ->
+                value
+            Nothing ->
+                ""
+        
+        -- site position
+        position = case Array.get 2 values_arr of
+            Just value ->
+                value
+            Nothing ->
+                ""
+
+    in 
+        {
+            substrate_ac = sub_ac,
+            site_residue = residue,
+            site_position = position
+        }
+
+kinaseToJson : Kinase -> Json.Encode.Value
+kinaseToJson kinase = 
+    Json.Encode.object [
+        ("substrate_ac",Json.Encode.string kinase.substrate_ac),
+        ("site_residue",Json.Encode.string kinase.site_residue),
+        ("site_position",Json.Encode.string kinase.site_position)
+    ]
+
+setBatchPage: Model -> BatchPage -> Model
+setBatchPage model newBatchPage = 
+    { model | batchPage = newBatchPage }
+
+setKinases: (List Kinase) -> BatchPage -> BatchPage
+setKinases newKinases batchPage =
+    { batchPage | kinases = newKinases }
+
+
+setBatchOutput: BatchPage -> Output -> BatchPage
+setBatchOutput batchPage newOutput =
+    { batchPage | outputType = newOutput }
+
+setBatchEnzymeData: BatchPage -> BatchEnzymeData -> BatchPage
+setBatchEnzymeData batchPage newData = 
+    { batchPage | batchEnzymeData = newData }
+
+setBatchPTMPPIData: BatchPage -> BatchPTMPPIData -> BatchPage
+setBatchPTMPPIData batchPage newData = 
+    { batchPage | batchPTMPPIData = newData }
+
+setBatchInputText: String -> BatchPage -> BatchPage
+setBatchInputText newText batchPage = 
+    { batchPage | inputText = newText }
+
+
+-- Batch Result Enzymes
+type alias BatchEnzyme entityDecoder sourceDecoder= 
+    {
+        ptm_type : String,
+        substrate : entityDecoder,
+        site: String,
+        site_position: Int,
+        enzyme: entityDecoder,
+        score: Int,
+        source: (List sourceDecoder),
+        pmids: (List String)
+    }
+
+batchEnzymeDecoder: Decoder (BatchEnzyme Entity Source)
+batchEnzymeDecoder =
+    decode BatchEnzyme 
+    |> required "ptm_type" string
+    |> required "substrate" entityDecoder
+    |> required "site" string
+    |> required "site_position" int
+    |> required "enzyme" entityDecoder
+    |> required "score" int
+    |> required "source" (list sourceDecoder)
+    |> required "pmids" (list string)
+
+batchEnzymeListDecoder: Decoder (List (BatchEnzyme Entity Source))
+batchEnzymeListDecoder = 
+    list batchEnzymeDecoder
+
+
+-- Batch Result PTMPPI
+type alias BatchPTMPPI entityDecoder sourceDecoder = 
+    {
+        ptm_type: String,
+        substrate: entityDecoder,
+        site: String,
+        site_position: Int,
+        interactant: entityDecoder,
+        association_type: String,
+        source: (List sourceDecoder),
+        pmid: String
+    }
+
+batchPTMPPIDecoder: Decoder (BatchPTMPPI Entity Source)
+batchPTMPPIDecoder =
+    decode BatchPTMPPI
+    |> required "ptm_type" string
+    |> required "substrate" entityDecoder
+    |> required "site" string
+    |> required "site_position" int
+    |> required "interactant" entityDecoder
+    |> required "association_type" string
+    |> required "source" (list sourceDecoder)
+    |> required "pmids" string
+
+batchPTMPPIListDecoder: Decoder (List (BatchPTMPPI Entity Source))
+batchPTMPPIListDecoder = 
+    list batchPTMPPIDecoder
+
+isVisible : Bool -> List Css.Style
+isVisible is_visible =
+    case is_visible of
+    True -> [
+              Css.property "visibility" "visible"   
+            ]
+    False -> [
+              Css.property "visibility" "visible",   
+              Css.property "display" "none"  
+            ]

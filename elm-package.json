@@ -16,10 +16,19 @@
         "elm-lang/http": "1.0.0 <= v < 2.0.0",
         "elm-lang/navigation": "2.1.0 <= v < 3.0.0",
         "evancz/url-parser": "2.0.1 <= v < 3.0.0",
+        "gummesson/elm-csv": "1.0.1 <= v < 2.0.0",
         "iosphere/elm-logger": "1.0.1 <= v < 2.0.0",
         "krisajenkins/remotedata": "4.4.0 <= v < 5.0.0",
         "lukewestby/elm-string-interpolate": "1.0.2 <= v < 2.0.0",
-        "rtfeldman/elm-css": "13.1.1 <= v < 14.0.0"
+        "rtfeldman/elm-css": "13.1.1 <= v < 14.0.0",
+        "simonh1000/file-reader": "1.6.0 <= v < 2.0.0",
+        "j-panasiuk/elm-ionicons": "1.0.0 <= v < 2.0.0"
+    },
+    "dependency-sources": {
+        "gummesson/elm-csv":  {
+            "url": "https://github.com/lovasoa/elm-csv.git",
+            "ref": "master"
+          }
     },
     "elm-version": "0.18.0 <= v < 0.19.0"
 }
