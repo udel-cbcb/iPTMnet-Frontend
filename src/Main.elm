@@ -115,9 +115,8 @@ update msg model =
                 ( newModel, Cmd.none)
         Msgs.OnFetchSubstrates response -> 
             let
-                newModel = Views.Substrate.decodeResponse response
-                |> Model.setSubstrateData model.entryPage
-                |> Model.setEntryPage model
+                newModel = Model.setSubstrateData model.entryPage (Views.Substrate.decodeResponse response)
+                           |> Model.setEntryPage model
             in
                 ( newModel, Cmd.none)        
         Msgs.ChangeLocation path -> 
@@ -136,6 +135,14 @@ update msg model =
                           |> Model.setEntryPage model
             in
             (newModel, Cmd.none)
+        Msgs.OnSubstrateTabClick clickedTab -> 
+            let 
+                newModel = Model.setSelectedSubstrateTab clickedTab model.entryPage.substrateData.tabData
+                               |> Model.setSubstrateTabData model.entryPage.substrateData
+                               |> Model.setSubstrateData model.entryPage
+                               |> Model.setEntryPage model
+            in
+                (newModel, Cmd.none)
         Msgs.OnProteoformsErrorButtonClicked ->
             let 
                 newModel = Model.setShowProteoformsErrorMsg (not model.entryPage.showProteoformsErrorMsg) model.entryPage

@@ -72,7 +72,11 @@ initialModel route =
             substrateData = {
                 status = NotAsked,
                 error = "",
-                data = Dict.empty
+                data = Dict.empty,
+                tabData = {
+                    tabs = ["Substrate 1", "Substrate 2", "Substrate 3"],
+                    selectedTab = ""
+                }
             },
             showSubstrateErrorMsg = False
         },
@@ -227,7 +231,14 @@ type alias SubstrateData =
     {
         status: RequestState,
         error: String,
-        data: Dict String (List (Substrate Source SubstrateEnzyme))
+        data: Dict String (List (Substrate Source SubstrateEnzyme)),
+        tabData: TabData
+    }
+
+type alias TabData =
+    {
+        tabs: List String,
+        selectedTab: String
     }
 
 setEntryPage : Model -> EntryPage -> Model
@@ -254,10 +265,6 @@ setProteoformPPIData: EntryPage -> ProteoformPPIData -> EntryPage
 setProteoformPPIData entryPage newData = 
     { entryPage | proteoformPPIData = newData}
 
-setSubstrateData: EntryPage -> SubstrateData -> EntryPage
-setSubstrateData entryPage newData = 
-    { entryPage | substrateData = newData }
-
 setShowInfoErrorMsg: Bool -> EntryPage -> EntryPage
 setShowInfoErrorMsg newValue entryPage = 
     { entryPage | showInfoErrorMsg = newValue}
@@ -278,6 +285,17 @@ setShowProteoformsPPIErrorMsg: Bool -> EntryPage -> EntryPage
 setShowProteoformsPPIErrorMsg newValue entryPage = 
     { entryPage | showProteoformsPPIErrorMsg = newValue}
 
+setSubstrateData: EntryPage -> SubstrateData -> EntryPage
+setSubstrateData entryPage newData = 
+    { entryPage | substrateData = newData }
+
+setSelectedSubstrateTab: String -> TabData -> TabData
+setSelectedSubstrateTab newSelectedTab tabData =
+    { tabData | selectedTab = newSelectedTab}
+
+setSubstrateTabData: SubstrateData -> TabData -> SubstrateData
+setSubstrateTabData substrateData newTabData =
+    { substrateData | tabData = newTabData}
 
 
 type alias Info = 

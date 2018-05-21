@@ -10,6 +10,8 @@ import String.Interpolate exposing (interpolate)
 import String.Extra exposing (..)
 import Views.Error
 import Views.Loading
+import Views.Tabs
+
 
 -- returns the substrate view
 view: SubstrateData -> String -> String -> Bool -> Html Msg 
@@ -20,7 +22,7 @@ view  data entryID geneName showErrorMsg =
         Loading ->
             viewWithSection Views.Loading.view entryID geneName
         Success ->
-            viewWithSection (renderSubstrateTable data.data) entryID geneName
+            viewWithSection (renderSubstrateTable data) entryID geneName
         Error ->
             viewWithSection (Views.Error.view data.error showErrorMsg Msgs.OnSubstrateErrorButtonClicked) entryID geneName
 
@@ -53,21 +55,43 @@ renderView data =
         Loading ->
             text "Loading"
         Success ->
-            renderSubstrateTable data.data
+            renderSubstrateTable data
         Error ->
             text data.error
 
-renderSubstrateTable: Dict String (List (Substrate Source SubstrateEnzyme)) -> Html Msg
-renderSubstrateTable substrateDict =
-        div [id "proteoforms_table", css [
-            displayFlex,
-            flexDirection column,
-            fontSize (Css.em 0.88),
-            borderWidth (px 1),
-            borderStyle solid,
-            borderColor (hex "#d9dadb"),
-            alignSelf stretch
-        ]][
+renderSubstrateTable: Model.SubstrateData -> Html Msg
+renderSubstrateTable substrateData =
+        div [
+            id "div_substrate_table_container",
+            css [
+                displayFlex,
+                flexDirection column,
+                alignSelf stretch
+            ]
+        ][
+            -- tabs
+            div [
+                id "div_tabs_container",
+                css [
+                    displayFlex,
+                    flexDirection row,
+                    alignItems center,
+                    marginBottom (px 10),
+                    alignSelf stretch    
+                ]
+            ] [
+                Views.Tabs.view substrateData.tabData Msgs.OnSubstrateTabClick
+            ],
+
+            div [id "proteoforms_table", css [
+                displayFlex,
+                flexDirection column,
+                fontSize (Css.em 0.88),
+                borderWidth (px 1),
+                borderStyle solid,
+                borderColor (hex "#d9dadb"),
+                alignSelf stretch
+            ]][
             -- header
             div [
                 id "proteoforms_table_header",
@@ -119,14 +143,13 @@ renderSubstrateTable substrateDict =
                 ]
             ],
             -- rows
-            case Dict.get ( Dict.keys substrateDict
-                            |> List.head 
-                            |> Maybe.withDefault "" 
-                          ) substrateDict of 
+            case Dict.get substrateData.tabData.selectedTab substrateData.data of 
                 Just substrates -> 
                     div [] (List.map substrateRow substrates) 
                 Nothing -> 
                     div [] []
+        ]
+
         ]
 
 substrateRow: Substrate Source SubstrateEnzyme -> Html Msg
@@ -200,28 +223,46 @@ decodeResponse response =
             {
                 status = NotAsked,
                 error = "",
-                data = Dict.empty
+                data = Dict.empty,
+                tabData = {
+                    tabs = ["Substrate 1", "Substrate 2", "Substrate 3"],
+                    selectedTab = ""
+                }
             }
 
         RemoteData.Loading ->
             {
                 status = Loading,
                 error = "",
-                data = Dict.empty
+                data = Dict.empty,
+                tabData = {
+                    tabs = ["Substrate 1", "Substrate 2", "Substrate 3"],
+                    selectedTab = ""
+                }
             }
 
         RemoteData.Success substrateTable ->
             {
                 status = Success,
                 error = "",
-                data = substrateTable
+                data = substrateTable,
+                tabData = {
+                    tabs = Dict.keys substrateTable,
+                    selectedTab = Dict.keys substrateTable
+                                  |> List.head 
+                                  |> Maybe.withDefault ""
+                }
             }
 
         RemoteData.Failure error ->
             {
                 status = Error,
                 error = (toString error),
-                data = Dict.empty
+                data = Dict.empty,
+                tabData = {
+                    tabs = ["Substrate 1", "Substrate 2", "Substrate 3"],
+                    selectedTab = ""
+                }
             }
 
 

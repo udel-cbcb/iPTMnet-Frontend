@@ -33,5 +33,6 @@ type Msg
     | OnProteoformsErrorButtonClicked
     | OnPTMDepPPIErrorButtonClicked
     | OnProteoformsPPIErrorButtonClicked
+    | OnSubstrateTabClick String
 
 

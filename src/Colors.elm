@@ -95,6 +95,11 @@ emptyIcon = Color.rgb 174 174 174
 emptyText: Css.Color
 emptyText = hex "#aeaeaeff"
 
+tabSelectedColor: Css.Color
+tabSelectedColor = hex "#329CDA"
+
+tabHoverColor: Css.Color
+tabHoverColor = hex "#329cda22"
 
 
 
