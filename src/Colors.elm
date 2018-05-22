@@ -101,5 +101,8 @@ tabSelectedColor = hex "#329CDA"
 tabHoverColor: Css.Color
 tabHoverColor = hex "#329cda22"
 
+score: Color.Color
+score = Color.rgb 50 156 280
+
 
 
