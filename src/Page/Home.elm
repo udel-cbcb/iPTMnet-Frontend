@@ -211,7 +211,8 @@ view model =
                     ],
 
                     a [
-                        href "#",
+                        href "http://nsf.gov/awardsearch/showAward.do?AwardNumber=1062520",
+                        Html.Styled.Attributes.target "blank",
                         css[
                             marginLeft (px 10),
                             fontSize (Css.em 0.85),

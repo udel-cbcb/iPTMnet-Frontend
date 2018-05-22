@@ -11,7 +11,8 @@ import String.Extra exposing (..)
 import Views.Error
 import Views.Loading
 import Views.Tabs
-
+import Views.Score
+import Styles.Generic
 
 -- returns the substrate view
 view: SubstrateData -> String -> String -> Bool -> Html Msg 
@@ -76,14 +77,60 @@ renderSubstrateTable substrateData =
                     displayFlex,
                     flexDirection row,
                     alignItems center,
-                    marginBottom (px 10),
+                    marginBottom (px 5),
                     alignSelf stretch    
                 ]
             ] [
-                Views.Tabs.view substrateData.tabData Msgs.OnSubstrateTabClick
+                Views.Tabs.view substrateData.tabData Msgs.OnSubstrateTabClick,
+                button [
+                        id "btn_expanded_view",
+                        css (Styles.Generic.selectorButton ++ [
+                                                                marginLeft auto,
+                                                                fontSize (Css.em 0.90),
+                                                                marginRight (px 10),
+                                                                paddingTop (px 5),
+                                                                paddingBottom (px 5)
+                                                            ])
+                        ][
+                            text "Expanded View"
+                    ],
+
+                button [
+                        id "btn_overlap_ptms",
+                        css (Styles.Generic.selectorButton ++ [
+                                                                fontSize (Css.em 0.90),
+                                                                marginLeft (px 0),
+                                                                paddingTop (px 5),
+                                                                paddingBottom (px 5)
+                                                            ])
+                        ][
+                            text "Display Overalapping PTM"
+                ]
             ],
 
-            div [id "proteoforms_table", css [
+            -- search
+            div [
+                id "div_search",
+                css [
+                    displayFlex,
+                    flexDirection row,
+                    alignItems center,
+                    marginTop (px 5),
+                    marginBottom (px 10)
+                ]
+            ][
+                
+                div [id "substrate_search" ,css [
+                                                marginLeft auto,
+                                                alignSelf center
+                                                ]]
+                    [
+                        span [css [marginRight (px 10), fontSize (Css.em 1)]] [text "Search:"],
+                        input [] []
+                ]
+
+            ],
+            div [id "substrate_table", css [
                 displayFlex,
                 flexDirection column,
                 fontSize (Css.em 0.88),
@@ -94,7 +141,7 @@ renderSubstrateTable substrateData =
             ]][
             -- header
             div [
-                id "proteoforms_table_header",
+                id "substrate_table_header",
                 css [
                     displayFlex,
                     flexDirection row,
@@ -111,20 +158,22 @@ renderSubstrateTable substrateData =
                 [
                     text "Site"
                 ],
-                div [css [flex (num 1),
+                div [css [flex (num 1.2),
                           marginRight (px 20)         
                          ]] 
                 [
                     text "PTM Type"
                 ],
                 div [css [flex (num 3),
-                     marginRight (px 20)         
+                     marginRight (px 20),
+                     textAlign center         
                     ]]
                 [
                     text "PTM Enzyme"
                 ],
                 div [css [flex (num 1),
-                          marginRight (px 20)
+                          marginRight (px 20),
+                          textAlign center
                          ]]
                 [
                     text "Score"
@@ -136,7 +185,8 @@ renderSubstrateTable substrateData =
                     text "Sources"
                 ],
                 div [css [flex (num 3),
-                          marginRight (px 20)
+                          marginRight (px 20),
+                          textAlign center
                          ]]
                 [
                     text "PMID"
@@ -157,8 +207,8 @@ substrateRow substrate =
         div [css [
         displayFlex,
         flexDirection row,
-        paddingTop (px 10),
-        paddingBottom (px 10),
+        paddingTop (px 6),
+        paddingBottom (px 6),
         hover [
             backgroundColor (hex "#f4f4f4")
         ]
@@ -171,7 +221,7 @@ substrateRow substrate =
                 [
                     text substrate.site
                 ],
-                div [css [flex (num 1),
+                div [css [flex (num 1.2),
                           marginRight (px 20)         
                          ]] 
                 [
@@ -184,13 +234,13 @@ substrateRow substrate =
                           marginRight (px 20)
                          ]]
                 [
-                    text "Score"
+                    Views.Score.view substrate.score
                 ],
                 div [css [flex (num 3),
                           marginRight (px 20)
                          ]]
                 [
-                    text "Sources"
+                    div [] (List.map buildSource substrate.sources |> List.intersperse (span [css [display inline]] [text ", "]))
                 ],
                 div [css [flex (num 3),
                           marginRight (px 20),
@@ -215,6 +265,17 @@ buildPMID pmid =
     a [css [display inline], 
        href (interpolate "https://www.ncbi.nlm.nih.gov/pubmed/{0}" [pmid]), Html.Styled.Attributes.target "_blank"] [text pmid]
 
+buildSource: Source -> Html Msg 
+buildSource source =
+    a [
+        css [
+            display inline
+        ],
+        href "#",
+        Html.Styled.Attributes.target "_blank"
+    ] [
+        text source.name
+    ]
 
 decodeResponse: WebData (Dict String (List (Substrate Source SubstrateEnzyme))) -> SubstrateData 
 decodeResponse response = 
