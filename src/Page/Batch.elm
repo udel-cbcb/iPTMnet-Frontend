@@ -8,7 +8,7 @@ import Msgs exposing (..)
 import Views.Navbar
 import FileReader exposing (NativeFile)
 import String.Interpolate exposing (interpolate)
-
+import Views.Footer
 
 tableItemCSS: List Style
 tableItemCSS =
@@ -25,6 +25,7 @@ view : Model -> Html Msg
 view model =  
             div [id "page",css [
                 displayFlex,
+                Css.property "min-height" "100%",
                 flexDirection column]] 
             [  
             
@@ -36,6 +37,7 @@ view model =
                     displayFlex,
                     flexDirection column,
                     marginLeft (px 20),
+                    flexGrow (num 1),
                     fontSize (px 13),
                     marginBottom (px 100)
                 ]] [
@@ -248,7 +250,10 @@ view model =
 
                     ]
 
-                ]
+                ],
+
+                -- footer
+                Views.Footer.view
 
             ]
 

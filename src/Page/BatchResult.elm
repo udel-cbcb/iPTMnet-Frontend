@@ -6,6 +6,8 @@ import Model exposing (..)
 import Msgs exposing (..)
 import RemoteData exposing (WebData)
 import Views.Navbar
+import Views.Score
+import String.Interpolate exposing (interpolate)
 
 view : Model -> Html Msg
 view model =  
@@ -155,7 +157,7 @@ enzymeResultRow enzyme =
                             marginRight (px 20)
                             ]]
                     [
-                        text (toString enzyme.score)
+                        Views.Score.view enzyme.score
                     ],
                     div [
                         id "source",
@@ -163,7 +165,7 @@ enzymeResultRow enzyme =
                             marginRight (px 20)
                             ]]
                     [
-                        text "source"
+                        div [] (List.map buildSource enzyme.source |> List.intersperse (span [css [display inline]] [text ", "]))
                     ],
                     div [
                         id "pmid",
@@ -171,14 +173,13 @@ enzymeResultRow enzyme =
                             marginRight (px 20)
                             ]]
                     [
-                        text "pmid"
+                        div [] (List.map buildPMID enzyme.pmids |> List.intersperse (span [css [display inline]] [text ",  "]))
                     ]
 
                                      
 
 
                 ]
-
 
 decodeEnzymeResponse: WebData (List (BatchEnzyme Entity Source)) -> BatchEnzymeData 
 decodeEnzymeResponse response = 
@@ -210,3 +211,21 @@ decodeEnzymeResponse response =
                 error = (toString error),
                 data = []
             }
+
+
+buildSource: Source -> Html Msg 
+buildSource source =
+    a [
+        css [
+            display inline
+        ],
+        href "#",
+        Html.Styled.Attributes.target "_blank"
+    ] [
+        text source.name
+    ]
+
+buildPMID: String -> Html Msg
+buildPMID pmid =
+    a [css [display inline], 
+       href (interpolate "https://www.ncbi.nlm.nih.gov/pubmed/{0}" [pmid]), Html.Styled.Attributes.target "_blank"] [text pmid]

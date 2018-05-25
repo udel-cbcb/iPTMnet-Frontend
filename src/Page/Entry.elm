@@ -2,6 +2,7 @@ module Page.Entry exposing (..)
 import Html.Styled exposing (..)
 import Css exposing (..)
 import Html.Styled.Attributes exposing (..)
+import Html.Styled.Events exposing (..)
 import Model exposing (..)
 import Msgs exposing (..)
 import Views.Info
@@ -17,12 +18,14 @@ import Views.Footer
 sideBarItemCSS: List Style
 sideBarItemCSS = 
     [
-        padding (px 10),
-        paddingTop (px 7),
-        paddingBottom (px 7),
-        fontSize (Css.em 0.88),
+        paddingLeft (px 25),
+        paddingRight (px 10),
+        paddingTop (px 10),
+        paddingBottom (px 10),
+        fontSize (Css.em 0.85),
         flex (num 1),
         hover [
+            cursor pointer,
             backgroundColor (hex "#0000000D")
         ],
         textDecoration none,
@@ -68,32 +71,60 @@ view model =
                             text "Display"
                         ],
 
-                        div [css [displayFlex]] [
-                            a[href "#info", css sideBarItemCSS][text "Protein Information"]
+                        div [
+                            id "opt_info",
+                            css sideBarItemCSS,
+                            onClick (Msgs.ScrollToElement "info")   
+                            ] [
+                            text "Protein Information"
                         ],
                         
-                        div [css [displayFlex]] [
-                            a[href "#sequence_viewer", css sideBarItemCSS][text "Interactive Sequence Viewer"]
+                        div [
+                            id "opt_sequence_viewer",
+                            css sideBarItemCSS,
+                            onClick (Msgs.ScrollToElement "sequence_viewer")   
+                            ] [
+                            text "Interactive Sequence Viewer"
                         ],
                         
-                        div [css [displayFlex]] [
-                            a[href "#substrate", css sideBarItemCSS][text "Substrate"]
+                        div [
+                            id "opt_substrate",
+                            css sideBarItemCSS,
+                            onClick (Msgs.ScrollToElement "substrates")  
+                            ] [
+                            text "Substrate"
                         ],
                         
-                        div [css [displayFlex]] [
-                            a[href "#proteoforms", css sideBarItemCSS][text "Proteoforms"]
+                        div [
+                            id "opt_proteoforms",
+                            css sideBarItemCSS,
+                            onClick (Msgs.ScrollToElement "proteoforms")  
+                            ] [
+                            text "Proteoforms"
                         ],
                         
-                        div [css [displayFlex]] [
-                            a[href "#ptm_dependent_ppi", css sideBarItemCSS][text "PTM Dependent PPI"]
+                        div [
+                            id "opt_ptm_dep_ppi",
+                            css sideBarItemCSS,
+                            onClick (Msgs.ScrollToElement "ptm_dependent_ppi")  
+                            ] [
+                            text "PTM Dependent PPI"
                         ],
                         
-                        div [css [displayFlex]] [
-                            a[href "#proteoform_ppi", css sideBarItemCSS][text "Proteoform PPI"]
+                        div [
+                            id "opt_proteoform_ppi",
+                            css sideBarItemCSS,
+                            onClick (Msgs.ScrollToElement "proteoforms_ppi") 
+                            ] [
+                            text "Proteoform PPI"
                         ],
                                             
-                        div [css [displayFlex]] [
-                            a[href "#info", css sideBarItemCSS][text "Back to top"]
+                        div [
+                            id "opt_back_to_top",
+                            css sideBarItemCSS,
+                            onClick (Msgs.ScrollToElement "info")
+                            ] [
+                            text "Back to top"
                         ]
 
                     ],

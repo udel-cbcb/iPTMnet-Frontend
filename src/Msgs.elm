@@ -34,5 +34,6 @@ type Msg
     | OnPTMDepPPIErrorButtonClicked
     | OnProteoformsPPIErrorButtonClicked
     | OnSubstrateTabClick String
+    | ScrollToElement String
 
 

@@ -16,6 +16,7 @@ import Page.Home
 import Page.Search
 import Page.Batch
 import Page.BatchResult
+import Ports
 
 
 init : Navigation.Location -> ( Model, Cmd Msg )
@@ -161,6 +162,8 @@ update msg model =
                           |> Model.setEntryPage model
             in
             (newModel, Cmd.none)
+        Msgs.ScrollToElement element ->
+            (model, Ports.scrollToDiv element)
         
 
         -- Batch
