@@ -9,6 +9,7 @@ import String.Interpolate exposing (interpolate)
 import String.Extra exposing (..)
 import Views.Loading
 import Views.Error
+import Misc
 
 -- returns the substrate view
 view: ProteoformPPIData -> Bool -> Html Msg 
@@ -172,9 +173,10 @@ proteoformPPIRow proteoformPPI =
                 div [css [flex (num 1),
                           marginRight (px 10)
                          ]]
-                [
-                    text "PMID"
-                ]
+                (
+                    List.map Misc.buildPMID proteoformPPI.pmids 
+                    |> List.intersperse (span [css [display inline]] [text ",  "])
+                )
     ]
 
 

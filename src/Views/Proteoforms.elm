@@ -2,6 +2,7 @@ module Views.Proteoforms exposing (view, decodeResponse)
 import Html.Styled exposing (..)
 import Css exposing (..)
 import Html.Styled.Attributes exposing (..)
+import Html.Styled.Events
 import Msgs exposing (..)
 import RemoteData exposing (WebData)
 import Model exposing (..)
@@ -9,6 +10,9 @@ import String.Interpolate exposing (interpolate)
 import String.Extra exposing (..)
 import Views.Loading 
 import Views.Error
+import Misc
+import String
+import Filter
 
 -- returns the substrate view
 view: ProteoformsData -> Bool -> Html Msg 
@@ -19,9 +23,7 @@ view data showErrorMsg=
         Loading ->
             viewWithSection Views.Loading.view
         Success ->
-            case (List.length data.data) of
-            0 -> div [][]
-            _ ->  viewWithSection (renderProteoformTable data.data)
+            viewWithSection (renderProteoformTable data.data data.filterTerm) 
         Error ->
             viewWithSection (Views.Error.view data.error showErrorMsg Msgs.OnProteoformsErrorButtonClicked)
         
@@ -49,10 +51,13 @@ viewWithSection childView =
                     span [css [
                         fontSize (Css.em 1.5)
                     ]][text "Proteoforms"],
-                    div [id "proteforms_search" ,css [
-                                                        marginLeft auto,
-                                                        alignSelf center
-                                                    ]]
+                    div [id "proteforms_search" ,
+                        Html.Styled.Events.onInput Msgs.OnProteoformSearch,
+                        css [
+                                marginLeft auto,
+                                alignSelf center
+                            ]
+                        ]
                     [
                         span [css [marginRight (px 10), fontSize (Css.em 1)]] [text "Search:"],
                         input [] []
@@ -68,34 +73,38 @@ decodeResponse response =
             {
                 status = NotAsked,
                 error = "",
-                data = []
+                data = [],
+                filterTerm = ""
             }
 
         RemoteData.Loading ->
             {
                 status = Loading,
                 error = "",
-                data = []
+                data = [],
+                filterTerm = ""
             }
 
         RemoteData.Success proteoformsList ->
             {
                 status = Success,
                 error = "",
-                data = proteoformsList
+                data = proteoformsList,
+                filterTerm = ""
             }
 
         RemoteData.Failure error ->
             {
                 status = Error,
                 error = (toString error),
-                data = []
+                data = [],
+                filterTerm = ""
             }
 
 
 
-renderProteoformTable: List (Proteoform Enzyme Source) -> Html Msg
-renderProteoformTable proteoformList =
+renderProteoformTable: List (Proteoform Enzyme Source) -> String -> Html Msg
+renderProteoformTable proteoformList filterTerm =
         div [id "proteoforms_table", css [
             displayFlex,
             flexDirection column,
@@ -149,7 +158,10 @@ renderProteoformTable proteoformList =
             ],
 
             -- rows
-            div [] (List.map proteoformRow proteoformList) 
+            div [] (List.map proteoformRow (case String.length filterTerm of
+                                             0 -> proteoformList
+                                             _ -> List.filter (Filter.proteoforms filterTerm) proteoformList)
+                   ) 
         
         ]
 
@@ -192,9 +204,10 @@ proteoformRow proteoform =
         div [css [flex (num 1),
                   marginRight (px 20)
                  ]] 
-        [
-            text "PMID"
-        ]
+        (
+            List.map Misc.buildPMID proteoform.pmids 
+            |> List.intersperse (span [css [display inline]] [text ",  "])
+        )
     ]
 
 buildEnzyme: Enzyme -> List (Html Msg)
@@ -208,5 +221,4 @@ buildEnzyme entity =
         [
 
         ]
-
 

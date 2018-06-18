@@ -14,38 +14,38 @@ import Json.Encode
 
 fetchInfo: String -> Cmd Msg
 fetchInfo id = 
-    Http.get (interpolate "http://aws3.proteininformationresource.org/{0}/info" [id]) Model.infoDecoder
+    Http.get (interpolate (Model.url ++ "/{0}/info") [id]) Model.infoDecoder
     |> RemoteData.sendRequest
     |> Cmd.map Msgs.OnFetchInfo
 
 fetchProteoforms: String -> Cmd Msg
 fetchProteoforms id = 
-    Http.get (interpolate "http://aws3.proteininformationresource.org/{0}/proteoforms" [id]) Model.proteoformListDecoder
+    Http.get (interpolate (Model.url ++ "/{0}/proteoforms") [id]) Model.proteoformListDecoder
     |> RemoteData.sendRequest
     |> Cmd.map Msgs.OnFetchProteoform
 
 fetchPTMDependentPPI: String -> Cmd Msg
 fetchPTMDependentPPI id = 
-    Http.get (interpolate "http://aws3.proteininformationresource.org/{0}/ptmppi" [id]) Model.ptmDependentPPIListDecoder
+    Http.get (interpolate (Model.url ++ "/{0}/ptmppi") [id]) Model.ptmDependentPPIListDecoder
     |> RemoteData.sendRequest
     |> Cmd.map Msgs.OnFetchPTMDependentPPI
 
 fetchProteoformsPPI: String -> Cmd Msg
 fetchProteoformsPPI id = 
-    Http.get (interpolate "http://aws3.proteininformationresource.org/{0}/proteoformsppi" [id]) Model.proteoformPPIListDecoder
+    Http.get (interpolate (Model.url ++ "/{0}/proteoformsppi") [id]) Model.proteoformPPIListDecoder
     |> RemoteData.sendRequest
     |> Cmd.map Msgs.OnFetchProteoformPPI
 
 
 fetchSubstrates: String -> Cmd Msg
 fetchSubstrates id = 
-    Http.get (interpolate "http://aws3.proteininformationresource.org/{0}/substrate" [id]) Model.substrateTableDecoder
+    Http.get (interpolate (Model.url ++ "/{0}/substrate") [id]) Model.substrateTableDecoder
     |> RemoteData.sendRequest
     |> Cmd.map Msgs.OnFetchSubstrates
 
 fetchSearchResults: String -> Cmd Msg
 fetchSearchResults query_params = 
-    Http.get (interpolate "http://aws3.proteininformationresource.org/search?{0}" [query_params]) Model.searchResultListDecoder
+    Http.get (interpolate (Model.url ++ "/search?{0}") [query_params]) Model.searchResultListDecoder
     |> RemoteData.sendRequest
     |> Cmd.map Msgs.OnFetchSearchResults
 

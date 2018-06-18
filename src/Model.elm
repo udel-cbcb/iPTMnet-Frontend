@@ -14,6 +14,12 @@ type RequestState =
     | Error
     | Success
 
+url : String
+url = 
+    -- "http://aws3.proteininformationresource.org"
+    "http://localhost:8088"
+
+
 
 type alias Model =
     {
@@ -54,7 +60,8 @@ initialModel route =
             proteoformsData = {
                 status = NotAsked,
                 error = "",
-                data = []
+                data = [],
+                filterTerm = ""
             },
             showProteoformsErrorMsg = False,
             ptmDependentPPIData = {
@@ -210,7 +217,8 @@ type alias ProteoformsData =
     {
         status: RequestState,
         error: String,
-        data: List (Proteoform Enzyme Source)
+        data: List (Proteoform Enzyme Source),
+        filterTerm: String
     }
 
 type alias PTMDependentPPIData = 
@@ -252,6 +260,10 @@ setInfo entryPage newInfo =
 setProteoforms : ProteoformsData -> List (Proteoform Enzyme Source) -> ProteoformsData
 setProteoforms proteoformsData newProteoforms =
     { proteoformsData | data = newProteoforms, status = Success }
+
+setProteoformsFilterTerm : ProteoformsData -> String -> ProteoformsData
+setProteoformsFilterTerm proteoformsData newFilterTerm =
+    { proteoformsData | filterTerm = newFilterTerm, status = Success }
 
 setProteoformsData: EntryPage -> ProteoformsData -> EntryPage
 setProteoformsData entryPage newProteoformsData = 
@@ -400,7 +412,8 @@ type alias Proteoform enzymeDecoder sourceDecoder =
        label : String,
        sites : List String,
        ptm_enzyme: enzymeDecoder,
-       source: sourceDecoder 
+       source: sourceDecoder,
+       pmids: List String 
     }
 
 proteoformDecoder: Decoder (Proteoform Enzyme Source)
@@ -411,6 +424,7 @@ proteoformDecoder =
         |> required "sites" (list string)
         |> required "ptm_enzyme" enzymeDecoder
         |> required "source" sourceDecoder
+        |> required "pmids" (list string)
 
 proteoformListDecoder: Decoder (List (Proteoform Enzyme Source ))
 proteoformListDecoder = 
