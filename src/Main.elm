@@ -17,6 +17,8 @@ import Page.Search
 import Page.Batch
 import Page.BatchResult
 import Ports
+import List
+import Filter
 
 
 init : Navigation.Location -> ( Model, Cmd Msg )
@@ -149,6 +151,13 @@ update msg model =
                 newModel = Model.setShowProteoformsErrorMsg (not model.entryPage.showProteoformsErrorMsg) model.entryPage
                           |> Model.setEntryPage model
             in
+            (newModel, Cmd.none)
+        Msgs.OnProteoformSearch searchTerm ->
+            let 
+                newModel = Model.setProteoformsFilterTerm model.entryPage.proteoformsData searchTerm
+                           |> Model.setProteoformsData model.entryPage
+                           |> Model.setEntryPage model
+            in 
             (newModel, Cmd.none)
         Msgs.OnPTMDepPPIErrorButtonClicked ->
             let 

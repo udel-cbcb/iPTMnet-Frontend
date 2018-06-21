@@ -8,7 +8,7 @@ import RemoteData exposing (WebData)
 import String.Interpolate exposing (interpolate)
 import Views.Loading
 import Views.Error
-
+import Misc
 
 -- returns the substrate view
 view: PTMDependentPPIData -> Bool -> Html Msg 
@@ -187,7 +187,7 @@ ptmDependentPPIRow ptmdependentppi =
                   marginRight (px 20)
                  ]] 
         [
-            text "PMID"
+            Misc.buildPMID ptmdependentppi.pmid
         ]
     ]
 

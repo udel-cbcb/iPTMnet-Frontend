@@ -13,6 +13,7 @@ import Views.Loading
 import Views.Tabs
 import Views.Score
 import Styles.Generic
+import Misc
 
 -- returns the substrate view
 view: SubstrateData -> String -> String -> Bool -> Html Msg 
@@ -247,7 +248,7 @@ substrateRow substrate =
                           Css.property "word-wrap" "break-word"
                          ]]
                 (
-                    List.map buildPMID substrate.pmids 
+                    List.map Misc.buildPMID substrate.pmids 
                     |> List.intersperse (span [css [display inline]] [text ",  "])
                 )
             ]
@@ -256,14 +257,12 @@ substrateRow substrate =
 buildEnzyme: SubstrateEnzyme -> Html Msg
 buildEnzyme enzyme = 
     div [css [display inline]] [
-        a [href (interpolate "Q15796/{0}" [(replace ":" "_" enzyme.id )]), Html.Styled.Attributes.target "_blank"] [text enzyme.id],
-        span [] [text (interpolate " ({0})" [enzyme.name])]
+        a [href (interpolate "http://enz_type/{0}" [(replace ":" "_" enzyme.id )]), Html.Styled.Attributes.target "_blank"] [text enzyme.id],
+        span [] [text (case String.length(enzyme.name) of
+                         0 -> ""
+                         _ -> (interpolate " ({0})" [enzyme.name])
+                      )]
     ]
-
-buildPMID: String -> Html Msg
-buildPMID pmid =
-    a [css [display inline], 
-       href (interpolate "https://www.ncbi.nlm.nih.gov/pubmed/{0}" [pmid]), Html.Styled.Attributes.target "_blank"] [text pmid]
 
 buildSource: Source -> Html Msg 
 buildSource source =
