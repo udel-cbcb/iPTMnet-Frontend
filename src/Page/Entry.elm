@@ -13,6 +13,7 @@ import Views.PTMDependentPPI
 import Views.ProteoformPPI
 import Views.Navbar
 import Views.Footer
+import String.Interpolate exposing (interpolate)
 
 -- css
 sideBarItemCSS: List Style
@@ -134,13 +135,25 @@ view model =
                             backgroundColor (hex "ecececff"),
                             displayFlex,
                             flexDirection column,
-                            margin (px 20)
+                            margin (px 20),
+                            paddingLeft (px 10),
+                            paddingRight (px 10)
                         ]]
                     [
-                        div [css [fontWeight bold, padding (px 10)]] [
+                        div [
+                            css [fontWeight bold,
+                                 marginTop (px 10),
+                                 marginBottom (px 10)
+                                 ]
+                        ][
                             text "Cytoscape View"
-                        ]
-
+                        ],
+                        div [
+                            css [
+                                displayFlex,
+                                flexDirection column
+                            ]
+                        ](List.map buildCytoscapeItem model.entryPage.cytoscapeItems)
                     ]
                     ]
                     
@@ -173,6 +186,20 @@ view model =
 
 
         ]
+
+
+buildCytoscapeItem : CytoscapeItem -> Html Msg
+buildCytoscapeItem cytoscapeItem =
+    div[css [
+        padding (px 8),
+        marginTop (px 5),
+        marginBottom (px 5),
+        backgroundColor (hex "#c7c9cc" ),
+        borderRadius (px 20),
+        fontSize (Css.em 0.85)
+    ]][
+        text (interpolate "{0} - {1}" [cytoscapeItem.id_1,cytoscapeItem.id_2])
+    ]
 
 
 

@@ -36,5 +36,6 @@ type Msg
     | OnSubstrateTabClick String
     | ScrollToElement String
     | OnProteoformSearch String
+    | ToggleCytoscapeItem CytoscapeItem
 
 

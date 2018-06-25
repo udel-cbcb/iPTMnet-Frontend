@@ -173,6 +173,23 @@ update msg model =
             (newModel, Cmd.none)
         Msgs.ScrollToElement element ->
             (model, Ports.scrollToDiv element)
+    
+
+        -- Cytoscape
+        Msgs.ToggleCytoscapeItem cytoscapeItem ->
+            case List.member cytoscapeItem model.entryPage.cytoscapeItems of
+                True -> 
+                    let 
+                        newModel = Model.setCytoscapeItems model.entryPage (List.filter (\ e -> e /= cytoscapeItem) model.entryPage.cytoscapeItems)
+                        |> Model.setEntryPage model
+                    in
+                        (newModel, Cmd.none) 
+                False -> 
+                    let 
+                        newModel = Model.setCytoscapeItems model.entryPage (List.append model.entryPage.cytoscapeItems [cytoscapeItem])
+                        |> Model.setEntryPage model
+                    in
+                        (newModel, Cmd.none)
         
 
         -- Batch
@@ -252,8 +269,7 @@ update msg model =
                             
             in
                 (newModel, Cmd.none)
-
-
+        
             
 
 

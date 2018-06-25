@@ -2,7 +2,7 @@ module Views.Proteoforms exposing (view, decodeResponse)
 import Html.Styled exposing (..)
 import Css exposing (..)
 import Html.Styled.Attributes exposing (..)
-import Html.Styled.Events
+import Html.Styled.Events exposing (..)
 import Msgs exposing (..)
 import RemoteData exposing (WebData)
 import Model exposing (..)
@@ -181,7 +181,12 @@ proteoformRow proteoform =
                   marginRight (px 20)
                  ]] 
         [
-            input [type_ "checkbox", css[marginLeft (px 5), marginRight (px 10)]][],
+            input [
+                type_ "checkbox",
+                css[marginLeft (px 5),
+                    marginRight (px 10)],
+                onClick (Msgs.ToggleCytoscapeItem {id_1 = proteoform.pro_id ,id_2 = proteoform.ptm_enzyme.pro_id,item_type = "pro" })
+                ][],
             a [href (interpolate "http://purl.obolibrary.org/obo/{0}" [(replace ":" "_" proteoform.pro_id )]), Html.Styled.Attributes.target "_blank"] [text proteoform.pro_id],
             span [] [text (interpolate " ({0})" [proteoform.label])]
         ],

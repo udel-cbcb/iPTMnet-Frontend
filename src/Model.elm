@@ -16,8 +16,8 @@ type RequestState =
 
 url : String
 url = 
-    -- "http://aws3.proteininformationresource.org"
-    "http://localhost:8088"
+    "https://research.bioinformatics.udel.edu/iptmnet/api"
+    -- "http://localhost:8088"
 
 
 
@@ -51,6 +51,7 @@ initialModel route =
         },
 
         entryPage = {
+            cytoscapeItems = [],
             infoData = {
                 status = NotAsked,
                 error = "",
@@ -86,6 +87,7 @@ initialModel route =
                 }
             },
             showSubstrateErrorMsg = False
+
         },
 
         batchPage = {
@@ -194,6 +196,7 @@ setSearchShowErrorMsg newValue searchPage =
 -- Entry page
 type alias EntryPage = 
     {
+        cytoscapeItems: List CytoscapeItem,
         infoData: InfoData,
         showInfoErrorMsg: Bool,
         proteoformsData: ProteoformsData,
@@ -256,6 +259,10 @@ setEntryPage model newEntryPage =
 setInfo : EntryPage -> InfoData -> EntryPage
 setInfo entryPage newInfo =
     { entryPage | infoData = newInfo }
+
+setCytoscapeItems: EntryPage -> List (CytoscapeItem) -> EntryPage 
+setCytoscapeItems entryPage newCytoscapeItems =
+   {entryPage | cytoscapeItems= newCytoscapeItems}
 
 setProteoforms : ProteoformsData -> List (Proteoform Enzyme Source) -> ProteoformsData
 setProteoforms proteoformsData newProteoforms =
@@ -732,3 +739,11 @@ isVisible is_visible =
               Css.property "visibility" "visible",   
               Css.property "display" "none"  
             ]
+
+
+type alias CytoscapeItem = 
+    {
+        id_1: String,
+        id_2: String,
+        item_type: String   
+    }
