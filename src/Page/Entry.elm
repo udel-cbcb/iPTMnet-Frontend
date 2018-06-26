@@ -15,7 +15,8 @@ import Views.Navbar
 import Views.Footer
 import String.Interpolate exposing (interpolate)
 import Json.Encode exposing (string)
-
+import Styles.Generic
+import Colors
 
 -- css
 sideBarItemCSS: List Style
@@ -48,9 +49,9 @@ view model =
             Views.Navbar.view model,
 
             div [id "content",css [
-                displayFlex,
-                flexDirection row,
-                flex (num 1)
+                    displayFlex,
+                    flexDirection row,
+                    flex (num 1)
                 ]
             ] [
                 
@@ -143,12 +144,42 @@ view model =
                         ]]
                     [
                         div [
-                            css [fontWeight bold,
-                                 marginTop (px 10),
-                                 marginBottom (px 10)
-                                 ]
+                            css [
+                                  displayFlex,
+                                  flexDirection row,
+                                  alignItems center,
+                                  marginTop (px 15),
+                                  marginBottom (px 15)
+                                ]
                         ][
-                            text "Cytoscape View"
+                            div [
+                                css [fontWeight bold
+                                ]                                
+                            ][
+                                text "Cytoscape View"
+                            ],
+
+                        div [
+                             id "btn_clear",
+                             css [
+                                    marginLeft auto,
+                                    marginRight (px 10),
+                                    fontSize (Css.em 0.85),
+                                    color Colors.navigationText,
+                                    backgroundColor Colors.headerBlack,
+                                    paddingTop (px 5),
+                                    paddingBottom (px 5),
+                                    paddingRight (px 10),
+                                    paddingLeft (px 10),
+                                    borderRadius (px 5),
+                                    hover [
+                                        cursor pointer
+                                    ]
+                                ],
+                            Html.Styled.Events.onClick (Msgs.CytoscapeClearClicked)
+                            ][
+                               text "Clear"
+                            ]
                         ],
                         div [
                             css [

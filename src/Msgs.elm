@@ -36,7 +36,8 @@ type Msg
     | OnSubstrateTabClick String
     | ScrollToElement String
     | OnProteoformSearch String
+    | OnPTMPPISearch String
     | ToggleCytoscapeItem CytoscapeItem
     | RemoveCytoscapeItem CytoscapeItem
-
+    | CytoscapeClearClicked
 

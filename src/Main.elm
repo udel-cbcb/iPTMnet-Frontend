@@ -165,6 +165,13 @@ update msg model =
                           |> Model.setEntryPage model
             in
             (newModel, Cmd.none)
+        Msgs.OnPTMPPISearch searchTerm ->
+            let 
+                newModel = Model.setPTMDependentPPIFilterTerm model.entryPage.ptmDependentPPIData searchTerm
+                           |> Model.setPTMDependentPPIData model.entryPage
+                           |> Model.setEntryPage model
+            in 
+            (newModel, Cmd.none)
         Msgs.OnProteoformsPPIErrorButtonClicked ->
             let 
                 newModel = Model.setShowProteoformsPPIErrorMsg (not model.entryPage.showProteoformsPPIErrorMsg) model.entryPage
@@ -196,6 +203,13 @@ update msg model =
                 |> Model.setEntryPage model
             in
                 (newModel, Cmd.none)
+        Msgs.CytoscapeClearClicked ->
+            let 
+                newModel = Model.setCytoscapeItems model.entryPage []
+                |> Model.setEntryPage model
+            in
+                (newModel, Cmd.none)
+            
 
         -- Batch
         Msgs.OnFileChange file ->

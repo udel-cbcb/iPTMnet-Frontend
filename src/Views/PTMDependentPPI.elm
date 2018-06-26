@@ -1,5 +1,6 @@
 module Views.PTMDependentPPI exposing (..)
 import Html.Styled exposing (..)
+import Html.Styled.Events 
 import Css exposing (..)
 import Html.Styled.Attributes exposing (..)
 import Msgs exposing (..)
@@ -9,6 +10,7 @@ import String.Interpolate exposing (interpolate)
 import Views.Loading
 import Views.Error
 import Misc
+import Filter
 
 -- returns the substrate view
 view: PTMDependentPPIData -> Bool -> Html Msg 
@@ -21,7 +23,7 @@ view data showErrorMsg =
         Success ->
             case (List.length data.data) of
             0 -> div [][]
-            _ ->  viewWithSection (renderPTMTable data.data)
+            _ ->  viewWithSection (renderPTMTable data.data data.filterTerm)
         Error ->
             viewWithSection (Views.Error.view data.error showErrorMsg Msgs.OnPTMDepPPIErrorButtonClicked)
 
@@ -48,10 +50,13 @@ viewWithSection childView =
                     span [css [
                         fontSize (Css.em 1.5)
                     ]][text "PTM Dependent PPI"],
-                    div [id "ptm_dep_ppi__search" ,css [
-                                                        marginLeft auto,
-                                                        alignSelf center
-                                                    ]]
+                    div [id "ptm_dep_ppi__search" ,
+                        css [
+                                marginLeft auto,
+                                alignSelf center
+                            ],
+                        Html.Styled.Events.onInput Msgs.OnPTMPPISearch
+                        ]
                     [
                         span [css [marginRight (px 10), fontSize (Css.em 1)]] [text "Search:"],
                         input [] []
@@ -60,8 +65,8 @@ viewWithSection childView =
                 childView             
             ]
 
-renderPTMTable: List (PTMDependentPPI Entity Source) -> Html Msg
-renderPTMTable ptmDependentPPIList =
+renderPTMTable: List (PTMDependentPPI Entity Source) -> String -> Html Msg
+renderPTMTable ptmDependentPPIList filterTerm =
         div [id "ptmdependentppi_table", css [
             displayFlex,
             flexDirection column,
@@ -128,7 +133,10 @@ renderPTMTable ptmDependentPPIList =
             ],
 
             -- rows
-            div [] (List.map ptmDependentPPIRow ptmDependentPPIList) 
+            div [] (List.map ptmDependentPPIRow  (case String.length filterTerm of
+                                             0 -> ptmDependentPPIList
+                                             _ -> List.filter (Filter.ptmDependentPPI filterTerm) ptmDependentPPIList)
+                   ) 
         
         ]
 
@@ -198,26 +206,30 @@ decodeResponse response =
             {
                 status = NotAsked,
                 error = "",
-                data = []
+                data = [],
+                filterTerm = ""
             }
 
         RemoteData.Loading ->
             {
                 status = Loading,
                 error = "",
-                data = []
+                data = [],
+                filterTerm = ""
             }
 
         RemoteData.Success ptmDependentPPIList ->
             {
                 status = Success,
                 error = "",
-                data = ptmDependentPPIList
+                data = ptmDependentPPIList,
+                filterTerm = ""
             }
 
         RemoteData.Failure error ->
             {
                 status = Error,
                 error = (toString error),
-                data = []
+                data = [],
+                filterTerm = ""
             }

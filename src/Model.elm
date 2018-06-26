@@ -68,7 +68,8 @@ initialModel route =
             ptmDependentPPIData = {
                 status = NotAsked,
                 error = "",
-                data = []
+                data = [],
+                filterTerm = ""
             },
             showPTMDepPPIErrorMsg = False,
             proteoformPPIData = {
@@ -228,7 +229,8 @@ type alias PTMDependentPPIData =
     {
         status: RequestState,
         error: String,
-        data: List (PTMDependentPPI Entity Source)
+        data: List (PTMDependentPPI Entity Source),
+        filterTerm : String
     }
     
 type alias ProteoformPPIData = 
@@ -271,6 +273,10 @@ setProteoforms proteoformsData newProteoforms =
 setProteoformsFilterTerm : ProteoformsData -> String -> ProteoformsData
 setProteoformsFilterTerm proteoformsData newFilterTerm =
     { proteoformsData | filterTerm = newFilterTerm, status = Success }
+
+setPTMDependentPPIFilterTerm : PTMDependentPPIData -> String -> PTMDependentPPIData
+setPTMDependentPPIFilterTerm ptmDependentPPIData newFilterTerm =
+    { ptmDependentPPIData | filterTerm = newFilterTerm, status = Success }
 
 setProteoformsData: EntryPage -> ProteoformsData -> EntryPage
 setProteoformsData entryPage newProteoformsData = 
