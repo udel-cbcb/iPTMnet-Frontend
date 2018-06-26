@@ -1,4 +1,4 @@
-module Filter exposing (proteoforms,ptmDependentPPI)
+module Filter exposing (proteoforms,ptmDependentPPI,proteoformPPI)
 import Model exposing (..)
 import String
 import List
@@ -50,6 +50,29 @@ ptmDependentPPI searchTerm ptm_dependent_ppi =
         True
     else
         False
+
+proteoformPPI: String -> (ProteoformPPI Protein Source) -> Bool
+proteoformPPI searchTerm proteoform_ppi = 
+    if String.contains (String.toLower searchTerm) (String.toLower proteoform_ppi.protein_1.pro_id) then
+        True
+    else if String.contains (String.toLower searchTerm) (String.toLower proteoform_ppi.protein_1.label) then
+        True
+    else if String.contains (String.toLower searchTerm) (String.toLower proteoform_ppi.protein_2.pro_id) then
+        True
+    else if String.contains (String.toLower searchTerm) (String.toLower proteoform_ppi.protein_2.label) then
+        True
+    else if String.contains (String.toLower searchTerm) (String.toLower proteoform_ppi.relation) then
+        True
+    else if String.contains (String.toLower searchTerm) (String.toLower proteoform_ppi.source.name) then
+        True
+    else if String.contains (String.toLower searchTerm) (String.toLower proteoform_ppi.source.label) then
+        True
+    else if String.contains (String.toLower searchTerm) (String.join "," proteoform_ppi.pmids) then
+        True
+    else
+        False
+
+
 
 
 matchString: String -> String -> Bool

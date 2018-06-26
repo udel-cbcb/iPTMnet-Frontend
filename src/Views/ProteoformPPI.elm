@@ -10,6 +10,8 @@ import String.Extra exposing (..)
 import Views.Loading
 import Views.Error
 import Misc
+import Html.Styled.Events
+import Filter
 
 -- returns the substrate view
 view: ProteoformPPIData -> Bool -> Html Msg 
@@ -22,7 +24,7 @@ view data showErrorMsg=
         Success ->
             case (List.length data.data) of
             0 -> div [][]
-            _ ->  viewWithSection (renderProteoformPPITable data.data)
+            _ ->  viewWithSection (renderProteoformPPITable data.data data.filterTerm)
         Error ->
             viewWithSection (Views.Error.view data.error showErrorMsg Msgs.OnProteoformsPPIErrorButtonClicked)
 
@@ -49,10 +51,13 @@ viewWithSection childView =
                     span [css [
                         fontSize (Css.em 1.5)
                     ]][text "ProteoformsPPI"],
-                    div [id "proteforms_ppi_search" ,css [
-                                                        marginLeft auto,
-                                                        alignSelf center
-                                                    ]]
+                    div [id "proteforms_ppi_search",
+                         css [
+                                marginLeft auto,
+                                alignSelf center
+                            ],
+                         Html.Styled.Events.onInput Msgs.OnProteoformPPISearch
+                        ]
                     [
                         span [css [marginRight (px 10), fontSize (Css.em 1)]] [text "Search:"],
                         input [] []
@@ -62,21 +67,8 @@ viewWithSection childView =
             ]
 
 
-renderView: ProteoformPPIData -> Html Msg
-renderView data =
-    case data.status of
-        NotAsked ->
-            text "No yet requested"
-        Loading ->
-            text "Loading"
-        Success ->
-            renderProteoformPPITable data.data
-        Error ->
-            text data.error
-
-
-renderProteoformPPITable: List (ProteoformPPI Protein Source) -> Html Msg
-renderProteoformPPITable proteoformPPIList =
+renderProteoformPPITable: List (ProteoformPPI Protein Source) -> String -> Html Msg
+renderProteoformPPITable proteoformPPIList filterTerm =
         div [id "proteoformppi_table", css [
             displayFlex,
             flexDirection column,
@@ -130,7 +122,10 @@ renderProteoformPPITable proteoformPPIList =
                 
             ],
             -- rows
-            div [] (List.map proteoformPPIRow proteoformPPIList) 
+            div [] (List.map proteoformPPIRow (case String.length filterTerm of
+                                             0 -> proteoformPPIList
+                                             _ -> List.filter (Filter.proteoformPPI filterTerm) proteoformPPIList)
+                    ) 
         
         ]
 
@@ -200,27 +195,31 @@ decodeResponse response =
             {
                 status = NotAsked,
                 error = "",
-                data = []
+                data = [],
+                filterTerm = ""
             }
 
         RemoteData.Loading ->
             {
                 status = Loading,
                 error = "",
-                data = []
+                data = [],
+                filterTerm = ""
             }
 
         RemoteData.Success proteoformsList ->
             {
                 status = Success,
                 error = "",
-                data = proteoformsList
+                data = proteoformsList,
+                filterTerm = ""
             }
 
         RemoteData.Failure error ->
             {
                 status = Error,
                 error = (toString error),
-                data = []
+                data = [],
+                filterTerm = ""
             }
 

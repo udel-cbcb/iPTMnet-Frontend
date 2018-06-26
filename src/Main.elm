@@ -172,6 +172,13 @@ update msg model =
                            |> Model.setEntryPage model
             in 
             (newModel, Cmd.none)
+        Msgs.OnProteoformPPISearch searchTerm ->
+            let 
+                newModel = Model.setProteoformPPIFilterTerm model.entryPage.proteoformPPIData searchTerm
+                           |> Model.setProteoformPPIData model.entryPage
+                           |> Model.setEntryPage model
+            in 
+            (newModel, Cmd.none)
         Msgs.OnProteoformsPPIErrorButtonClicked ->
             let 
                 newModel = Model.setShowProteoformsPPIErrorMsg (not model.entryPage.showProteoformsPPIErrorMsg) model.entryPage
