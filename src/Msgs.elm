@@ -37,5 +37,6 @@ type Msg
     | ScrollToElement String
     | OnProteoformSearch String
     | ToggleCytoscapeItem CytoscapeItem
+    | RemoveCytoscapeItem CytoscapeItem
 
 

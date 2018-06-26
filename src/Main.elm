@@ -190,7 +190,12 @@ update msg model =
                         |> Model.setEntryPage model
                     in
                         (newModel, Cmd.none)
-        
+        Msgs.RemoveCytoscapeItem cytoscapeItem -> 
+            let 
+                newModel = Model.setCytoscapeItems model.entryPage (List.filter (\ e -> e /= cytoscapeItem) model.entryPage.cytoscapeItems)
+                |> Model.setEntryPage model
+            in
+                (newModel, Cmd.none)
 
         -- Batch
         Msgs.OnFileChange file ->

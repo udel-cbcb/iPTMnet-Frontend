@@ -15,15 +15,15 @@ import String
 import Filter
 
 -- returns the substrate view
-view: ProteoformsData -> Bool -> Html Msg 
-view data showErrorMsg= 
+view: ProteoformsData -> (List CytoscapeItem) -> Bool ->  Html Msg 
+view data cytoscapeItems showErrorMsg= 
     case data.status of
         NotAsked ->
             div [][]
         Loading ->
             viewWithSection Views.Loading.view
         Success ->
-            viewWithSection (renderProteoformTable data.data data.filterTerm) 
+            viewWithSection (renderProteoformTable data.data data.filterTerm cytoscapeItems) 
         Error ->
             viewWithSection (Views.Error.view data.error showErrorMsg Msgs.OnProteoformsErrorButtonClicked)
         
@@ -103,8 +103,8 @@ decodeResponse response =
 
 
 
-renderProteoformTable: List (Proteoform Enzyme Source) -> String -> Html Msg
-renderProteoformTable proteoformList filterTerm =
+renderProteoformTable: List (Proteoform Enzyme Source) -> String -> (List CytoscapeItem) -> Html Msg
+renderProteoformTable proteoformList filterTerm cytoscapeItems =
         div [id "proteoforms_table", css [
             displayFlex,
             flexDirection column,
@@ -158,15 +158,15 @@ renderProteoformTable proteoformList filterTerm =
             ],
 
             -- rows
-            div [] (List.map proteoformRow (case String.length filterTerm of
+            div [] (List.map (proteoformRow cytoscapeItems) (case String.length filterTerm of
                                              0 -> proteoformList
                                              _ -> List.filter (Filter.proteoforms filterTerm) proteoformList)
                    ) 
         
         ]
 
-proteoformRow: (Proteoform Enzyme Source) -> Html Msg
-proteoformRow proteoform = 
+proteoformRow: (List CytoscapeItem) -> (Proteoform Enzyme Source) -> Html Msg
+proteoformRow cytoscapeItems proteoform = 
     div [css [
         displayFlex,
         flexDirection row,
@@ -181,12 +181,19 @@ proteoformRow proteoform =
                   marginRight (px 20)
                  ]] 
         [
-            input [
-                type_ "checkbox",
-                css[marginLeft (px 5),
-                    marginRight (px 10)],
-                onClick (Msgs.ToggleCytoscapeItem {id_1 = proteoform.pro_id ,id_2 = proteoform.ptm_enzyme.pro_id,item_type = "pro" })
-                ][],
+            (
+                let
+                    cytoscapeItem = {id_1 = proteoform.pro_id ,id_2 = proteoform.ptm_enzyme.pro_id,item_type = "pro" } 
+                    isChecked = List.member cytoscapeItem cytoscapeItems
+                in
+                    input [
+                        type_ "checkbox",
+                        css[marginLeft (px 5),
+                            marginRight (px 10)],
+                        onClick (Msgs.ToggleCytoscapeItem cytoscapeItem),
+                        Html.Styled.Attributes.checked isChecked
+                ][]
+            ),
             a [href (interpolate "http://purl.obolibrary.org/obo/{0}" [(replace ":" "_" proteoform.pro_id )]), Html.Styled.Attributes.target "_blank"] [text proteoform.pro_id],
             span [] [text (interpolate " ({0})" [proteoform.label])]
         ],
@@ -226,4 +233,3 @@ buildEnzyme entity =
         [
 
         ]
-
