@@ -14,6 +14,8 @@ import Views.ProteoformPPI
 import Views.Navbar
 import Views.Footer
 import String.Interpolate exposing (interpolate)
+import Json.Encode exposing (string)
+import Colors
 
 -- css
 sideBarItemCSS: List Style
@@ -191,14 +193,40 @@ view model =
 buildCytoscapeItem : CytoscapeItem -> Html Msg
 buildCytoscapeItem cytoscapeItem =
     div[css [
-        padding (px 8),
         marginTop (px 5),
         marginBottom (px 5),
         backgroundColor (hex "#c7c9cc" ),
         borderRadius (px 20),
-        fontSize (Css.em 0.85)
+        displayFlex,
+        flexDirection row,
+        alignItems center
     ]][
-        text (interpolate "{0} - {1}" [cytoscapeItem.id_1,cytoscapeItem.id_2])
+        div [
+            css [
+                marginLeft (px 15),
+                fontSize (Css.em 0.85)
+            ]
+        ][
+            text (interpolate "{0} - {1}" [cytoscapeItem.id_1,cytoscapeItem.id_2])
+        ],
+        div [
+            css [
+                fontFamilies ["Ionicons"],
+                fontSize (Css.em 1.5),
+                marginTop (px 5),
+                marginBottom (px 5),
+                marginLeft auto,
+                marginRight (px 10),
+                hover [
+                    cursor pointer,
+                    fontSize (Css.em 1.6)
+                ]
+            ]
+        ][
+            span [ 
+                Html.Styled.Attributes.property "innerHTML" (string "&#xf36e;")
+                ][]
+        ]
     ]
 
 

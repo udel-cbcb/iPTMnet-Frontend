@@ -53,8 +53,7 @@ view model =
                 div [
                     id "header_image",
                     css [
-                        Css.height (px 0),
-                        backgroundColor (hex "#f2f2f2")
+                        Css.height (px 0)
                     ]
                 ][
                     
