@@ -152,6 +152,13 @@ update msg model =
                           |> Model.setEntryPage model
             in
             (newModel, Cmd.none)
+        Msgs.OnSubstrateSearch searchTerm ->
+            let 
+                newModel = Model.setSubstrateFilterTerm model.entryPage.substrateData searchTerm
+                           |> Model.setSubstrateData model.entryPage
+                           |> Model.setEntryPage model
+            in 
+            (newModel, Cmd.none)
         Msgs.OnProteoformSearch searchTerm ->
             let 
                 newModel = Model.setProteoformsFilterTerm model.entryPage.proteoformsData searchTerm

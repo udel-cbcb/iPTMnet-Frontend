@@ -86,7 +86,8 @@ initialModel route =
                 tabData = {
                     tabs = ["Substrate 1", "Substrate 2", "Substrate 3"],
                     selectedTab = ""
-                }
+                },
+                filterTerm = ""
             },
             showSubstrateErrorMsg = False
 
@@ -247,7 +248,8 @@ type alias SubstrateData =
         status: RequestState,
         error: String,
         data: Dict String (List (Substrate Source SubstrateEnzyme)),
-        tabData: TabData
+        tabData: TabData,
+        filterTerm: String
     }
 
 type alias TabData =
@@ -327,6 +329,10 @@ setSelectedSubstrateTab newSelectedTab tabData =
 setSubstrateTabData: SubstrateData -> TabData -> SubstrateData
 setSubstrateTabData substrateData newTabData =
     { substrateData | tabData = newTabData}
+
+setSubstrateFilterTerm : SubstrateData -> String -> SubstrateData
+setSubstrateFilterTerm substrateData newFilterTerm =
+    { substrateData | filterTerm = newFilterTerm, status = Success }
 
 
 type alias Info = 

@@ -1,4 +1,4 @@
-module Filter exposing (proteoforms,ptmDependentPPI,proteoformPPI)
+module Filter exposing (proteoforms,ptmDependentPPI,proteoformPPI,substrate)
 import Model exposing (..)
 import String
 import List
@@ -72,7 +72,42 @@ proteoformPPI searchTerm proteoform_ppi =
     else
         False
 
+substrate: String -> (Substrate Source SubstrateEnzyme) -> Bool
+substrate searchTerm substrate_item = 
+    if String.contains (String.toLower searchTerm) (String.toLower substrate_item.residue) then
+        True
+    else if String.contains (String.toLower searchTerm) (String.toLower substrate_item.site) then
+        True
+    else if String.contains (String.toLower searchTerm) (String.toLower substrate_item.ptm_type) then
+        True
+    else if List.length (List.filter (enzyme searchTerm) substrate_item.enzymes) > 0 then
+        True
+    else if List.length (List.filter (source searchTerm) substrate_item.sources) > 0 then
+        True
+    else if String.contains (String.toLower searchTerm) (String.join "," substrate_item.pmids) then
+        True  
+    else 
+        False
 
+enzyme: String -> SubstrateEnzyme -> Bool
+enzyme searchTerm enzyme =
+    if String.contains (String.toLower searchTerm) (String.toLower enzyme.enz_type) then
+        True
+    else if String.contains (String.toLower searchTerm) (String.toLower enzyme.name) then
+        True
+    else if String.contains (String.toLower searchTerm) (String.toLower enzyme.id) then
+        True   
+    else
+        False
+
+source: String -> Source -> Bool
+source searchTerm source = 
+    if String.contains (String.toLower searchTerm) (String.toLower source.name) then
+        True
+    else if String.contains (String.toLower searchTerm) (String.toLower source.label) then
+        True
+    else
+        False
 
 
 matchString: String -> String -> Bool

@@ -14,6 +14,8 @@ import Views.Tabs
 import Views.Score
 import Styles.Generic
 import Misc
+import Html.Styled.Events
+import Filter
 
 -- returns the substrate view
 view: SubstrateData -> String -> String -> Bool -> Html Msg 
@@ -24,7 +26,7 @@ view  data entryID geneName showErrorMsg =
         Loading ->
             viewWithSection Views.Loading.view entryID geneName
         Success ->
-            viewWithSection (renderSubstrateTable data) entryID geneName
+            viewWithSection (renderSubstrateTable data ) entryID geneName
         Error ->
             viewWithSection (Views.Error.view data.error showErrorMsg Msgs.OnSubstrateErrorButtonClicked) entryID geneName
 
@@ -47,19 +49,6 @@ viewWithSection childView entryID geneName =
                 childView
             
         ]
-
-
-renderView: SubstrateData -> Html Msg
-renderView data =
-    case data.status of
-        NotAsked ->
-            text "No yet requested"
-        Loading ->
-            text "Loading"
-        Success ->
-            renderSubstrateTable data
-        Error ->
-            text data.error
 
 renderSubstrateTable: Model.SubstrateData -> Html Msg
 renderSubstrateTable substrateData =
@@ -121,10 +110,13 @@ renderSubstrateTable substrateData =
                 ]
             ][
                 
-                div [id "substrate_search" ,css [
-                                                marginLeft auto,
-                                                alignSelf center
-                                                ]]
+                div [id "substrate_search",
+                    css [
+                            marginLeft auto,
+                            alignSelf center
+                        ],
+                    Html.Styled.Events.onInput Msgs.OnSubstrateSearch
+                ]
                     [
                         span [css [marginRight (px 10), fontSize (Css.em 1)]] [text "Search:"],
                         input [] []
@@ -195,8 +187,13 @@ renderSubstrateTable substrateData =
             ],
             -- rows
             case Dict.get substrateData.tabData.selectedTab substrateData.data of 
-                Just substrates -> 
-                    div [] (List.map substrateRow substrates) 
+                Just substrates ->
+                    let
+                        filteredList = (case String.length substrateData.filterTerm of
+                                             0 -> substrates
+                                             _ -> List.filter (Filter.substrate substrateData.filterTerm) substrates)
+                    in 
+                        div [] (List.map substrateRow filteredList) 
                 Nothing -> 
                     div [] []
         ]
@@ -287,7 +284,8 @@ decodeResponse response =
                 tabData = {
                     tabs = ["Substrate 1", "Substrate 2", "Substrate 3"],
                     selectedTab = ""
-                }
+                },
+                filterTerm = ""
             }
 
         RemoteData.Loading ->
@@ -298,7 +296,8 @@ decodeResponse response =
                 tabData = {
                     tabs = ["Substrate 1", "Substrate 2", "Substrate 3"],
                     selectedTab = ""
-                }
+                },
+                filterTerm = ""
             }
 
         RemoteData.Success substrateTable ->
@@ -311,7 +310,8 @@ decodeResponse response =
                     selectedTab = Dict.keys substrateTable
                                   |> List.head 
                                   |> Maybe.withDefault ""
-                }
+                },
+                filterTerm = ""
             }
 
         RemoteData.Failure error ->
@@ -322,7 +322,8 @@ decodeResponse response =
                 tabData = {
                     tabs = ["Substrate 1", "Substrate 2", "Substrate 3"],
                     selectedTab = ""
-                }
+                },
+                filterTerm = ""
             }
 
 

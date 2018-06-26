@@ -35,6 +35,7 @@ type Msg
     | OnProteoformsPPIErrorButtonClicked
     | OnSubstrateTabClick String
     | ScrollToElement String
+    | OnSubstrateSearch String
     | OnProteoformSearch String
     | OnPTMPPISearch String
     | OnProteoformPPISearch String
