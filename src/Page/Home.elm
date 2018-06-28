@@ -399,23 +399,17 @@ view model =
                         ]
                     ] [
                         div [
+                            css [
+                                color Colors.miscText,
+                                paddingRight (px 20),
+                                textDecoration underline,
+                                hover [
+                                    cursor pointer
+                                ]
+                            ],
                             onClick (Msgs.OnAdvancedSearchVisibilityChange (not model.homePage.advancedSearchVisibility))
                         ][
-                            a [
-                                href "#",
-                                css[
-                                    marginRight (px 20),
-                                    link [
-                                        color Colors.miscText
-                                    ],
-                                    visited [
-                                        color Colors.miscText
-                                    ]
-                                ]
-                            ]
-                                [
-                                    text "Advanced search"
-                            ]
+                            text "Advanced search"
                         ],
                         a [
                             href "/entry/Q15796",
