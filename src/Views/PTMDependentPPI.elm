@@ -11,10 +11,11 @@ import Views.Loading
 import Views.Error
 import Misc
 import Filter
+import Html.Styled.Events exposing (..)
 
 -- returns the substrate view
-view: PTMDependentPPIData -> Bool -> Html Msg 
-view data showErrorMsg = 
+view: PTMDependentPPIData -> (List CytoscapeItem) -> Bool -> Html Msg 
+view data cytoscapeItems showErrorMsg = 
     case data.status of
         NotAsked ->
             div [][]
@@ -23,7 +24,7 @@ view data showErrorMsg =
         Success ->
             case (List.length data.data) of
             0 -> div [][]
-            _ ->  viewWithSection (renderPTMTable data.data data.filterTerm)
+            _ ->  viewWithSection (renderPTMTable data.data data.filterTerm cytoscapeItems)
         Error ->
             viewWithSection (Views.Error.view data.error showErrorMsg Msgs.OnPTMDepPPIErrorButtonClicked)
 
@@ -65,8 +66,8 @@ viewWithSection childView =
                 childView             
             ]
 
-renderPTMTable: List (PTMDependentPPI Entity Source) -> String -> Html Msg
-renderPTMTable ptmDependentPPIList filterTerm =
+renderPTMTable: List (PTMDependentPPI Entity Source) -> String -> (List CytoscapeItem) -> Html Msg
+renderPTMTable ptmDependentPPIList filterTerm cytoscapeItems =
         div [id "ptmdependentppi_table", css [
             displayFlex,
             flexDirection column,
@@ -133,15 +134,15 @@ renderPTMTable ptmDependentPPIList filterTerm =
             ],
 
             -- rows
-            div [] (List.map ptmDependentPPIRow  (case String.length filterTerm of
+            div [] (List.map (ptmDependentPPIRow cytoscapeItems) (case String.length filterTerm of
                                              0 -> ptmDependentPPIList
                                              _ -> List.filter (Filter.ptmDependentPPI filterTerm) ptmDependentPPIList)
                    ) 
         
         ]
 
-ptmDependentPPIRow: (PTMDependentPPI Entity Source) -> Html Msg
-ptmDependentPPIRow ptmdependentppi = 
+ptmDependentPPIRow: (List CytoscapeItem) -> (PTMDependentPPI Entity Source) -> Html Msg
+ptmDependentPPIRow cytoscapeItems ptmdependentppi = 
     div [css [
         displayFlex,
         flexDirection row,
@@ -156,7 +157,19 @@ ptmDependentPPIRow ptmdependentppi =
                   marginRight (px 20)
                  ]] 
         [
-            input [type_ "checkbox", css[marginLeft (px 5), marginRight (px 10)]][],
+            (
+                let
+                    cytoscapeItem = {id_1 = ptmdependentppi.substrate.uniprot_id ,id_2 = ptmdependentppi.interactant.uniprot_id,item_type = "ptm_ppi" } 
+                    isChecked = List.member cytoscapeItem cytoscapeItems
+                in
+                    input [
+                        type_ "checkbox",
+                        css[marginLeft (px 5),
+                            marginRight (px 10)],
+                        onClick (Msgs.ToggleCytoscapeItem cytoscapeItem),
+                        Html.Styled.Attributes.checked isChecked
+                ][]
+            ),
             span [] [text (interpolate " {0}" [ptmdependentppi.ptm_type])]
         ],
         div [css [flex (num 1),

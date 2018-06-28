@@ -173,7 +173,17 @@ enzymeResultRow enzyme =
                             marginRight (px 20)
                             ]]
                     [
-                        div [] (List.map buildPMID enzyme.pmids |> List.intersperse (span [css [display inline]] [text ",  "]))
+                        div [] (case (List.length enzyme.pmids) > 3 of
+                                    False -> 
+                                        (List.map buildPMID enzyme.pmids |> List.intersperse (span [css [display inline]] [text ",  "]))
+                                    True ->
+                                        let 
+                                            trimmed_list = (List.take 3 enzyme.pmids) ++ ["..."]
+                                                           |> List.map buildPMID
+                                                           |> List.intersperse (span [css [display inline]] [text ",  "])
+                                        in 
+                                            trimmed_list
+                                )
                     ]
 
                                      
