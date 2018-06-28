@@ -15,8 +15,8 @@ import Views.Navbar
 import Views.Footer
 import String.Interpolate exposing (interpolate)
 import Json.Encode exposing (string)
-import Styles.Generic
 import Colors
+import String.Extra
 
 -- css
 sideBarItemCSS: List Style
@@ -186,8 +186,33 @@ view model =
                                 displayFlex,
                                 flexDirection column
                             ]
-                        ](List.map buildCytoscapeItem model.entryPage.cytoscapeItems)
-                    ]
+                        ](List.map buildCytoscapeItem model.entryPage.cytoscapeItems),
+
+                        a [
+                             id "btn_submit",
+                             css [
+                                    marginTop (px 10),
+                                    marginBottom (px 10),
+                                    marginLeft auto,
+                                    marginRight (px 10),
+                                    fontSize (Css.em 0.85),
+                                    color Colors.navigationText,
+                                    backgroundColor Colors.headerBlack,
+                                    paddingTop (px 5),
+                                    paddingBottom (px 5),
+                                    paddingRight (px 10),
+                                    paddingLeft (px 10),
+                                    borderRadius (px 5),
+                                    hover [
+                                        cursor pointer
+                                    ]
+                                ],
+                            href (buildCystoscapeURL model.entryPage.cytoscapeItems),
+                            Html.Styled.Attributes.target "_blank"
+                            ][
+                               text "Submit"
+                            ]
+                        ]
                     ]
                     
                 ],
@@ -260,6 +285,28 @@ buildCytoscapeItem cytoscapeItem =
                 ][]
         ]
     ]
+
+buildCystoscapeURL: (List CytoscapeItem) -> String
+buildCystoscapeURL cytoscapeItems =
+    let 
+      cytoscapeItemString = List.map buildCystoscapeURLItem cytoscapeItems
+                             |> String.join "%2C" 
+      cytoscapeURL = "https://research.bioinformatics.udel.edu/iptmnet/visual/cytoscape/event/" ++ cytoscapeItemString
+    in 
+      cytoscapeURL
+
+buildCystoscapeURLItem: CytoscapeItem -> String
+buildCystoscapeURLItem cytoscapeItem =
+    if cytoscapeItem.item_type == "pro" then
+        let
+            id1 = String.Extra.replace ":" "%3A" cytoscapeItem.id_1
+            id2 = String.Extra.replace ":" "%3A" cytoscapeItem.id_2
+            cytoscapeItemString = "pro" ++ id1 ++ "%26" ++ id2
+        in
+            cytoscapeItemString
+    else 
+        ""
+
 
 
 

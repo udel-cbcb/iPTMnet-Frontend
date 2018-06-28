@@ -222,7 +222,7 @@ update msg model =
                 newModel = Model.setCytoscapeItems model.entryPage []
                 |> Model.setEntryPage model
             in
-                (newModel, Cmd.none)
+                (newModel, Cmd.none)      
             
 
         -- Batch
