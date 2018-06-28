@@ -59,8 +59,37 @@ update msg model =
 
         -- Home Page
         Msgs.OnHomePageSearchInputChange newContent ->
-            let newModel = Model.setSearchInput model.homePage newContent
+            let newModel = Model.setSearchInput model.homePage.searchOptions newContent
+                           |> Model.setSearchOptions model.homePage
                            |> Model.setHomePage model
+            in
+                (newModel, Cmd.none)
+        Msgs.SetSelectedPTMTypes ptm_types -> 
+            let
+                newModel = Model.setSelectedPTMTypes model.homePage.searchOptions ptm_types
+                           |> Model.setSearchOptions model.homePage
+                           |> Model.setHomePage model
+            in
+                (newModel, Cmd.none)
+        Msgs.SetSelectedTaxons taxons -> 
+            let
+                newModel = Model.setSelectedTaxons model.homePage.searchOptions taxons
+                           |> Model.setSearchOptions model.homePage
+                           |> Model.setHomePage model
+            in
+                (newModel, Cmd.none)
+        Msgs.OnTermTypeSelected newTermType ->
+            let
+                newModel = Model.setSearchTermType model.homePage.searchOptions newTermType
+                            |> Model.setSearchOptions model.homePage
+                            |> Model.setHomePage model
+            in
+                (newModel,Cmd.none)    
+        Msgs.OnTaxonsUserInput newTaxons -> 
+            let 
+                newModel = Model.setOrganismsUser model.homePage.searchOptions newTaxons
+                            |> Model.setSearchOptions model.homePage
+                            |> Model.setHomePage model        
             in
                 (newModel, Cmd.none)
 
@@ -70,6 +99,13 @@ update msg model =
                           |> Model.setHomePage model
             in
                 (newModel, Cmd.none)
+        Msgs.SearchRoleChanged new_role ->
+            let 
+                newModel = Model.setSearchRole model.homePage.searchOptions new_role
+                           |> Model.setSearchOptions model.homePage
+                           |> Model.setHomePage model                           
+            in     
+                (newModel, Cmd.none)   
 
         -- Search Page
         Msgs.OnFetchSearchResults response -> 

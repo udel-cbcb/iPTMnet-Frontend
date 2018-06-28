@@ -16,7 +16,7 @@ view model =
             flexDirection column]] 
             [  
 
-            Views.Navbar.view model,
+            Views.Navbar.view model.navbar,
 
             case model.batchPage.outputType of
                 Model.Enzymes ->
@@ -184,10 +184,7 @@ enzymeResultRow enzyme =
                                         in 
                                             trimmed_list
                                 )
-                    ]
-
-                                     
-
+                    ]                                   
 
                 ]
 

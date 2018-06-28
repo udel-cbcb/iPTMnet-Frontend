@@ -46,7 +46,7 @@ view model =
             ]] 
             [  
 
-            Views.Navbar.view model,
+            Views.Navbar.view model.navbar,
 
             div [id "content",css [
                     displayFlex,

@@ -23,7 +23,7 @@ view model =
                     Css.property "min-height" "100%"
                 ]] [  
 
-                Views.Navbar.view model,
+                Views.Navbar.view model.navbar,
 
                 (case model.searchPage.searchData.status of 
                 NotAsked ->
@@ -367,7 +367,7 @@ viewSearchTable model =
                     ],
 
                     -- rows
-                    div [] (List.map searchResultRow (Debug.log "search_results" model.searchPage.searchData.data))               
+                    div [] (List.map searchResultRow model.searchPage.searchData.data)               
 
                 ]
 

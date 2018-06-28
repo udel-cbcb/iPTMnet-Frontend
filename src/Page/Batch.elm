@@ -30,7 +30,7 @@ view model =
             [  
             
                 -- header
-                Views.Navbar.view model,
+                Views.Navbar.view model.navbar,
 
                 -- content
                 div [id "content", css [

@@ -20,8 +20,8 @@ navBarItemCSS =
          fontSize (px 13)
         ]
 
-view: Model -> Html Msg
-view model = 
+view: Model.Navbar -> Html Msg
+view navbar = 
         div [
             id "nav_bar_container",
             css [
@@ -236,7 +236,7 @@ view model =
                                     backgroundColor Colors.selectBackgroundHover
                                 ]
                             ],
-                            Html.Styled.Events.onClick (Msgs.OnAdvancedSearchVisibilityChange (not model.homePage.advancedSearchVisibility))
+                            Html.Styled.Events.onClick (Msgs.OnAdvancedSearchVisibilityChange (not navbar.advancedSearchVisibility))
                         ][
                             div [
                                 css [
@@ -256,7 +256,7 @@ view model =
                     backgroundColor Colors.advancedSearchExpandBackground
                 ]
             ][
-                Views.AdvancedSearch.view model True
+                Views.AdvancedSearch.view navbar.searchOptions navbar.isSearchVisible True
             ]
             
         ]

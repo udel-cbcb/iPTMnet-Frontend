@@ -4,7 +4,7 @@ import Css exposing (..)
 import Html.Styled.Attributes exposing (..)
 import Model exposing (..)
 import Msgs exposing (..)
-import Html.Styled.Events exposing (onClick,onWithOptions)
+import Html.Styled.Events exposing (onClick,onWithOptions,on)
 import Json.Decode as Decode
 import String.Interpolate exposing (interpolate)
 import Colors exposing (..)
@@ -28,9 +28,44 @@ onLinkClick message =
     in
         onWithOptions "click" options (Decode.succeed message)
 
-buildSearchUrl: HomePage -> String
-buildSearchUrl homePage =
-    interpolate "/search/search_term={0}&term_type=All&role=Enzyme%20or%20Substrate" [homePage.searchInput]
+buildPTMType: String -> String
+buildPTMType ptm_type =
+    interpolate "ptm_type={0}" [ptm_type]
+
+buildOrganism: String -> String
+buildOrganism organism = 
+    interpolate "organism={0}" [organism]
+
+isNotEmpty : String -> Bool
+isNotEmpty string =
+    not (String.Extra.isBlank string) 
+
+buildSearchUrl: SearchOptions -> String
+buildSearchUrl searchOptions =
+    let
+        ptm_types = case (List.length searchOptions.ptm_types) > 0 of
+                        True -> interpolate "&{0}" [(String.join "&" (List.map buildPTMType searchOptions.ptm_types))]
+                        False -> ""
+        
+        taxon_codes = searchOptions.organisms_defaults
+                      ++ 
+                      (
+                        String.Extra.clean searchOptions.organisms_user  
+                        |> String.split ","
+                        |> List.map String.Extra.clean
+                        |> List.filter isNotEmpty 
+                      )
+                       
+        taxons = case (List.length taxon_codes) > 0 of 
+                            True -> interpolate "&{0}" [(String.join "&" (List.map buildOrganism taxon_codes))] 
+                            False -> ""
+
+    in
+        interpolate "/search/search_term={0}&term_type={1}&role={2}{3}{4}" [searchOptions.searchTerm,
+                                                                            searchOptions.searchTermType,
+                                                                            searchOptions.role,
+                                                                            ptm_types,
+                                                                            taxons]
 
 view : Model -> Html Msg
 view model =
@@ -327,8 +362,9 @@ view model =
                                 ],
                                 hover [
                                     cursor pointer
-                                ]
-                            ]][
+                                ] 
+                            ]
+                            ][
                                 option [value "all",css[color Colors.infoText]][text "All"],
                                 option [value "uniprot",css[color Colors.infoText]] [text "Uniprot AC/ID"],
                                 option [value "name",css[color Colors.infoText]] [text "Protein/Gene Name"],
@@ -347,7 +383,7 @@ view model =
                 ],
 
                 -- advanced search
-                Views.AdvancedSearch.view model False,
+                Views.AdvancedSearch.view model.homePage.searchOptions model.homePage.advancedSearchVisibility False,
 
                 -- misc
                     div [
@@ -362,19 +398,24 @@ view model =
                             color Colors.miscText
                         ]
                     ] [
-                        a [
-                            href "#",
-                            css[
-                                marginRight (px 20),
-                                link [
-                                    color Colors.miscText
-                                ],
-                                visited [
-                                    color Colors.miscText
+                        div [
+                            onClick (Msgs.OnAdvancedSearchVisibilityChange (not model.homePage.advancedSearchVisibility))
+                        ][
+                            a [
+                                href "#",
+                                css[
+                                    marginRight (px 20),
+                                    link [
+                                        color Colors.miscText
+                                    ],
+                                    visited [
+                                        color Colors.miscText
+                                    ]
                                 ]
-                            ]]
-                            [
-                                text "Advanced search"
+                            ]
+                                [
+                                    text "Advanced search"
+                            ]
                         ],
                         a [
                             href "/entry/Q15796",
@@ -421,8 +462,8 @@ view model =
                     ][
                         button [
                             id "btn_search",
-                            onClick ( case (String.Extra.clean model.homePage.searchInput) == "" of 
-                                      False -> ChangeLocation (buildSearchUrl model.homePage)
+                            onClick ( case (String.Extra.clean model.homePage.searchOptions.searchTerm) == "" of 
+                                      False -> ChangeLocation (buildSearchUrl model.homePage.searchOptions)
                                       True -> ChangeLocation "/"),
                             css [
                                 backgroundColor Colors.searchButton,

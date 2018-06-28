@@ -42,4 +42,9 @@ type Msg
     | ToggleCytoscapeItem CytoscapeItem
     | RemoveCytoscapeItem CytoscapeItem
     | CytoscapeClearClicked
+    | SetSelectedPTMTypes (List String)
+    | SearchRoleChanged String
+    | SetSelectedTaxons (List String)
+    | OnTermTypeSelected String
+    | OnTaxonsUserInput String
 

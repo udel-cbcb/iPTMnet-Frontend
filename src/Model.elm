@@ -16,14 +16,15 @@ type RequestState =
 
 url : String
 url = 
-    "https://research.bioinformatics.udel.edu/iptmnet/api"
-    -- "http://localhost:8088"
+    -- "https://research.bioinformatics.udel.edu/iptmnet/api"
+    "http://localhost:8088"
 
 
 
 type alias Model =
     {
         route: Routing.Route,
+        navbar: Navbar,
         searchPage: SearchPage,
         homePage: HomePage,
         entryPage: EntryPage,
@@ -34,9 +35,27 @@ initialModel : Routing.Route -> Model
 initialModel route = 
     { 
         route = route,
-
+        navbar = {
+            searchOptions = {
+                searchTerm = "",
+                searchTermType = "",
+                ptm_types = [],
+                role = "Enzyme or Substrate",
+                organisms_defaults = [],
+                organisms_user = ""
+            },
+            isSearchVisible = False,
+            advancedSearchVisibility = False
+        },
         homePage = {
-            searchInput = "",
+            searchOptions = {
+                searchTerm = "",
+                searchTermType = "All",
+                ptm_types = [],
+                role = "Enzyme or Substrate",
+                organisms_defaults = [],
+                organisms_user = ""
+            },
             advancedSearchVisibility = False
         },
 
@@ -110,10 +129,18 @@ initialModel route =
         }
     }
 
+-- Nav bar
+type alias Navbar = 
+    {
+        searchOptions: SearchOptions,
+        isSearchVisible: Bool,
+        advancedSearchVisibility: Bool
+    }
+
 -- Home page
 type alias HomePage = 
     {
-        searchInput: String,
+        searchOptions: SearchOptions,
         advancedSearchVisibility: Bool
     }
 
@@ -121,13 +148,48 @@ setHomePage : Model -> HomePage -> Model
 setHomePage model newHomePage = 
     { model | homePage = newHomePage}
 
-setSearchInput: HomePage -> String -> HomePage
-setSearchInput homePage newInput =
-    { homePage | searchInput = newInput }
+setSearchOptions : HomePage -> SearchOptions -> HomePage
+setSearchOptions homePage newSearchOptions = 
+    { homePage | searchOptions = newSearchOptions }
+
+setSelectedPTMTypes : SearchOptions -> (List String) -> SearchOptions
+setSelectedPTMTypes searchOptions selected_ptms = 
+    {searchOptions | ptm_types = selected_ptms}
+
+setSelectedTaxons : SearchOptions -> (List String) -> SearchOptions
+setSelectedTaxons searchOptions selected_taxons = 
+    {searchOptions | organisms_defaults = selected_taxons}
+
+setSearchRole : SearchOptions -> String -> SearchOptions
+setSearchRole searchOptions new_role =
+    {searchOptions | role = new_role}
+
+setSearchTermType : SearchOptions -> String -> SearchOptions
+setSearchTermType searchOptions new_term_type =
+    {searchOptions | searchTermType = new_term_type}
+
+setOrganismsUser : SearchOptions -> String -> SearchOptions
+setOrganismsUser searchOptions new_taxons =
+    {searchOptions | organisms_user = new_taxons}
+
+setSearchInput: SearchOptions -> String -> SearchOptions
+setSearchInput searchOptions newInput =
+    { searchOptions | searchTerm = newInput }
 
 setHomePageAdvancedSearchVisibility: Bool -> HomePage -> HomePage
 setHomePageAdvancedSearchVisibility is_visible homePage =
     {homePage | advancedSearchVisibility = is_visible}
+
+
+type alias SearchOptions = 
+    {
+        searchTerm : String,
+        searchTermType : String,
+        ptm_types : (List String),
+        role : String,
+        organisms_defaults: (List String),
+        organisms_user: String
+    }
 
 -- Search page
 type alias SearchPage = 
