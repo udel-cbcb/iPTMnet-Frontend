@@ -229,7 +229,7 @@ view model =
                     Views.Substrate.view model.entryPage.substrateData model.entryPage.infoData.data.uniprot_ac model.entryPage.infoData.data.gene_name model.entryPage.showSubstrateErrorMsg,
                     Views.Proteoforms.view model.entryPage.proteoformsData model.entryPage.cytoscapeItems model.entryPage.showProteoformsErrorMsg,
                     Views.PTMDependentPPI.view model.entryPage.ptmDependentPPIData model.entryPage.showPTMDepPPIErrorMsg,
-                    Views.ProteoformPPI.view model.entryPage.proteoformPPIData model.entryPage.showProteoformsPPIErrorMsg
+                    Views.ProteoformPPI.view model.entryPage.proteoformPPIData model.entryPage.cytoscapeItems model.entryPage.showProteoformsPPIErrorMsg
                 ]
             ],
 
@@ -302,6 +302,13 @@ buildCystoscapeURLItem cytoscapeItem =
             id1 = String.Extra.replace ":" "%3A" cytoscapeItem.id_1
             id2 = String.Extra.replace ":" "%3A" cytoscapeItem.id_2
             cytoscapeItemString = "pro" ++ id1 ++ "%26" ++ id2
+        in
+            cytoscapeItemString
+    else if cytoscapeItem.item_type == "pro_ppi" then
+        let
+            id1 = String.Extra.replace ":" "%3A" cytoscapeItem.id_1
+            id2 = String.Extra.replace ":" "%3A" cytoscapeItem.id_2
+            cytoscapeItemString = "paf" ++ id1 ++ "%26" ++ id2
         in
             cytoscapeItemString
     else 

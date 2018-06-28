@@ -12,10 +12,11 @@ import Views.Error
 import Misc
 import Html.Styled.Events
 import Filter
+import Html.Styled.Events exposing (..)
 
 -- returns the substrate view
-view: ProteoformPPIData -> Bool -> Html Msg 
-view data showErrorMsg= 
+view: ProteoformPPIData -> (List CytoscapeItem) -> Bool -> Html Msg 
+view data cytoscapeItems showErrorMsg= 
     case data.status of
         NotAsked ->
             div [][]
@@ -24,7 +25,7 @@ view data showErrorMsg=
         Success ->
             case (List.length data.data) of
             0 -> div [][]
-            _ ->  viewWithSection (renderProteoformPPITable data.data data.filterTerm)
+            _ ->  viewWithSection (renderProteoformPPITable data.data data.filterTerm cytoscapeItems)
         Error ->
             viewWithSection (Views.Error.view data.error showErrorMsg Msgs.OnProteoformsPPIErrorButtonClicked)
 
@@ -67,8 +68,8 @@ viewWithSection childView =
             ]
 
 
-renderProteoformPPITable: List (ProteoformPPI Protein Source) -> String -> Html Msg
-renderProteoformPPITable proteoformPPIList filterTerm =
+renderProteoformPPITable: List (ProteoformPPI Protein Source) -> String -> (List CytoscapeItem) -> Html Msg
+renderProteoformPPITable proteoformPPIList filterTerm cytoscapeItems =
         div [id "proteoformppi_table", css [
             displayFlex,
             flexDirection column,
@@ -122,15 +123,15 @@ renderProteoformPPITable proteoformPPIList filterTerm =
                 
             ],
             -- rows
-            div [] (List.map proteoformPPIRow (case String.length filterTerm of
+            div [] (List.map (proteoformPPIRow cytoscapeItems) (case String.length filterTerm of
                                              0 -> proteoformPPIList
                                              _ -> List.filter (Filter.proteoformPPI filterTerm) proteoformPPIList)
                     ) 
         
         ]
 
-proteoformPPIRow: (ProteoformPPI Protein Source) -> Html Msg
-proteoformPPIRow proteoformPPI = 
+proteoformPPIRow: (List CytoscapeItem) -> (ProteoformPPI Protein Source) -> Html Msg
+proteoformPPIRow cytoscapeItems proteoformPPI = 
     div [css [
         displayFlex,
         flexDirection row,
@@ -146,7 +147,19 @@ proteoformPPIRow proteoformPPI =
                           paddingLeft (px 5)
                     ]]
                 [
-                    input [type_ "checkbox", css[marginLeft (px 5), marginRight (px 10)]][],
+                    (
+                        let
+                            cytoscapeItem = {id_1 = proteoformPPI.protein_1.pro_id ,id_2 = proteoformPPI.protein_2.pro_id,item_type = "pro_ppi" } 
+                            isChecked = List.member cytoscapeItem cytoscapeItems
+                        in
+                            input [
+                                type_ "checkbox",
+                                css[marginLeft (px 5),
+                                    marginRight (px 10)],
+                                onClick (Msgs.ToggleCytoscapeItem cytoscapeItem),
+                                Html.Styled.Attributes.checked isChecked
+                        ][]
+                    ),
                     a [href (interpolate "http://purl.obolibrary.org/obo/{0}" [(replace ":" "_" proteoformPPI.protein_1.pro_id )]), Html.Styled.Attributes.target "_blank"] [text proteoformPPI.protein_1.pro_id],
                     span [] [text (interpolate " ({0})" [proteoformPPI.protein_1.label])]
                 ],
