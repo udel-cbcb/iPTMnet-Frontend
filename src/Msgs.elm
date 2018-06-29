@@ -21,7 +21,7 @@ type Msg
     | OnFetchSearchResults (WebData (List (SearchResult Organism)))
     | OnFileChange (List NativeFile)
     | OnFileContent (Result FileReader.Error String)
-    | OnFetchBatchEnzymes  (WebData (List (BatchEnzyme Entity Source)))
+    | OnFetchBatchEnzymes  (WebData (List BatchEnzyme))
     | OnFetchBatchPTMPPI  (WebData (List (BatchPTMPPI Entity Source)))
     | SwitchBatchOutput Model.Output
     | OnBatchInputChanged String
@@ -47,4 +47,5 @@ type Msg
     | SetSelectedTaxons (List String)
     | OnTermTypeSelected String
     | OnTaxonsUserInput String
+    | OnBatchTabClick String
 

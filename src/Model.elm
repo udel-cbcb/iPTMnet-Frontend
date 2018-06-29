@@ -31,6 +31,10 @@ type alias Model =
         batchPage: BatchPage        
     }
 
+setRoute: Model -> Routing.Route -> Model
+setRoute model new_route = 
+    {model | route = new_route }
+
 initialModel : Routing.Route -> Model
 initialModel route = 
     { 
@@ -103,7 +107,7 @@ initialModel route =
                 error = "",
                 data = Dict.empty,
                 tabData = {
-                    tabs = ["Substrate 1", "Substrate 2", "Substrate 3"],
+                    tabs = [],
                     selectedTab = ""
                 },
                 filterTerm = ""
@@ -118,8 +122,16 @@ initialModel route =
             batchEnzymeData = {
                 status = NotAsked,
                 error = "",
-                data = []
+                data = {
+                    list_found = {
+                        count = 0,
+                        with_enzyme = [],
+                        without_enzyme = []
+                    },
+                    list_not_found = []
+                }
             },
+            selectedTab = "Input sites found in iPTMnet",
             batchPTMPPIData = {
                 status = NotAsked,
                 error = "",
@@ -314,9 +326,15 @@ type alias SubstrateData =
         filterTerm: String
     }
 
+type alias Tab  = 
+    {
+        title : String,
+        count : Int
+    }
+
 type alias TabData =
     {
-        tabs: List String,
+        tabs: List Tab,
         selectedTab: String
     }
 
@@ -654,6 +672,7 @@ type alias BatchPage =
      outputType: Output,
      batchEnzymeData : BatchEnzymeData,
      batchPTMPPIData : BatchPTMPPIData,
+     selectedTab : String,
      inputText : String 
  }
 
@@ -661,7 +680,14 @@ type alias BatchEnzymeData =
     {
         status: RequestState,
         error: String,
-        data: List (BatchEnzyme Entity Source)    
+        data: {
+            list_found : {
+                count: Int,
+                with_enzyme : List BatchEnzyme,
+                without_enzyme: List BatchEnzyme
+            },
+            list_not_found : List Kinase  
+        }    
     }
 
 type alias BatchPTMPPIData = 
@@ -749,21 +775,24 @@ setBatchInputText: String -> BatchPage -> BatchPage
 setBatchInputText newText batchPage = 
     { batchPage | inputText = newText }
 
+setSelectedBatchTab: BatchPage -> String -> BatchPage
+setSelectedBatchTab batchPage newTab =
+    {batchPage | selectedTab = newTab }   
 
 -- Batch Result Enzymes
-type alias BatchEnzyme entityDecoder sourceDecoder= 
+type alias BatchEnzyme = 
     {
         ptm_type : String,
-        substrate : entityDecoder,
+        substrate : Entity,
         site: String,
         site_position: Int,
-        enzyme: entityDecoder,
+        enzyme: Entity,
         score: Int,
-        source: (List sourceDecoder),
+        source: (List Source),
         pmids: (List String)
     }
 
-batchEnzymeDecoder: Decoder (BatchEnzyme Entity Source)
+batchEnzymeDecoder: Decoder BatchEnzyme
 batchEnzymeDecoder =
     decode BatchEnzyme 
     |> required "ptm_type" string
@@ -775,7 +804,7 @@ batchEnzymeDecoder =
     |> required "source" (list sourceDecoder)
     |> required "pmids" (list string)
 
-batchEnzymeListDecoder: Decoder (List (BatchEnzyme Entity Source))
+batchEnzymeListDecoder: Decoder (List BatchEnzyme)
 batchEnzymeListDecoder = 
     list batchEnzymeDecoder
 

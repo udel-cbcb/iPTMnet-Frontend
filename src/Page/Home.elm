@@ -428,7 +428,6 @@ view model =
                         ],
                         a [
                             href "/batch",
-                            Html.Styled.Attributes.target "_blank",
                             css[
                                 marginLeft auto,
                                 marginRight (px 20),

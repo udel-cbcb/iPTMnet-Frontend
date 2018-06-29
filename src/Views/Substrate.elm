@@ -282,7 +282,7 @@ decodeResponse response =
                 error = "",
                 data = Dict.empty,
                 tabData = {
-                    tabs = ["Substrate 1", "Substrate 2", "Substrate 3"],
+                    tabs = [],
                     selectedTab = ""
                 },
                 filterTerm = ""
@@ -294,25 +294,30 @@ decodeResponse response =
                 error = "",
                 data = Dict.empty,
                 tabData = {
-                    tabs = ["Substrate 1", "Substrate 2", "Substrate 3"],
+                    tabs = [],
                     selectedTab = ""
                 },
                 filterTerm = ""
             }
 
         RemoteData.Success substrateTable ->
-            {
-                status = Success,
-                error = "",
-                data = substrateTable,
-                tabData = {
-                    tabs = Dict.keys substrateTable,
-                    selectedTab = Dict.keys substrateTable
-                                  |> List.head 
-                                  |> Maybe.withDefault ""
-                },
-                filterTerm = ""
-            }
+            let 
+                tabs = Dict.toList substrateTable
+                           |> Debug.log "list substrate"
+                           |> List.map toTab 
+            in
+                {
+                    status = Success,
+                    error = "",
+                    data = substrateTable,
+                    tabData = {
+                        tabs = tabs,
+                        selectedTab = Dict.keys substrateTable
+                                    |> List.head 
+                                    |> Maybe.withDefault ""
+                    },
+                    filterTerm = ""
+                }
 
         RemoteData.Failure error ->
             {
@@ -320,10 +325,20 @@ decodeResponse response =
                 error = (toString error),
                 data = Dict.empty,
                 tabData = {
-                    tabs = ["Substrate 1", "Substrate 2", "Substrate 3"],
+                    tabs = [],
                     selectedTab = ""
                 },
                 filterTerm = ""
             }
+
+toTab : ( String, List (Substrate Source SubstrateEnzyme) )  -> Tab
+toTab substrate_list =
+    let
+        _ = Debug.log "sub" substrate_list
+    in
+        {
+            title = Tuple.first substrate_list,
+            count = (Tuple.second substrate_list) |> List.length
+        }
 
 

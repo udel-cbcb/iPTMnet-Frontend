@@ -18,7 +18,6 @@ import Page.Batch
 import Page.BatchResult
 import Ports
 import List
-import Filter
 
 
 init : Navigation.Location -> ( Model, Cmd Msg )
@@ -319,7 +318,7 @@ update msg model =
         Msgs.OnFetchBatchEnzymes response ->
             let 
                 newModel = 
-                    Page.BatchResult.decodeEnzymeResponse response
+                    Page.BatchResult.decodeEnzymeResponse response model.batchPage.kinases
                     |> Model.setBatchEnzymeData model.batchPage
                     |> Model.setBatchPage model
             in
@@ -338,7 +337,12 @@ update msg model =
                             
             in
                 (newModel, Cmd.none)
-        
+        Msgs.OnBatchTabClick newTab ->
+            let 
+                newModel = Model.setSelectedBatchTab model.batchPage newTab
+                               |> Model.setBatchPage model
+            in
+                (newModel, Cmd.none)                  
             
 
 

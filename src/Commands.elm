@@ -90,19 +90,19 @@ handleRoute model location =
         in
         case currentRoute of 
             Routing.HomeRoute -> 
-                (Model.initialModel currentRoute, Cmd.none )
+                (Model.setRoute model currentRoute, Cmd.none )
             Routing.EntryRoute id ->
-                (Model.initialModel currentRoute, Cmd.batch [fetchInfo id,
+                (Model.setRoute model currentRoute, Cmd.batch [fetchInfo id,
                                                              fetchProteoforms id,
                                                              fetchPTMDependentPPI id,
                                                              fetchProteoformsPPI id,
                                                              fetchSubstrates id
                                                              ])
             Routing.SearchRoute queryString -> 
-                (Model.initialModel currentRoute, fetchSearchResults queryString )
+                (Model.setRoute model currentRoute, fetchSearchResults queryString )
             Routing.BatchRoute ->
-                (Model.initialModel currentRoute, Cmd.none )
+                (Model.setRoute model currentRoute, Cmd.none )
             Routing.BatchResultRoute ->
-                (Model.initialModel currentRoute, (fetchBatchData model.batchPage.outputType model.batchPage.kinases) )
+                (Model.setRoute model currentRoute, (fetchBatchData model.batchPage.outputType model.batchPage.kinases) )
             Routing.NotFoundRoute ->
-                (Model.initialModel currentRoute, Cmd.none )
+                (Model.setRoute model currentRoute, Cmd.none )
