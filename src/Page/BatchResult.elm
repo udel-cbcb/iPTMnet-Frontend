@@ -260,10 +260,6 @@ renderEnzymesTable withEnzyme withoutEnzyme =
                 ]
     ]
 
-batchPTMPPIView: Model -> Html Msg
-batchPTMPPIView model =
-            div [] []
-
 enzymeResultRow: BatchEnzyme -> Html Msg
 enzymeResultRow enzyme = 
     div [id "enzyme_table_row", css [
@@ -341,6 +337,205 @@ enzymeResultRow enzyme =
                                     True ->
                                         let 
                                             trimmed_list = (List.take 3 enzyme.pmids) ++ ["..."]
+                                                           |> List.map buildPMID
+                                                           |> List.intersperse (span [css [display inline]] [text ",  "])
+                                        in 
+                                            trimmed_list
+                                )
+                    ]                                   
+
+                ]
+
+
+batchPTMPPIView: Model -> Html Msg
+batchPTMPPIView model =
+            div [
+                css [
+                    displayFlex,
+                    flexDirection column,
+                    marginLeft (px 10),
+                    marginRight (px 10)
+                ]
+            ][
+                
+                -- tabs
+                div [
+                    css [
+                        marginTop (px 20),
+                        marginBottom (px 20),
+                        marginRight auto                        
+                    ]
+                ][
+                    let
+                        tabs = [
+                            {
+                                title = "PTM Dependent PPIs",
+                                count = List.length model.batchPage.batchPTMPPIData.data.ptm_ppi
+                            },
+                            {
+                                title = "Sites without interactants",
+                                count = List.length model.batchPage.batchEnzymeData.data.list_not_found
+                            },
+                            {
+                                title = "Input site not found in iPTMnet",
+                                count = List.length model.batchPage.batchPTMPPIData.data.not_found
+                            }
+                        ]
+
+                        tabData = {
+                            tabs = tabs,
+                            selectedTab = model.batchPage.selectedTab
+                        }
+
+                    in
+                        Views.Tabs.view tabData Msgs.OnBatchTabClick
+                ],
+                case model.batchPage.selectedTab of
+                    "Input site not found in iPTMnet" -> 
+                        renderKinaseTable model.batchPage.batchPTMPPIData.data.not_found
+                    "Sites without interactants" ->
+                        renderKinaseTable model.batchPage.batchPTMPPIData.data.sites_without_interactants
+                    _ -> 
+                         renderPTMPPITable model.batchPage.batchPTMPPIData.data.ptm_ppi
+            ]
+
+
+renderPTMPPITable: (List BatchPTMPPI) -> Html Msg
+renderPTMPPITable ptm_ppi =
+    div [
+
+    ][
+
+                -- ptm ppi table
+                div [id "ptm_with_enzyme_table", css [
+                    displayFlex,
+                    flexDirection column,
+                    fontSize (px 13),
+                    borderWidth (px 1),
+                    borderStyle solid,
+                    borderColor (hex "#d9dadb")
+                ]][
+                    -- header
+                    div [id "header", css [
+                        displayFlex,
+                        flexDirection row,
+                        backgroundColor (hex "#eff1f2"),
+                        paddingTop (px 5),
+                        paddingBottom (px 5),
+                        fontWeight bold,
+                        alignItems center
+                    ]] [
+                        div [css [flex (num 1),
+                            marginLeft (px 10),
+                            marginRight (px 20)         
+                            ]]
+                        [
+                            text "Substrate"
+                        ],
+                        div [css [flex (num 1),
+                                marginRight (px 20)
+                                ]]
+                        [
+                            text "Site"
+                        ],
+                        div [css [flex (num 1),
+                                marginRight (px 20)
+                                ]]
+                        [
+                            text "Interactant"
+                        ],
+                        div [css [flex (num 1),
+                                marginRight (px 20)
+                                ]]
+                        [
+                            text "Association Type"
+                        ],
+                        div [css [flex (num 1),
+                                marginRight (px 20)
+                                ]]
+                        [
+                            text "Source"
+                        ],
+                        div [css [flex (num 1),
+                                marginRight (px 20)
+                                ]]
+                        [
+                            text "PMID"
+                        ]         
+
+                    ],
+
+                    -- rows
+                    div [id "body"] (List.map ptmPPIResultRow ptm_ppi)
+                
+                ]
+    ]
+
+
+ptmPPIResultRow: BatchPTMPPI -> Html Msg
+ptmPPIResultRow ptmppi = 
+    div [id "ptmppi_table_row", css [
+                    displayFlex,
+                    flexDirection row,
+                    paddingTop (px 10),
+                    paddingBottom (px 10),
+                    hover [
+                        backgroundColor (hex "#0000000D")
+                    ]
+                ]] [
+                    div [
+                        id "substrate",
+                        css [flex (num 1),
+                        marginLeft (px 10),
+                        marginRight (px 20)         
+                        ]]
+                    [
+                        text ptmppi.substrate.uniprot_id
+                    ],
+                    div [
+                        id "site",
+                        css [flex (num 1),
+                            marginRight (px 20)
+                            ]]
+                    [
+                        text ptmppi.site
+                    ],
+                    div [
+                        id "interactant",
+                        css [flex (num 1),
+                            marginRight (px 20)
+                            ]]
+                    [
+                        text ptmppi.interactant.uniprot_id
+                    ],
+                    div [
+                        id "association_type",
+                        css [flex (num 1),
+                            marginRight (px 20)
+                            ]]
+                    [
+                        text ptmppi.association_type
+                    ],
+                    div [
+                        id "source",
+                        css [flex (num 1),
+                            marginRight (px 20)
+                            ]]
+                    [
+                        div [] [text ptmppi.source.name]
+                    ],
+                    div [
+                        id "pmid",
+                        css [flex (num 1),
+                            marginRight (px 20)
+                            ]]
+                    [
+                        div [] (case (List.length ptmppi.pmid) > 3 of
+                                    False -> 
+                                        (List.map buildPMID ptmppi.pmid |> List.intersperse (span [css [display inline]] [text ",  "]))
+                                    True ->
+                                        let 
+                                            trimmed_list = (List.take 3 ptmppi.pmid) ++ ["..."]
                                                            |> List.map buildPMID
                                                            |> List.intersperse (span [css [display inline]] [text ",  "])
                                         in 
@@ -474,7 +669,7 @@ decodeEnzymeResponse response kinases =
             let
                 with_enzyme = List.filter isEnzymeNotEmpty enzymeList
                 without_enzyme = List.filter isEnzymeEmpty enzymeList
-                sites_not_found = List.filter (isKinaseNotPresent enzymeList) kinases 
+                sites_not_found = List.filter (isKinaseNotPresentInEnzymeList enzymeList) kinases 
                 _ = Debug.log "sites_not_found" sites_not_found 
             in
                 {
@@ -504,6 +699,58 @@ decodeEnzymeResponse response kinases =
                 }
             }
 
+decodePTMPPIResponse: WebData (List BatchPTMPPI) -> (List Kinase) -> BatchPTMPPIData 
+decodePTMPPIResponse response kinases = 
+    case response of
+        RemoteData.NotAsked ->
+            {
+                status = NotAsked,
+                error = "",
+                data = {
+                    ptm_ppi = [],
+                    sites_without_interactants = [],
+                    not_found = []
+                }  
+            }
+
+        RemoteData.Loading ->
+            {
+                status = Loading,
+                error = "",
+                data = {
+                    ptm_ppi = [],
+                    sites_without_interactants = [],
+                    not_found = []
+                }
+            }
+
+        RemoteData.Success ptmPPIList ->
+            let
+                ptm_ppi = List.filter isInteractantNotEmpty ptmPPIList
+                sites_without_interactants = []
+                not_found = List.filter (isKinaseNotPresentInPTMPPIList ptmPPIList) kinases
+            in
+                {
+                    status = Success,
+                    error = "",
+                    data = {
+                        ptm_ppi = ptm_ppi,
+                        sites_without_interactants = [],
+                        not_found = not_found
+                    }
+                }
+
+        RemoteData.Failure error ->
+            {
+                status = Error,
+                error = (toString error),
+                data = {
+                    ptm_ppi = [],
+                    sites_without_interactants = [],
+                    not_found = []
+                }
+            }
+
 isEnzymeEmpty : BatchEnzyme -> Bool
 isEnzymeEmpty batchEnzyme = 
     String.Extra.isBlank batchEnzyme.enzyme.uniprot_id
@@ -512,9 +759,23 @@ isEnzymeNotEmpty : BatchEnzyme -> Bool
 isEnzymeNotEmpty batchEnzyme =
     not (isEnzymeEmpty batchEnzyme)
 
-isKinaseNotPresent : (List BatchEnzyme) -> Kinase -> Bool
-isKinaseNotPresent batchEnzymes kinase =
+isKinaseNotPresentInEnzymeList : (List BatchEnzyme) -> Kinase -> Bool
+isKinaseNotPresentInEnzymeList batchEnzymes kinase =
     List.filter (\enz -> (kinase.site_residue ++ kinase.site_position) == enz.site) batchEnzymes
+    |> List.isEmpty
+
+
+isInteractantEmpty : BatchPTMPPI -> Bool
+isInteractantEmpty batchPTMPPI = 
+    String.Extra.isBlank batchPTMPPI.interactant.uniprot_id
+
+isInteractantNotEmpty : BatchPTMPPI -> Bool
+isInteractantNotEmpty batchPTMPPI = 
+    not (isInteractantEmpty batchPTMPPI)
+
+isKinaseNotPresentInPTMPPIList : (List BatchPTMPPI) -> Kinase -> Bool
+isKinaseNotPresentInPTMPPIList batchPTMPPIs kinase =
+    List.filter (\ptm_ppi -> (kinase.site_residue ++ kinase.site_position) == ptm_ppi.site) batchPTMPPIs
     |> List.isEmpty
 
 buildSource: Source -> Html Msg 

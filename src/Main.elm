@@ -327,8 +327,12 @@ update msg model =
         Msgs.OnFetchBatchPTMPPI response ->
             let 
                 _ = Debug.log "ptm_ppi" response
+                newModel = 
+                    Page.BatchResult.decodePTMPPIResponse response model.batchPage.kinases
+                    |> Model.setBatchPTMPPIData model.batchPage
+                    |> Model.setBatchPage model
             in
-                (model, Cmd.none)
+                (newModel, Cmd.none)
 
         Msgs.SwitchBatchOutput output ->
             let 

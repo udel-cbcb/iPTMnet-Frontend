@@ -22,7 +22,7 @@ type Msg
     | OnFileChange (List NativeFile)
     | OnFileContent (Result FileReader.Error String)
     | OnFetchBatchEnzymes  (WebData (List BatchEnzyme))
-    | OnFetchBatchPTMPPI  (WebData (List (BatchPTMPPI Entity Source)))
+    | OnFetchBatchPTMPPI  (WebData (List BatchPTMPPI))
     | SwitchBatchOutput Model.Output
     | OnBatchInputChanged String
     | OnBatchInputExampleClicked

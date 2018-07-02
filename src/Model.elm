@@ -135,7 +135,11 @@ initialModel route =
             batchPTMPPIData = {
                 status = NotAsked,
                 error = "",
-                data = []
+                data = {
+                    ptm_ppi = [],
+                    sites_without_interactants = [],
+                    not_found = []
+                }
             },
             inputText = ""
         }
@@ -694,7 +698,11 @@ type alias BatchPTMPPIData =
     {
         status: RequestState,
         error: String,
-        data: List (BatchPTMPPI Entity Source)    
+        data: {
+            ptm_ppi : List BatchPTMPPI,
+            sites_without_interactants: List Kinase,
+            not_found: List Kinase
+        }    
     }
 
 type alias Kinase =
@@ -810,19 +818,19 @@ batchEnzymeListDecoder =
 
 
 -- Batch Result PTMPPI
-type alias BatchPTMPPI entityDecoder sourceDecoder = 
+type alias BatchPTMPPI = 
     {
         ptm_type: String,
-        substrate: entityDecoder,
+        substrate: Entity,
         site: String,
         site_position: Int,
-        interactant: entityDecoder,
+        interactant: Entity,
         association_type: String,
-        source: (List sourceDecoder),
-        pmid: String
+        source: Source,
+        pmid: List String
     }
 
-batchPTMPPIDecoder: Decoder (BatchPTMPPI Entity Source)
+batchPTMPPIDecoder: Decoder BatchPTMPPI
 batchPTMPPIDecoder =
     decode BatchPTMPPI
     |> required "ptm_type" string
@@ -831,10 +839,10 @@ batchPTMPPIDecoder =
     |> required "site_position" int
     |> required "interactant" entityDecoder
     |> required "association_type" string
-    |> required "source" (list sourceDecoder)
-    |> required "pmids" string
+    |> required "source" sourceDecoder
+    |> required "pmids" (list string)
 
-batchPTMPPIListDecoder: Decoder (List (BatchPTMPPI Entity Source))
+batchPTMPPIListDecoder: Decoder (List BatchPTMPPI)
 batchPTMPPIListDecoder = 
     list batchPTMPPIDecoder
 
