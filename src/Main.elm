@@ -2,6 +2,7 @@ module Main exposing (..)
 import Html exposing (..)
 import Html.Styled exposing (toUnstyled)
 import Page.Entry
+import Page.License
 import Model exposing (..)
 import Msgs exposing (Msg)
 import Commands exposing (..)
@@ -16,6 +17,7 @@ import Page.Home
 import Page.Search
 import Page.Batch
 import Page.BatchResult
+import Page.Citation
 import Ports
 import List
 
@@ -32,6 +34,12 @@ view model =
     case model.route of
         Routing.HomeRoute -> 
             Page.Home.view model
+            |> toUnstyled
+        Routing.CitationRoute -> 
+            Page.Citation.view model
+            |> toUnstyled
+        Routing.LicenseRoute -> 
+            Page.License.view model
             |> toUnstyled
         Routing.EntryRoute id ->
             Page.Entry.view model

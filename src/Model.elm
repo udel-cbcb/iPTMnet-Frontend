@@ -31,8 +31,8 @@ type alias Model =
         batchPage: BatchPage        
     }
 
-setRoute: Model -> Routing.Route -> Model
-setRoute model new_route = 
+setRoute: Routing.Route -> Model -> Model
+setRoute new_route model = 
     {model | route = new_route }
 
 initialModel : Routing.Route -> Model
@@ -159,6 +159,14 @@ type alias HomePage =
         searchOptions: SearchOptions,
         advancedSearchVisibility: Bool
     }
+
+setNavBarSearchVisibility: Navbar -> Bool -> Navbar
+setNavBarSearchVisibility navBar isSearchVisible =
+    {navBar | isSearchVisible = isSearchVisible}
+
+setNavbar: Model -> Navbar -> Model
+setNavbar model newNavbar =
+    {model | navbar = newNavbar}
 
 setHomePage : Model -> HomePage -> Model
 setHomePage model newHomePage = 

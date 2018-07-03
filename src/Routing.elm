@@ -4,6 +4,8 @@ import Navigation
 
 type Route
     = HomeRoute
+    | LicenseRoute
+    | CitationRoute
     | EntryRoute String
     | SearchRoute String
     | BatchRoute
@@ -18,6 +20,8 @@ matchers : UrlParser.Parser (Route -> a) a
 matchers =
     UrlParser.oneOf
         [ UrlParser.map HomeRoute UrlParser.top
+        , UrlParser.map LicenseRoute (s "license")
+        , UrlParser.map CitationRoute (s "citation") 
         , UrlParser.map EntryRoute (s "entry" </> string)
         , UrlParser.map SearchRoute (s "search" </> string)
         , UrlParser.map BatchRoute (s "batch")

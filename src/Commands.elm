@@ -90,19 +90,44 @@ handleRoute model location =
         in
         case currentRoute of 
             Routing.HomeRoute -> 
-                (Model.setRoute model currentRoute, Cmd.none )
+                let
+                              -- hide the search bar in navigation
+                    newModel = Model.setNavBarSearchVisibility model.navbar False
+                              |> Model.setNavbar model
+                              -- set the proper route
+                              |> Model.setRoute currentRoute
+                in
+                    (newModel, Cmd.none )
+            Routing.CitationRoute -> 
+                let
+                              -- hide the search bar in navigation
+                    newModel = Model.setNavBarSearchVisibility model.navbar False
+                              |> Model.setNavbar model
+                              -- set the proper route
+                              |> Model.setRoute currentRoute
+                in
+                    (newModel, Cmd.none )
+            Routing.LicenseRoute -> 
+                let
+                              -- hide the search bar in navigation
+                    newModel = Model.setNavBarSearchVisibility model.navbar False
+                              |> Model.setNavbar model
+                              -- set the proper route
+                              |> Model.setRoute currentRoute
+                in
+                    (newModel, Cmd.none )
             Routing.EntryRoute id ->
-                (Model.setRoute model currentRoute, Cmd.batch [fetchInfo id,
+                (Model.setRoute currentRoute model, Cmd.batch [fetchInfo id,
                                                              fetchProteoforms id,
                                                              fetchPTMDependentPPI id,
                                                              fetchProteoformsPPI id,
                                                              fetchSubstrates id
                                                              ])
             Routing.SearchRoute queryString -> 
-                (Model.setRoute model currentRoute, fetchSearchResults queryString )
+                (Model.setRoute currentRoute model, fetchSearchResults queryString )
             Routing.BatchRoute ->
-                (Model.setRoute model currentRoute, Cmd.none )
+                (Model.setRoute currentRoute model, Cmd.none )
             Routing.BatchResultRoute ->
-                (Model.setRoute model currentRoute, (fetchBatchData model.batchPage.outputType model.batchPage.kinases) )
+                (Model.setRoute currentRoute model, (fetchBatchData model.batchPage.outputType model.batchPage.kinases) )
             Routing.NotFoundRoute ->
-                (Model.setRoute model currentRoute, Cmd.none )
+                (Model.setRoute currentRoute model, Cmd.none )

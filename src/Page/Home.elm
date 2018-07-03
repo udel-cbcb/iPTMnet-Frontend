@@ -8,7 +8,7 @@ import Html.Styled.Events exposing (onClick,onWithOptions,on)
 import Json.Decode as Decode
 import String.Interpolate exposing (interpolate)
 import Colors exposing (..)
-import Styles.Home exposing (..)
+import Views.Navbar
 import Ionicon
 import Views.AdvancedSearch exposing (..)
 import Views.Footer exposing (..)
@@ -85,101 +85,7 @@ view model =
             flexDirection column,
             alignSelf stretch
             ]] [
-                div [
-                    id "header_image",
-                    css [
-                        Css.height (px 0)
-                    ]
-                ][
-                    
-                ],
-
-                div [
-                    id "home_page_navigation",
-                    css [
-                        Css.height (px 40),
-                        backgroundColor Colors.navigationBackground,
-                        displayFlex,
-                        flexDirection row,
-                        alignItems center
-                    ]
-                ][
-                    div [
-                        id "nav_home",
-                        css navigationItem
-                    ][
-                        text "iPTMnet"
-                    ],
-                    div [
-                        id "seperator",
-                        css Styles.Home.navigationSeperator
-                    ][],
-                    div [
-                        id "nav_browse",
-                        css navigationItem
-                    ][
-                        text "Browse"
-                    ],
-                    div [
-                        id "seperator",
-                        css [
-                            Css.property "height" "50%",
-                            Css.width (px 1),
-                            backgroundColor Colors.navigationSeperator
-                        ]
-                    ][],
-                    div [
-                        id "nav_stats",
-                        css navigationItem
-                    ][
-                        text "Statistics"
-                    ],
-                    div [
-                        id "seperator",
-                        css Styles.Home.navigationSeperator
-                    ][],
-                    div [
-                        id "nav_help",
-                        css navigationItem
-                    ][
-                        text "Help"
-                    ],
-                    div [
-                        id "seperator",
-                        css Styles.Home.navigationSeperator
-                    ][],
-                    div [
-                        id "nav_license",
-                        css navigationItem
-                    ][
-                        text "License"
-                    ],
-                    div [
-                        id "seperator",
-                        css Styles.Home.navigationSeperator
-                    ][],
-                    div [
-                        id "nav_citation",
-                        css navigationItem
-                    ][
-                        text "Citation"
-                    ],
-                    div [
-                        id "seperator",
-                        css Styles.Home.navigationSeperator
-                    ][],
-                    div [
-                        id "nav_about",
-                        css navigationItem
-                    ][
-                        text "About"
-                    ],
-                    div [
-                        id "seperator",
-                        css Styles.Home.navigationSeperator
-                    ][]
-                ]
-
+                Views.Navbar.view model.navbar
             ],
         
         div [id "body", css [

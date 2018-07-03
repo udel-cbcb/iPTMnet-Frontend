@@ -54,7 +54,8 @@ view navbar =
                     ][],
                     div [
                         id "nav_browse",
-                        css navigationItem
+                        css navigationItem,
+                        onClick (ChangeLocation "/browse")
                     ][
                         text "Browse"
                     ],
@@ -68,7 +69,8 @@ view navbar =
                     ][],
                     div [
                         id "nav_stats",
-                        css navigationItem
+                        css navigationItem,
+                        onClick (ChangeLocation "/statistics")
                     ][
                         text "Statistics"
                     ],
@@ -77,8 +79,20 @@ view navbar =
                         css Styles.Home.navigationSeperator
                     ][],
                     div [
+                        id "nav_api",
+                        css navigationItem,
+                        onClick (ChangeLocation "/api")
+                    ][
+                        text "Api"
+                    ],
+                    div [
+                        id "seperator",
+                        css Styles.Home.navigationSeperator
+                    ][],
+                    div [
                         id "nav_help",
-                        css navigationItem
+                        css navigationItem,
+                        onClick (ChangeLocation "/help")
                     ][
                         text "Help"
                     ],
@@ -88,7 +102,8 @@ view navbar =
                     ][],
                     div [
                         id "nav_license",
-                        css navigationItem
+                        css navigationItem,
+                        onClick (ChangeLocation "/license")
                     ][
                         text "License"
                     ],
@@ -98,7 +113,8 @@ view navbar =
                     ][],
                     div [
                         id "nav_citation",
-                        css navigationItem
+                        css navigationItem,
+                        onClick (ChangeLocation "/citation")
                     ][
                         text "Citation"
                     ],
@@ -108,7 +124,8 @@ view navbar =
                     ][],
                     div [
                         id "nav_about",
-                        css navigationItem
+                        css navigationItem,
+                        onClick (ChangeLocation "/about")
                     ][
                         text "About"
                     ],
@@ -124,7 +141,11 @@ view navbar =
                             marginRight (px 20),
                             displayFlex,
                             flexDirection row,
-                            alignItems center
+                            alignItems center,
+                            (case navbar.isSearchVisible of
+                                        True -> Css.property "visibility" "visible"
+                                        False -> Css.property "visibility" "hidden"
+                                       )
                         ]
                     ][
                         div 
