@@ -20,6 +20,7 @@ import Page.BatchResult
 import Page.Citation
 import Page.About
 import Page.Api
+import Page.Statistics
 import Ports
 import List
 
@@ -45,6 +46,9 @@ view model =
             |> toUnstyled
         Routing.AboutRoute -> 
             Page.About.view model
+            |> toUnstyled
+        Routing.StatisticsRoute -> 
+            Page.Statistics.view model
             |> toUnstyled
         Routing.ApiRoute -> 
             Page.Api.view model
@@ -362,7 +366,17 @@ update msg model =
                 newModel = Model.setSelectedBatchTab model.batchPage newTab
                                |> Model.setBatchPage model
             in
-                (newModel, Cmd.none)                  
+                (newModel, Cmd.none)           
+
+        -- Statistics
+        Msgs.OnFetchStatistics response -> 
+            let
+                statistics = Page.Statistics.decodeResponse response
+                _ = Debug.log "stats" statistics
+                newModel = Model.setStatistics model.statisticsPage statistics
+                          |> Model.setStatisticsPage model
+            in
+                (newModel, Cmd.none)       
             
 
 

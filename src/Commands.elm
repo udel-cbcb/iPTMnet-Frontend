@@ -78,7 +78,13 @@ fetchBatchPTMPPI kinases =
     in
         Http.post "http://aws3.proteininformationresource.org/batch_ptm_ppi" (Http.jsonBody json_body) Model.batchPTMPPIListDecoder 
         |> RemoteData.sendRequest
-        |> Cmd.map Msgs.OnFetchBatchPTMPPI 
+        |> Cmd.map Msgs.OnFetchBatchPTMPPI
+
+fetchStatistics : Cmd Msg
+fetchStatistics =
+     Http.get (Model.url ++ "/statistics") Model.statisticsDecoder
+    |> RemoteData.sendRequest
+    |> Cmd.map Msgs.OnFetchStatistics
 
 
 handleRoute : Model.Model -> Navigation.Location -> (Model.Model, Cmd Msg)
@@ -125,6 +131,15 @@ handleRoute model location =
                               |> Model.setRoute currentRoute
                 in
                     (newModel, Cmd.none )
+            Routing.StatisticsRoute -> 
+                let
+                              -- hide the search bar in navigation
+                    newModel = Model.setNavBarSearchVisibility model.navbar False
+                              |> Model.setNavbar model
+                              -- set the proper route
+                              |> Model.setRoute currentRoute
+                in
+                    (newModel, fetchStatistics)
             Routing.LicenseRoute -> 
                 let
                               -- hide the search bar in navigation

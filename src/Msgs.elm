@@ -16,6 +16,7 @@ type Msg
     | OnFetchPTMDependentPPI (WebData (List (PTMDependentPPI Entity Source)))
     | OnFetchProteoformPPI (WebData (List (ProteoformPPI Protein Source)))
     | OnFetchSubstrates (WebData (Dict String (List (Substrate Source SubstrateEnzyme))))
+    | OnFetchStatistics (WebData (Statistics))
     | OnHomePageSearchInputChange String
     | OnAdvancedSearchVisibilityChange Bool
     | OnFetchSearchResults (WebData (List (SearchResult Organism)))
