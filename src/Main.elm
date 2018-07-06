@@ -19,6 +19,7 @@ import Page.Batch
 import Page.BatchResult
 import Page.Citation
 import Page.About
+import Page.Api
 import Ports
 import List
 
@@ -44,6 +45,9 @@ view model =
             |> toUnstyled
         Routing.AboutRoute -> 
             Page.About.view model
+            |> toUnstyled
+        Routing.ApiRoute -> 
+            Page.Api.view model
             |> toUnstyled
         Routing.EntryRoute id ->
             Page.Entry.view model

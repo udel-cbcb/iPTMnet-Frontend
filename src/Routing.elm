@@ -7,6 +7,7 @@ type Route
     | LicenseRoute
     | CitationRoute
     | AboutRoute
+    | ApiRoute
     | EntryRoute String
     | SearchRoute String
     | BatchRoute
@@ -24,6 +25,7 @@ matchers =
         , UrlParser.map LicenseRoute (s "license")
         , UrlParser.map CitationRoute (s "citation") 
         , UrlParser.map AboutRoute (s "about") 
+        , UrlParser.map ApiRoute (s "api") 
         , UrlParser.map EntryRoute (s "entry" </> string)
         , UrlParser.map SearchRoute (s "search" </> string)
         , UrlParser.map BatchRoute (s "batch")

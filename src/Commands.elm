@@ -116,6 +116,15 @@ handleRoute model location =
                               |> Model.setRoute currentRoute
                 in
                     (newModel, Cmd.none )
+            Routing.ApiRoute -> 
+                let
+                              -- hide the search bar in navigation
+                    newModel = Model.setNavBarSearchVisibility model.navbar False
+                              |> Model.setNavbar model
+                              -- set the proper route
+                              |> Model.setRoute currentRoute
+                in
+                    (newModel, Cmd.none )
             Routing.LicenseRoute -> 
                 let
                               -- hide the search bar in navigation
