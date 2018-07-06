@@ -118,6 +118,7 @@ view navbar =
                     ][
                         text "Citation"
                     ],
+                    
                     div [
                         id "seperator",
                         css Styles.Home.navigationSeperator

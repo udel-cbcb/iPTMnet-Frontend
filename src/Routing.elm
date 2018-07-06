@@ -6,6 +6,7 @@ type Route
     = HomeRoute
     | LicenseRoute
     | CitationRoute
+    | AboutRoute
     | EntryRoute String
     | SearchRoute String
     | BatchRoute
@@ -22,6 +23,7 @@ matchers =
         [ UrlParser.map HomeRoute UrlParser.top
         , UrlParser.map LicenseRoute (s "license")
         , UrlParser.map CitationRoute (s "citation") 
+        , UrlParser.map AboutRoute (s "about") 
         , UrlParser.map EntryRoute (s "entry" </> string)
         , UrlParser.map SearchRoute (s "search" </> string)
         , UrlParser.map BatchRoute (s "batch")

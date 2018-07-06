@@ -3,6 +3,7 @@ import Html.Styled exposing (..)
 import Css exposing (..)
 import Html.Styled.Attributes exposing (..)
 import Msgs exposing (..)
+import Json.Encode
 
 -- returns the sequence view
 view: Html Msg 
@@ -21,17 +22,16 @@ view =
             borderStyle solid,
             borderColor (hex "#d9dadb")
         ]][
-            -- header
-            div [id "proteoformppi_table_header", css [
-                displayFlex,
-                flexDirection row,
-                backgroundColor (hex "#eff1f2"),
-                paddingTop (px 5),
-                paddingBottom (px 5),
-                fontWeight bold,
-                Css.height (px 100)
-            ]] []
-        
+            embed [
+                  css [
+                      borderWidth (px 0),
+                      alignSelf stretch
+                  ],
+                  Html.Styled.Attributes.src "https://research.bioinformatics.udel.edu/iptmnet/visual/msa/view/entry/Q15796/"
+                  
+                ][
+
+                ]        
         ]
 
     ]
