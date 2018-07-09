@@ -303,7 +303,6 @@ decodeResponse response =
         RemoteData.Success substrateTable ->
             let 
                 tabs = Dict.toList substrateTable
-                           |> Debug.log "list substrate"
                            |> List.map toTab 
             in
                 {
@@ -333,12 +332,9 @@ decodeResponse response =
 
 toTab : ( String, List (Substrate Source SubstrateEnzyme) )  -> Tab
 toTab substrate_list =
-    let
-        _ = Debug.log "sub" substrate_list
-    in
-        {
-            title = Tuple.first substrate_list,
-            count = (Tuple.second substrate_list) |> List.length
-        }
+    {
+        title = Tuple.first substrate_list,
+        count = (Tuple.second substrate_list) |> List.length
+    }
 
 

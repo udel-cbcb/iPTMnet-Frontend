@@ -29,7 +29,8 @@ type alias Model =
         homePage: HomePage,
         entryPage: EntryPage,
         batchPage: BatchPage,
-        statisticsPage: StatisticsPage        
+        statisticsPage: StatisticsPage,
+        alignmentViewer: AlignmentViewer        
     }
 
 setRoute: Routing.Route -> Model -> Model
@@ -150,7 +151,10 @@ initialModel route =
                 error = "",
                 data = emptyStatistics
             }
-        }
+        },
+
+        alignmentViewer = defaultAlignmentViewer
+
     }
 
 -- Nav bar
@@ -956,3 +960,56 @@ statisticsOverviewDecoder =
     |> required "Enzyme-substrate-site" int
     |> required "PTM-dependent PPI" int
     |> required "PMIDs" int
+
+
+type alias AlignmentViewer = 
+    {
+        rowIndex : Int,
+        columnIndex : Int,
+        alignment: Alignment
+    }
+
+type alias AlignmentItem = 
+    {
+        label: String
+    }
+
+type alias AlignmentRow = 
+    {
+        name: String,
+        sequences: (Array.Array AlignmentItem)
+    }
+
+type alias Alignment = (Array.Array AlignmentRow)
+
+defaultAlignmentViewer : AlignmentViewer
+defaultAlignmentViewer = 
+    {
+        rowIndex = -1,
+        columnIndex = -1,
+        alignment = defaultAlignment    
+    }
+
+setSelectedAlignmentRowIndex : Int -> AlignmentViewer -> AlignmentViewer
+setSelectedAlignmentRowIndex newRowIndex alignmentViewer =
+    {alignmentViewer | rowIndex = newRowIndex }
+
+setSelectedAlignmentColumnIndex : Int -> AlignmentViewer -> AlignmentViewer
+setSelectedAlignmentColumnIndex newColumnIndex alignmentViewer =
+    {alignmentViewer | columnIndex = newColumnIndex }
+
+setAlignmentViewer : Model -> AlignmentViewer -> Model
+setAlignmentViewer model newAlignmentViewer = 
+    {model | alignmentViewer = newAlignmentViewer}
+
+defaultAlignment: Alignment 
+defaultAlignment = 
+        (Array.repeat 
+            5
+            {
+                name = "test3",
+                sequences = Array.repeat 400 {
+                    label = "A"
+                }
+            }
+        )

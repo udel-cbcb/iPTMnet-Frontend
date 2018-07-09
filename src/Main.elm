@@ -285,11 +285,7 @@ update msg model =
             case file of
                 -- Only handling case of a single file
                 [ f ] ->
-                    let 
-                        _ = Debug.log "msg" f
-                    in
-                        (model, Commands.getFileContents f)
-
+                    (model, Commands.getFileContents f)
                 _ ->
                     (model, Cmd.none)
 
@@ -346,7 +342,6 @@ update msg model =
 
         Msgs.OnFetchBatchPTMPPI response ->
             let 
-                _ = Debug.log "ptm_ppi" response
                 newModel = 
                     Page.BatchResult.decodePTMPPIResponse response model.batchPage.kinases
                     |> Model.setBatchPTMPPIData model.batchPage
@@ -372,12 +367,20 @@ update msg model =
         Msgs.OnFetchStatistics response -> 
             let
                 statistics = Page.Statistics.decodeResponse response
-                _ = Debug.log "stats" statistics
                 newModel = Model.setStatistics model.statisticsPage statistics
                           |> Model.setStatisticsPage model
             in
                 (newModel, Cmd.none)       
             
+        -- Statistics
+        Msgs.OnSequenceHover rowIndex columnIndex ->
+            let 
+                _ = Debug.log "hover_index -> " ((toString rowIndex) ++ " : " ++ (toString columnIndex))
+                newModel = Model.setSelectedAlignmentRowIndex rowIndex model.alignmentViewer
+                          |> Model.setSelectedAlignmentColumnIndex columnIndex
+                          |> Model.setAlignmentViewer model
+            in
+                (newModel,Cmd.none)
 
 
 -- SUBSCRIPTIONS

@@ -18,6 +18,7 @@ import Json.Encode exposing (string)
 import Colors
 import String.Extra
 
+
 -- css
 sideBarItemCSS: List Style
 sideBarItemCSS = 
@@ -51,18 +52,20 @@ view model =
             div [id "content",css [
                     displayFlex,
                     flexDirection row,
-                    flex (num 1)
+                    flex (num 1),
+                    Css.property "max-width" "100%"
                 ]
             ] [
                 
                 div [id "sidebar", css [
                     displayFlex,
                     flexDirection column,
-                    flex (num 1)
+                    Css.property "min-width" "20%"
+                    -- backgroundColor Colors.searchBoxColor
                 ]][
                     div [css [
                         position fixed,
-                        Css.property "width" "20%"
+                        Css.property "min-width" "20%"
                     ]] [
                         div [css [
                             displayFlex,
@@ -70,7 +73,7 @@ view model =
                             margin (px 20),
                             backgroundColor (hex "ecececff")
                         ]]
-                    [
+                        [
                         div [css [fontWeight bold, padding (px 10)]] [
                             text "Display"
                         ],
@@ -219,17 +222,30 @@ view model =
                 div [id "entry_content", css [
                     displayFlex,
                     flexDirection column,
-                    flex (num 4),
-                    paddingLeft (px 40),
-                    paddingRight (px 40),
-                    paddingBottom (px 40)
+                    Css.property "max-width" "80%"
                 ]][
-                    Views.Info.view model.entryPage.infoData model.entryPage.showInfoErrorMsg,
-                    Views.Sequence.view,
-                    Views.Substrate.view model.entryPage.substrateData model.entryPage.infoData.data.uniprot_ac model.entryPage.infoData.data.gene_name model.entryPage.showSubstrateErrorMsg,
-                    Views.Proteoforms.view model.entryPage.proteoformsData model.entryPage.cytoscapeItems model.entryPage.showProteoformsErrorMsg,
-                    Views.PTMDependentPPI.view model.entryPage.ptmDependentPPIData model.entryPage.cytoscapeItems model.entryPage.showPTMDepPPIErrorMsg,
-                    Views.ProteoformPPI.view model.entryPage.proteoformPPIData model.entryPage.cytoscapeItems model.entryPage.showProteoformsPPIErrorMsg
+                    div [
+                        css [
+                            paddingLeft (px 40),
+                            paddingBottom (px 40),
+                            paddingRight (px 40)
+                        ]
+                    ][
+                        let 
+                            _ = Debug.log "info_changed" "" 
+                        in
+                            Views.Info.view model.entryPage.infoData model.entryPage.showInfoErrorMsg,
+
+                        let 
+                            _ = Debug.log "alignment_changed" "" 
+                        in    
+                            Views.Sequence.view model.alignmentViewer,
+                        
+                        Views.Substrate.view model.entryPage.substrateData model.entryPage.infoData.data.uniprot_ac model.entryPage.infoData.data.gene_name model.entryPage.showSubstrateErrorMsg,
+                        Views.Proteoforms.view model.entryPage.proteoformsData model.entryPage.cytoscapeItems model.entryPage.showProteoformsErrorMsg,
+                        Views.PTMDependentPPI.view model.entryPage.ptmDependentPPIData model.entryPage.cytoscapeItems model.entryPage.showPTMDepPPIErrorMsg,
+                        Views.ProteoformPPI.view model.entryPage.proteoformPPIData model.entryPage.cytoscapeItems model.entryPage.showProteoformsPPIErrorMsg
+                    ]
                 ]
             ],
 

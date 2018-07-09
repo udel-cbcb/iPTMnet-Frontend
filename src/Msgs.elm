@@ -49,4 +49,5 @@ type Msg
     | OnTermTypeSelected String
     | OnTaxonsUserInput String
     | OnBatchTabClick String
+    | OnSequenceHover Int Int
 
