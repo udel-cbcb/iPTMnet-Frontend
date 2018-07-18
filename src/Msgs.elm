@@ -5,6 +5,7 @@ import Model exposing (..)
 import Navigation
 import Dict exposing (..)
 import FileReader exposing (NativeFile)
+import Array exposing (..)
 
 -- MESSAGES
 type Msg
@@ -17,6 +18,7 @@ type Msg
     | OnFetchProteoformPPI (WebData (List (ProteoformPPI Protein Source)))
     | OnFetchSubstrates (WebData (Dict String (List (Substrate Source SubstrateEnzyme))))
     | OnFetchStatistics (WebData (Statistics))
+    | OnFetchAlignment (WebData (Array Alignment))
     | OnHomePageSearchInputChange String
     | OnAdvancedSearchVisibilityChange Bool
     | OnFetchSearchResults (WebData (List (SearchResult Organism)))

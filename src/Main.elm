@@ -13,6 +13,7 @@ import Views.Proteoforms
 import Views.PTMDependentPPI
 import Views.ProteoformPPI
 import Views.Substrate
+import Views.Alignment
 import Page.Home
 import Page.Search
 import Page.Batch
@@ -23,7 +24,6 @@ import Page.Api
 import Page.Statistics
 import Ports
 import List
-
 
 init : Navigation.Location -> ( Model, Cmd Msg )
 init location =
@@ -372,7 +372,13 @@ update msg model =
             in
                 (newModel, Cmd.none)       
             
-        -- Statistics
+        -- Alignment
+        Msgs.OnFetchAlignment response -> 
+            let 
+                alignmentViewer = Views.Alignment.decodeResponse (Debug.log "response" response)
+                newModel = Model.setAlignmentViewer model alignmentViewer
+            in
+                (newModel, Cmd.none)
         Msgs.OnSequenceHover rowIndex columnIndex ->
             let 
                 _ = Debug.log "hover_index -> " ((toString rowIndex) ++ " : " ++ (toString columnIndex))

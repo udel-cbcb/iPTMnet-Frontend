@@ -49,6 +49,13 @@ fetchSearchResults query_params =
     |> RemoteData.sendRequest
     |> Cmd.map Msgs.OnFetchSearchResults
 
+fetchMSA: String -> Cmd Msg 
+fetchMSA id =
+    Http.get (interpolate (Model.url ++ "/{0}/msa") [id]) Model.alignmentArrayDecoder
+    |> RemoteData.sendRequest
+    |> Cmd.map Msgs.OnFetchAlignment
+
+
 getFileContents : NativeFile -> Cmd Msg
 getFileContents nf =
     FileReader.readAsTextFile nf.blob
@@ -154,7 +161,8 @@ handleRoute model location =
                                                              fetchProteoforms id,
                                                              fetchPTMDependentPPI id,
                                                              fetchProteoformsPPI id,
-                                                             fetchSubstrates id
+                                                             fetchSubstrates id,
+                                                             fetchMSA id
                                                              ])
             Routing.SearchRoute queryString -> 
                 (Model.setRoute currentRoute model, fetchSearchResults queryString )

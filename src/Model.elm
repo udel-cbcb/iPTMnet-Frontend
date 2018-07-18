@@ -5,7 +5,7 @@ import Json.Decode.Pipeline exposing (..)
 import Dict exposing (..)
 import Json.Encode
 import Csv
-import Array
+import Array exposing (..)
 import Css exposing (property)
 
 type RequestState = 
@@ -966,28 +966,39 @@ type alias AlignmentViewer =
     {
         rowIndex : Int,
         columnIndex : Int,
-        alignment: Alignment
+        status: RequestState,
+        error: String,
+        alignments: Array Alignment
+    }
+
+type alias Alignment = 
+    {
+        id: String,
+        sequence: Array AlignmentItem
     }
 
 type alias AlignmentItem = 
     {
-        label: String
+        site: String,
+        position: Int,
+        decorations: List Decoration
     }
 
-type alias AlignmentRow = 
+type alias Decoration = 
     {
-        name: String,
-        sequences: (Array.Array AlignmentItem)
+        ptm_type: String,
+        source: Source,
+        pmids: List String
     }
-
-type alias Alignment = (Array.Array AlignmentRow)
 
 defaultAlignmentViewer : AlignmentViewer
 defaultAlignmentViewer = 
     {
         rowIndex = -1,
         columnIndex = -1,
-        alignment = defaultAlignment    
+        status =  NotAsked,
+        error = "",
+        alignments = Array.fromList []    
     }
 
 setSelectedAlignmentRowIndex : Int -> AlignmentViewer -> AlignmentViewer
@@ -1002,14 +1013,26 @@ setAlignmentViewer : Model -> AlignmentViewer -> Model
 setAlignmentViewer model newAlignmentViewer = 
     {model | alignmentViewer = newAlignmentViewer}
 
-defaultAlignment: Alignment 
-defaultAlignment = 
-        (Array.repeat 
-            5
-            {
-                name = "test3",
-                sequences = Array.repeat 400 {
-                    label = "A"
-                }
-            }
-        )
+alignmentArrayDecoder: Decoder (Array Alignment)
+alignmentArrayDecoder = 
+    array alignmentDecoder
+
+alignmentDecoder: Decoder Alignment
+alignmentDecoder =
+    decode Alignment
+    |> required "id" string
+    |> required "sequence" (array alignmentItemDecoder)
+
+alignmentItemDecoder: Decoder AlignmentItem
+alignmentItemDecoder = 
+    decode AlignmentItem
+    |> required "site" string
+    |> required "position" int
+    |> required "decorations" (list decorationDecoder)
+
+decorationDecoder: Decoder Decoration
+decorationDecoder =
+    decode Decoration
+    |> required "ptm_type" string
+    |> required "source" sourceDecoder
+    |> required "pmids" (list string)
