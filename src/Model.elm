@@ -987,8 +987,9 @@ type alias AlignmentItem =
 type alias Decoration = 
     {
         ptm_type: String,
-        source: Source,
-        pmids: List String
+        source: List Source,
+        pmids: List String,
+        is_conserved: Bool
     }
 
 defaultAlignmentViewer : AlignmentViewer
@@ -1034,5 +1035,6 @@ decorationDecoder: Decoder Decoration
 decorationDecoder =
     decode Decoration
     |> required "ptm_type" string
-    |> required "source" sourceDecoder
+    |> required "source" (list sourceDecoder)
     |> required "pmids" (list string)
+    |> required "is_conserved" bool

@@ -73,8 +73,12 @@ buildLabel selectedIndex index alignment =
             displayFlex,
             flexDirection row,
             alignItems center,
+            color (case (selectedIndex == index) of
+                                True -> (hex "#ffffff")
+                                False -> (hex "#191818")
+                            ),
             backgroundColor (case (selectedIndex == index) of
-                                True -> (hex "#e4e82e")
+                                True -> (hex "#329CDA")
                                 False -> (hex "#f9f9f9")
                             )
         ]
@@ -88,7 +92,8 @@ buildLabel selectedIndex index alignment =
                 paddingLeft (px 20),
                 hover [
                     cursor pointer,
-                    backgroundColor (hex "#e4e82e")
+                    backgroundColor (hex "#329CDA"),
+                    color (hex "#ffffff")
                 ]
             ]        
         ][
@@ -104,34 +109,56 @@ buildLabel selectedIndex index alignment =
 
 buildAlignmentItem : Int -> Int -> AlignmentItem -> Html Msg
 buildAlignmentItem rowIndex columnIndex alignmentItem =
-    div [
-        title "this is a decoration",
-        css [
-            fontSize (Css.em 0.70),
-            Css.property "min-width" "20px",
-            Css.property "min-height" "25px",
-            displayFlex,
-            alignItems center,
-            hover [
-                cursor pointer,
-                backgroundColor (hex "#e4e82e")
-            ]
-        ],
-        Html.Styled.Events.onMouseOver (Msgs.OnSequenceHover rowIndex columnIndex)        
-    ][
+    let 
+        background_color = (getBackgroundColor alignmentItem.decorations)
+        text_color = if (hex "#ffffff") == background_color then
+                        (hex "#191818")
+                     else
+                        (hex "#ffffff")
+        title_text = if (List.length alignmentItem.decorations) > 0 then
+                    (buildTitle alignmentItem.decorations alignmentItem.site alignmentItem.position)
+                else
+                    alignmentItem.site ++ toString alignmentItem.position
+
+    in
         div [
+            title title_text,
             css [
-                margin auto
-            ]
+                fontSize (Css.em 0.70),
+                color text_color,
+                Css.property "min-width" "20px",
+                Css.property "min-height" "25px",
+                displayFlex,
+                alignItems center,
+                backgroundColor background_color,
+                hover ([
+                    cursor pointer,
+                    color (hex "#ffffff")
+                ] ++ (if (List.length alignmentItem.decorations) > 0 then
+                            [
+                                Css.property "filter" "brightness(80%)"
+                            ]
+                      else
+                            [
+                                backgroundColor (hex "#329CDA")
+                            ]
+                     ))
+            ],
+            Html.Styled.Events.onMouseOver (Msgs.OnSequenceHover rowIndex columnIndex)        
         ][
-            text alignmentItem.site
+            div [
+                css [
+                    margin auto
+                ]
+            ][
+                text alignmentItem.site
+            ]
         ]
-    ]
 
 buildHeader : Int -> Html.Html Msg
 buildHeader length = 
     let
-        headerItems = (List.range 0 (length-1))
+        headerItems = (List.range 1 (length))
     in
         (div [
             css [
@@ -248,3 +275,66 @@ decodeResponse response =
                 error = toString error,
                 alignments = Array.fromList []    
             }
+
+getBackgroundColor: (List Decoration) -> Css.Color
+getBackgroundColor decorations =
+    case (List.length decorations) of 
+        0 -> (hex "#ffffff")
+        1 -> (case (List.head decorations) of
+                Nothing -> (hex "#ffffff")
+                Just decoration -> (getColorFromDecoration decoration)
+            )
+        _ -> (hex "#f7c23d")
+
+getColorFromDecoration: Decoration -> Css.Color
+getColorFromDecoration decoration = 
+    let
+        color = if (not (String.isEmpty decoration.ptm_type)) then 
+                    case (String.toLower decoration.ptm_type) of
+                        "phosphorylation" -> "#f4428c"
+                        "acetylation" -> "#bf42f4"
+                        "n-glycosylation" -> "#0bbc64"
+                        "o-glycosylation" -> "#0bbc64"
+                        "s-glycosylation" -> "#0bbc64"
+                        "c-glycosylation" -> "#0bbc64"
+                        "methylation" -> "#42cef4"
+                        "ubiquitination" -> "#415cf4"
+                        "myristoylation" -> "#058252"
+                        "s-nitrosylation" -> "#821704"
+                        _ -> 
+                            "#191818"
+                else
+                    (if decoration.is_conserved then
+                                "#cecccc"
+                            else
+                                "#ffffff" 
+                    )
+    in
+    (hex color)
+
+buildTitle: (List Decoration) -> String -> int -> String
+buildTitle decorations site position =
+    List.map (buildTitleFromDecoration site position) decorations |> String.join "\n" 
+
+buildTitleFromDecoration: String -> int -> Decoration -> String
+buildTitleFromDecoration site position decoration = 
+    if (not (String.isEmpty decoration.ptm_type)) then
+        site ++ (toString position) ++ ": " ++ decoration.ptm_type ++ ", Source: " ++ (sourcesToString decoration.source) ++ ", PMID: " ++ pmidsToString decoration.pmids
+    else
+        site ++ (toString position)
+
+sourcesToString : (List Source) -> String 
+sourcesToString sources =
+    if (List.length sources) > 0 then
+        List.map (\source -> source.name) sources |> String.join "\n"
+    else
+        "NA"
+
+pmidsToString : (List String) -> String 
+pmidsToString pmids =
+    if (List.length pmids) > 0 then
+        pmids |> String.join ","
+    else
+        "NA"
+
+    
