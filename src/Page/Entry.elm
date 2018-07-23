@@ -219,10 +219,11 @@ view model =
                     ]
                     
                 ],
+
                 div [id "entry_content", css [
                     displayFlex,
                     flexDirection column,
-                    Css.property "max-width" "80%"
+                    Css.property "min-width" "80%"
                 ]][
                     div [
                         css [
@@ -231,16 +232,8 @@ view model =
                             paddingRight (px 40)
                         ]
                     ][
-                        let 
-                            _ = Debug.log "info_changed" "" 
-                        in
-                            Views.Info.view model.entryPage.infoData model.entryPage.showInfoErrorMsg,
-
-                        let 
-                            _ = Debug.log "alignment_changed" "" 
-                        in    
-                            Views.Sequence.view model.alignmentViewer,
-                        
+                        Views.Info.view model.entryPage.infoData model.entryPage.showInfoErrorMsg,                        
+                        Views.Sequence.view model.alignmentViewer,
                         Views.Substrate.view model.entryPage.substrateData model.entryPage.infoData.data.uniprot_ac model.entryPage.infoData.data.gene_name model.entryPage.showSubstrateErrorMsg,
                         Views.Proteoforms.view model.entryPage.proteoformsData model.entryPage.cytoscapeItems model.entryPage.showProteoformsErrorMsg,
                         Views.PTMDependentPPI.view model.entryPage.ptmDependentPPIData model.entryPage.cytoscapeItems model.entryPage.showPTMDepPPIErrorMsg,

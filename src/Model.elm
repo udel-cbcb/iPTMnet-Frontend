@@ -447,7 +447,7 @@ type alias Info =
        protein_name: String,
        synonymns: List String,
        organism: Organism,
-       pro: PRO     
+       pro: Maybe PRO     
     }
 
 infoDecoder: Decoder Info
@@ -459,7 +459,7 @@ infoDecoder =
         |> required "protein_name" string
         |> required "synonyms" (list string)
         |> required "organism" organismDecoder
-        |> required "pro" proDecoder
+        |> optional "pro" (maybe proDecoder) Nothing
 
 
 type alias Organism = 
@@ -676,7 +676,7 @@ emptyInfo =
                         species = "",
                         common_name = ""
                     },
-                    pro = {
+                    pro = Just {
                         id = "",
                         name = "",
                         definition = "",
@@ -997,7 +997,7 @@ defaultAlignmentViewer =
     {
         rowIndex = -1,
         columnIndex = -1,
-        status =  NotAsked,
+        status =  Loading,
         error = "",
         alignments = Array.fromList []    
     }

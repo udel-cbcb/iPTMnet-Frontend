@@ -5,6 +5,9 @@ import Html.Styled.Attributes exposing (..)
 import Msgs exposing (..)
 import Views.Alignment
 import Model
+import Ionicon
+import Colors
+import RemoteData exposing (WebData)
 
 -- returns the sequence view
 view: Model.AlignmentViewer -> Html Msg 
@@ -20,7 +23,70 @@ view alignmentViewer =
             css [
                 marginTop (px 10)
             ]][
-                Views.Alignment.view alignmentViewer
+                --- Views.Alignment.view alignmentViewer
+                -- viewLoading
+                (case alignmentViewer.status of 
+                Model.NotAsked ->
+                    div [] []
+                Model.Loading ->
+                    viewLoading
+                Model.Error ->
+                    -- viewError model.searchPage.searchData.error model.searchPage.showErrorMsg Msgs.OnSearchResultErrorButtonClicked
+                    div [] []
+                Model.Success ->
+                    Views.Alignment.view alignmentViewer)
         ]
+    ]
 
+
+viewLoading: Html Msg 
+viewLoading = 
+    div [
+        id "div_loading_view_container",
+        css [
+            displayFlex,
+            flexDirection row,
+            alignSelf center,
+            flexGrow (num 5),
+            alignItems center
+        ]
+    ] [
+        div [
+            id "div_loading_view",
+            css [
+                displayFlex,
+                flexDirection column,
+                alignItems center,
+                marginLeft auto,
+                marginRight auto
+            ]
+        ][
+            div [
+                id "loading_icon",
+                        css [
+                            Css.width (px 50),
+                            Css.height (px 50),
+                            Css.property "-webkit-animation" "spin 0.8s linear infinite",
+                            Css.property "-moz-animation" "spin 0.8s linear infinite"
+                        ]
+                ][
+                    div [
+                            css [
+                                margin auto
+                            ]
+                        ] [
+                            Ionicon.loadC 50 Colors.emptyIcon |> Html.Styled.fromUnstyled
+                    ]
+            ],
+            div [
+                id "loading_label",
+                css [
+                    color Colors.emptyText,
+                    fontSize (Css.em 1.0),
+                    Css.fontWeight bold
+                ]
+            ][
+                text "Loading results.."
+            ]
+        ]
     ]
