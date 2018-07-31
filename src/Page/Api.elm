@@ -6,7 +6,8 @@ import Msgs exposing (..)
 import Views.Footer
 import Colors
 import Views.Navbar
-import Model exposing (..)
+import Model.AppModel exposing (..)
+
 
 view : Model -> Html Msg
 view model = 

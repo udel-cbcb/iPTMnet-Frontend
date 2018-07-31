@@ -1,9 +1,16 @@
 module Filter exposing (proteoforms,ptmDependentPPI,proteoformPPI,substrate)
-import Model exposing (..)
+
+import Model.Proteoform exposing (..)
+import Model.PTMDependentPPI exposing (..)
+import Model.ProteoformPPI exposing (..)
+import Model.Substrate exposing (..)
+import Model.SubstrateEnzyme exposing (..)
+import Model.Source exposing (..)
+
 import String
 import List
 
-proteoforms: String -> (Proteoform Enzyme Source) -> Bool
+proteoforms: String -> Proteoform -> Bool
 proteoforms searchTerm proteoform = 
     if String.contains (String.toLower searchTerm) (String.toLower proteoform.pro_id) then
         True
@@ -26,7 +33,7 @@ proteoforms searchTerm proteoform =
     else
         False
 
-ptmDependentPPI: String -> (PTMDependentPPI Entity Source) -> Bool
+ptmDependentPPI: String -> PTMDependentPPI -> Bool
 ptmDependentPPI searchTerm ptm_dependent_ppi = 
     if String.contains (String.toLower searchTerm) (String.toLower ptm_dependent_ppi.ptm_type) then
         True
@@ -51,7 +58,7 @@ ptmDependentPPI searchTerm ptm_dependent_ppi =
     else
         False
 
-proteoformPPI: String -> (ProteoformPPI Protein Source) -> Bool
+proteoformPPI: String -> ProteoformPPI -> Bool
 proteoformPPI searchTerm proteoform_ppi = 
     if String.contains (String.toLower searchTerm) (String.toLower proteoform_ppi.protein_1.pro_id) then
         True
@@ -72,7 +79,7 @@ proteoformPPI searchTerm proteoform_ppi =
     else
         False
 
-substrate: String -> (Substrate Source SubstrateEnzyme) -> Bool
+substrate: String -> Substrate -> Bool
 substrate searchTerm substrate_item = 
     if String.contains (String.toLower searchTerm) (String.toLower substrate_item.residue) then
         True

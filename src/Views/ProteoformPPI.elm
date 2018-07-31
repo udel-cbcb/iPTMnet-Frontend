@@ -4,7 +4,6 @@ import Css exposing (..)
 import Html.Styled.Attributes exposing (..)
 import Msgs exposing (..)
 import RemoteData exposing (WebData)
-import Model exposing (..)
 import String.Interpolate exposing (interpolate)
 import String.Extra exposing (..)
 import Views.Loading
@@ -13,6 +12,10 @@ import Misc
 import Html.Styled.Events
 import Filter
 import Html.Styled.Events exposing (..)
+import Model.ProteoformPPI exposing (..)
+import Model.CytoscapeItem exposing (..)
+import Model.Misc exposing (..)
+import Model.Protein exposing (..)
 
 -- returns the substrate view
 view: ProteoformPPIData -> (List CytoscapeItem) -> Bool -> Html Msg 
@@ -68,7 +71,7 @@ viewWithSection childView =
             ]
 
 
-renderProteoformPPITable: List (ProteoformPPI Protein Source) -> String -> (List CytoscapeItem) -> Html Msg
+renderProteoformPPITable: List ProteoformPPI -> String -> (List CytoscapeItem) -> Html Msg
 renderProteoformPPITable proteoformPPIList filterTerm cytoscapeItems =
         div [id "proteoformppi_table", css [
             displayFlex,
@@ -130,7 +133,7 @@ renderProteoformPPITable proteoformPPIList filterTerm cytoscapeItems =
         
         ]
 
-proteoformPPIRow: (List CytoscapeItem) -> (ProteoformPPI Protein Source) -> Html Msg
+proteoformPPIRow: (List CytoscapeItem) -> ProteoformPPI -> Html Msg
 proteoformPPIRow cytoscapeItems proteoformPPI = 
     div [css [
         displayFlex,
@@ -201,7 +204,7 @@ buildProtein2 entity =
         ]
 
 
-decodeResponse: WebData (List (ProteoformPPI Protein Source)) -> ProteoformPPIData 
+decodeResponse: WebData (List ProteoformPPI ) -> ProteoformPPIData 
 decodeResponse response = 
     case response of
         RemoteData.NotAsked ->

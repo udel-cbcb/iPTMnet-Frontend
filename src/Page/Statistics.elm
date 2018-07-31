@@ -6,9 +6,11 @@ import Msgs exposing (..)
 import Views.Footer
 import Colors
 import Views.Navbar
-import Model exposing (..)
 import RemoteData exposing (WebData)
 import String.Interpolate exposing (interpolate)
+import Model.AppModel exposing (..)
+import Model.Statistics as Statistics exposing (..)
+import Model.Misc exposing (..)
 
 overViewCellStyle : (List Style)
 overViewCellStyle =
@@ -524,14 +526,14 @@ decodeResponse response =
             {
                 status = NotAsked,
                 error = "",
-                data = Model.emptyStatistics
+                data = Statistics.initialModel
             }
 
         RemoteData.Loading ->
             {
                 status = Loading,
                 error = "",
-                data = Model.emptyStatistics
+                data = Statistics.initialModel
             }
 
         RemoteData.Success statistics ->
@@ -545,5 +547,5 @@ decodeResponse response =
             {
                 status = Error,
                 error = (toString error),
-                data = Model.emptyStatistics
+                data = Statistics.initialModel
             }

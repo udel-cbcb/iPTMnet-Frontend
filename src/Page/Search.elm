@@ -3,7 +3,6 @@ import Html.Styled exposing (..)
 import Css exposing (..)
 import Html.Styled.Attributes exposing (..)
 import Html.Styled.Events exposing (..)
-import Model exposing (..)
 import Msgs exposing (..)
 import RemoteData exposing (WebData)
 import String.Interpolate exposing (interpolate)
@@ -12,6 +11,9 @@ import Ionicon.Ios
 import Colors
 import Views.Footer exposing (..)
 import Ionicon
+import Model.AppModel exposing (..)
+import Model.Misc exposing (..)
+import Model.SearchResult exposing (..)
 
 view : Model -> Html Msg
 view model =  
@@ -278,7 +280,7 @@ viewError errorMsg isMsgVisible erroButtonMsg =
                     marginLeft (px 20),
                     marginRight (px 20),
                     textAlign center
-                ] ++ Model.isVisible isMsgVisible)
+                ] ++ isVisible isMsgVisible)
             ][
                 text errorMsg
             ]
@@ -372,7 +374,7 @@ viewSearchTable model =
                 ]
 
 
-searchResultRow: (SearchResult Organism) -> Html Msg
+searchResultRow: SearchResult  -> Html Msg
 searchResultRow searchResult = 
     div [id "search_table_header", css [
                     displayFlex,
@@ -579,7 +581,7 @@ viewPTMDepPPIRole ptm_dep_ppi_role ptm_dep_ppi_num =
                         ]
                 ]
 
-decodeResponse: WebData (List (SearchResult Organism)) -> SearchData 
+decodeResponse: WebData (List SearchResult ) -> SearchData 
 decodeResponse response = 
     case response of
         RemoteData.NotAsked ->

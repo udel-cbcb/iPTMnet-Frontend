@@ -5,9 +5,10 @@ import Html.Styled.Events exposing (..)
 import Css exposing (..)
 import Msgs exposing (..)
 import Colors
-import Model
 
-view : Model.TabData -> (String -> Msg) -> Html Msg
+import Model.Tab exposing (..)
+
+view : TabData -> (String -> Msg) -> Html Msg
 view data onTabClick = 
             div [
                     id "div_tabs",
@@ -24,7 +25,7 @@ view data onTabClick =
                 ] ++ List.map (viewTabItem data.selectedTab onTabClick) data.tabs) 
 
 
-viewTabItem: String -> (String -> Msg) -> Model.Tab -> Html Msg
+viewTabItem: String -> (String -> Msg) -> Tab -> Html Msg
 viewTabItem selected_tab onTabClick tab =
         div [
            id "sub_button",

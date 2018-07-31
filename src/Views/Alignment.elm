@@ -6,10 +6,13 @@ import Html.Styled exposing (toUnstyled,fromUnstyled)
 import Html.Styled.Attributes exposing (..)
 import Html.Styled.Events exposing (..)
 import Msgs exposing (..)
-import Model exposing  (..)
 import Array exposing (..)
 import Html.Lazy exposing (..)
 import RemoteData exposing (WebData)
+import Model.AlignmentViewer exposing (..)
+import Model.Alignment exposing (..)
+import Model.Misc exposing (..)
+import Model.Source exposing (..)
 
 view: AlignmentViewer -> Html Msg 
 view alignmentViewer =

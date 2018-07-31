@@ -4,7 +4,6 @@ import Css exposing (..)
 import Html.Styled.Attributes exposing (..)
 import Msgs exposing (..)
 import RemoteData exposing (WebData)
-import Model exposing (..)
 import Dict exposing (..)
 import String.Interpolate exposing (interpolate)
 import String.Extra exposing (..)
@@ -16,6 +15,11 @@ import Styles.Generic
 import Misc
 import Html.Styled.Events
 import Filter
+import Model.Substrate exposing (..)
+import Model.Misc exposing (..)
+import Model.SubstrateEnzyme exposing (..)
+import Model.Source exposing (..)
+import Model.Tab exposing (..)
 
 -- returns the substrate view
 view: SubstrateData -> String -> String -> Bool -> Html Msg 
@@ -50,7 +54,7 @@ viewWithSection childView entryID geneName =
             
         ]
 
-renderSubstrateTable: Model.SubstrateData -> Html Msg
+renderSubstrateTable: SubstrateData -> Html Msg
 renderSubstrateTable substrateData =
         div [
             id "div_substrate_table_container",
@@ -200,7 +204,7 @@ renderSubstrateTable substrateData =
 
         ]
 
-substrateRow: Substrate Source SubstrateEnzyme -> Html Msg
+substrateRow: Substrate -> Html Msg
 substrateRow substrate = 
         div [css [
         displayFlex,
@@ -273,7 +277,7 @@ buildSource source =
         text source.name
     ]
 
-decodeResponse: WebData (Dict String (List (Substrate Source SubstrateEnzyme))) -> SubstrateData 
+decodeResponse: WebData (Dict String (List Substrate )) -> SubstrateData 
 decodeResponse response = 
     case response of
         RemoteData.NotAsked ->
@@ -330,7 +334,7 @@ decodeResponse response =
                 filterTerm = ""
             }
 
-toTab : ( String, List (Substrate Source SubstrateEnzyme) )  -> Tab
+toTab : ( String, List Substrate )  -> Tab
 toTab substrate_list =
     {
         title = Tuple.first substrate_list,

@@ -1,14 +1,13 @@
 module Views.AdvancedSearch exposing (..)
-import Model exposing (..)
 import Html.Styled exposing (..)
 import Html.Styled.Events exposing (..)
 import Css exposing (..)
 import Html.Styled.Attributes exposing (..)
-import Model exposing (..)
 import Msgs exposing (..)
 import Colors exposing (..)
 import Styles.Home exposing (..)
 import List.Extra
+import Model.SearchOptions exposing (..)
 
 view : SearchOptions -> Bool -> Bool -> Html Msg
 view searchOptions advancedSearchVisibility isInNavbar = 

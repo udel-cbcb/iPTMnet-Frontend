@@ -9,7 +9,7 @@ import Styles.Home exposing (..)
 import Ionicon exposing (..)
 import Ionicon.Ios exposing (..)
 import Views.AdvancedSearch exposing (..)
-import Model exposing (..)
+import Model.Navbar exposing (..)
 
 navBarItemCSS: List Style
 navBarItemCSS = 
@@ -20,7 +20,7 @@ navBarItemCSS =
          fontSize (px 13)
         ]
 
-view: Model.Navbar -> Html Msg
+view: Navbar -> Html Msg
 view navbar = 
         div [
             id "nav_bar_container",

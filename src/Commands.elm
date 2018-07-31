@@ -2,56 +2,70 @@ module Commands exposing (..)
 
 import Http
 import Msgs exposing (Msg)
-import Model exposing (Info)
 import RemoteData
 import Routing
-import Model
 import Navigation
 import String.Interpolate exposing(interpolate)
 import FileReader exposing (NativeFile)
 import Task
 import Json.Encode
+import Model.Misc as Misc exposing (..)
+import Model.Info as Info
+import Model.Proteoform as Proteoform
+import Model.PTMDependentPPI as PTMDependentPPI
+import Model.ProteoformPPI as ProteoformPPI
+import Model.Substrate as Substrate
+import Model.SearchResult
+import Model.Alignment
+import Model.BatchPage
+import Model.Kinase exposing (..)
+import Model.BatchPage exposing (..)
+import Model.BatchEnzyme exposing (..)
+import Model.BatchPTMPPI exposing (..)
+import Model.Statistics exposing (..)
+import Model.AppModel as AppModel exposing (..)
+import Model.Navbar as Navbar
 
 fetchInfo: String -> Cmd Msg
 fetchInfo id = 
-    Http.get (interpolate (Model.url ++ "/{0}/info") [id]) Model.infoDecoder
+    Http.get (interpolate (Misc.url ++ "/{0}/info") [id]) Info.infoDecoder
     |> RemoteData.sendRequest
     |> Cmd.map Msgs.OnFetchInfo
 
 fetchProteoforms: String -> Cmd Msg
 fetchProteoforms id = 
-    Http.get (interpolate (Model.url ++ "/{0}/proteoforms") [id]) Model.proteoformListDecoder
+    Http.get (interpolate (Misc.url ++ "/{0}/proteoforms") [id]) Proteoform.proteoformListDecoder
     |> RemoteData.sendRequest
     |> Cmd.map Msgs.OnFetchProteoform
 
 fetchPTMDependentPPI: String -> Cmd Msg
 fetchPTMDependentPPI id = 
-    Http.get (interpolate (Model.url ++ "/{0}/ptmppi") [id]) Model.ptmDependentPPIListDecoder
+    Http.get (interpolate (Misc.url ++ "/{0}/ptmppi") [id]) PTMDependentPPI.ptmDependentPPIListDecoder
     |> RemoteData.sendRequest
     |> Cmd.map Msgs.OnFetchPTMDependentPPI
 
 fetchProteoformsPPI: String -> Cmd Msg
 fetchProteoformsPPI id = 
-    Http.get (interpolate (Model.url ++ "/{0}/proteoformsppi") [id]) Model.proteoformPPIListDecoder
+    Http.get (interpolate (Misc.url ++ "/{0}/proteoformsppi") [id]) ProteoformPPI.proteoformPPIListDecoder
     |> RemoteData.sendRequest
     |> Cmd.map Msgs.OnFetchProteoformPPI
 
 
 fetchSubstrates: String -> Cmd Msg
 fetchSubstrates id = 
-    Http.get (interpolate (Model.url ++ "/{0}/substrate") [id]) Model.substrateTableDecoder
+    Http.get (interpolate (Misc.url ++ "/{0}/substrate") [id]) Substrate.substrateTableDecoder
     |> RemoteData.sendRequest
     |> Cmd.map Msgs.OnFetchSubstrates
 
 fetchSearchResults: String -> Cmd Msg
 fetchSearchResults query_params = 
-    Http.get (interpolate (Model.url ++ "/search?{0}") [query_params]) Model.searchResultListDecoder
+    Http.get (interpolate (Misc.url ++ "/search?{0}") [query_params]) Model.SearchResult.searchResultListDecoder
     |> RemoteData.sendRequest
     |> Cmd.map Msgs.OnFetchSearchResults
 
 fetchMSA: String -> Cmd Msg 
 fetchMSA id =
-    Http.get (interpolate (Model.url ++ "/{0}/msa") [id]) Model.alignmentArrayDecoder
+    Http.get (interpolate (Misc.url ++ "/{0}/msa") [id]) Model.Alignment.alignmentArrayDecoder
     |> RemoteData.sendRequest
     |> Cmd.map Msgs.OnFetchAlignment
 
@@ -61,40 +75,40 @@ getFileContents nf =
     FileReader.readAsTextFile nf.blob
     |> Task.attempt Msgs.OnFileContent
 
-fetchBatchData : Model.Output -> (List Model.Kinase) -> Cmd Msg 
+fetchBatchData : Model.BatchPage.Output -> (List Kinase) -> Cmd Msg 
 fetchBatchData output kinases =
     case output of 
-    Model.Enzymes ->
+    Enzymes ->
         fetchBatchEnzymes kinases
-    Model.PTMPPI ->
+    PTMPPI ->
         fetchBatchPTMPPI kinases
 
-fetchBatchEnzymes : (List Model.Kinase) -> Cmd Msg
+fetchBatchEnzymes : (List Kinase) -> Cmd Msg
 fetchBatchEnzymes kinases =
     let 
-        json_body = Json.Encode.list (List.map Model.kinaseToJson kinases)
+        json_body = Json.Encode.list (List.map kinaseToJson kinases)
     in
-        Http.post "http://aws3.proteininformationresource.org/batch_ptm_enzymes" (Http.jsonBody json_body) Model.batchEnzymeListDecoder 
+        Http.post "http://aws3.proteininformationresource.org/batch_ptm_enzymes" (Http.jsonBody json_body) batchEnzymeListDecoder 
         |> RemoteData.sendRequest
         |> Cmd.map Msgs.OnFetchBatchEnzymes
 
-fetchBatchPTMPPI : (List Model.Kinase) -> Cmd Msg
+fetchBatchPTMPPI : (List Kinase) -> Cmd Msg
 fetchBatchPTMPPI kinases =
     let 
-        json_body = Json.Encode.list (List.map Model.kinaseToJson kinases)
+        json_body = Json.Encode.list (List.map kinaseToJson kinases)
     in
-        Http.post "http://aws3.proteininformationresource.org/batch_ptm_ppi" (Http.jsonBody json_body) Model.batchPTMPPIListDecoder 
+        Http.post "http://aws3.proteininformationresource.org/batch_ptm_ppi" (Http.jsonBody json_body) batchPTMPPIListDecoder 
         |> RemoteData.sendRequest
         |> Cmd.map Msgs.OnFetchBatchPTMPPI
 
 fetchStatistics : Cmd Msg
 fetchStatistics =
-     Http.get (Model.url ++ "/statistics") Model.statisticsDecoder
+     Http.get (Misc.url ++ "/statistics") statisticsDecoder
     |> RemoteData.sendRequest
     |> Cmd.map Msgs.OnFetchStatistics
 
 
-handleRoute : Model.Model -> Navigation.Location -> (Model.Model, Cmd Msg)
+handleRoute : Model -> Navigation.Location -> (Model, Cmd Msg)
 handleRoute model location =
         -- parse to location to get the route and update the model       
         let
@@ -105,59 +119,59 @@ handleRoute model location =
             Routing.HomeRoute -> 
                 let
                               -- hide the search bar in navigation
-                    newModel = Model.setNavBarSearchVisibility model.navbar False
-                              |> Model.setNavbar model
+                    newModel = Navbar.setNavBarSearchVisibility model.navbar False
+                              |> AppModel.setNavbar model
                               -- set the proper route
-                              |> Model.setRoute currentRoute
+                              |> AppModel.setRoute currentRoute
                 in
                     (newModel, Cmd.none )
             Routing.CitationRoute -> 
                 let
                               -- hide the search bar in navigation
-                    newModel = Model.setNavBarSearchVisibility model.navbar False
-                              |> Model.setNavbar model
+                    newModel = Navbar.setNavBarSearchVisibility model.navbar False
+                              |> AppModel.setNavbar model
                               -- set the proper route
-                              |> Model.setRoute currentRoute
+                              |> AppModel.setRoute currentRoute
                 in
                     (newModel, Cmd.none )
             Routing.AboutRoute -> 
                 let
                               -- hide the search bar in navigation
-                    newModel = Model.setNavBarSearchVisibility model.navbar False
-                              |> Model.setNavbar model
+                    newModel = Navbar.setNavBarSearchVisibility model.navbar False
+                              |> AppModel.setNavbar model
                               -- set the proper route
-                              |> Model.setRoute currentRoute
+                              |> AppModel.setRoute currentRoute
                 in
                     (newModel, Cmd.none )
             Routing.ApiRoute -> 
                 let
                               -- hide the search bar in navigation
-                    newModel = Model.setNavBarSearchVisibility model.navbar False
-                              |> Model.setNavbar model
+                    newModel = Navbar.setNavBarSearchVisibility model.navbar False
+                              |> AppModel.setNavbar model
                               -- set the proper route
-                              |> Model.setRoute currentRoute
+                              |> AppModel.setRoute currentRoute
                 in
                     (newModel, Cmd.none )
             Routing.StatisticsRoute -> 
                 let
                               -- hide the search bar in navigation
-                    newModel = Model.setNavBarSearchVisibility model.navbar False
-                              |> Model.setNavbar model
+                    newModel = Navbar.setNavBarSearchVisibility model.navbar False
+                              |> AppModel.setNavbar model
                               -- set the proper route
-                              |> Model.setRoute currentRoute
+                              |> AppModel.setRoute currentRoute
                 in
-                    (newModel, fetchStatistics)
+                    (newModel, Cmd.none )
             Routing.LicenseRoute -> 
                 let
                               -- hide the search bar in navigation
-                    newModel = Model.setNavBarSearchVisibility model.navbar False
-                              |> Model.setNavbar model
+                    newModel = Navbar.setNavBarSearchVisibility model.navbar False
+                              |> AppModel.setNavbar model
                               -- set the proper route
-                              |> Model.setRoute currentRoute
+                              |> AppModel.setRoute currentRoute
                 in
                     (newModel, Cmd.none )
             Routing.EntryRoute id ->
-                (Model.setRoute currentRoute model, Cmd.batch [fetchInfo id,
+                (AppModel.setRoute currentRoute model, Cmd.batch [fetchInfo id,
                                                              fetchProteoforms id,
                                                              fetchPTMDependentPPI id,
                                                              fetchProteoformsPPI id,
@@ -165,10 +179,10 @@ handleRoute model location =
                                                              fetchMSA id
                                                              ])
             Routing.SearchRoute queryString -> 
-                (Model.setRoute currentRoute model, fetchSearchResults queryString )
+                (AppModel.setRoute currentRoute model, fetchSearchResults queryString )
             Routing.BatchRoute ->
-                (Model.setRoute currentRoute model, Cmd.none )
+                (AppModel.setRoute currentRoute model, Cmd.none )
             Routing.BatchResultRoute ->
-                (Model.setRoute currentRoute model, (fetchBatchData model.batchPage.outputType model.batchPage.kinases) )
+                (AppModel.setRoute currentRoute model, (fetchBatchData model.batchPage.outputType model.batchPage.kinases) )
             Routing.NotFoundRoute ->
-                (Model.setRoute currentRoute model, Cmd.none )
+                (AppModel.setRoute currentRoute model, Cmd.none )

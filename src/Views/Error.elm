@@ -3,10 +3,10 @@ import Html.Styled exposing (..)
 import Css exposing (..)
 import Html.Styled.Attributes exposing (..)
 import Html.Styled.Events exposing (..)
-import Model exposing (..)
 import Msgs exposing (..)
 import Colors
 import Ionicon
+import Model.Misc exposing (..)
 
 view: String -> Bool-> Msg -> Html Msg 
 view errorMsg isMsgVisible erroButtonMsg = 
@@ -109,7 +109,7 @@ view errorMsg isMsgVisible erroButtonMsg =
                     marginLeft (px 20),
                     marginRight (px 20),
                     textAlign center
-                ] ++ Model.isVisible isMsgVisible)
+                ] ++ isVisible isMsgVisible)
             ][
                 text errorMsg
             ]

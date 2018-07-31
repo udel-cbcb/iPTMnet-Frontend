@@ -2,7 +2,6 @@ module Page.BatchResult exposing (..)
 import Html.Styled exposing (..)
 import Css exposing (..)
 import Html.Styled.Attributes exposing (..)
-import Model exposing (..)
 import Msgs exposing (..)
 import RemoteData exposing (WebData)
 import Views.Navbar
@@ -11,6 +10,13 @@ import Views.Tabs
 import String.Interpolate exposing (interpolate)
 import String.Extra
 import List
+import Model.AppModel exposing (..)
+import Model.BatchPage as BatchPage exposing (..)
+import Model.BatchEnzyme exposing (..)
+import Model.BatchPTMPPI exposing (..)
+import Model.Kinase exposing (..)
+import Model.Misc exposing (..)
+import Model.Source exposing (..)
 
 view : Model -> Html Msg
 view model =  
@@ -22,9 +28,9 @@ view model =
             Views.Navbar.view model.navbar,
 
             case model.batchPage.outputType of
-                Model.Enzymes ->
+                BatchPage.Enzymes ->
                     batchEnzymesView model
-                Model.PTMPPI ->
+                BatchPage.PTMPPI ->
                     batchPTMPPIView model
         ]
 

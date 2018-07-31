@@ -2,13 +2,15 @@ module Views.Info exposing (..)
 import Html.Styled exposing (..)
 import Css exposing (..)
 import Html.Styled.Attributes exposing (..)
-import Model exposing (..)
 import Msgs exposing (..)
 import RemoteData exposing (WebData)
 import String.Interpolate exposing (interpolate)
 import String
 import Views.Error
 import Views.Loading
+import Model.Info as Info exposing (..)
+import Model.Misc exposing (..)
+import Model.Pro exposing (..)
 
 -- css
 geneInfoTableCSS: List Style
@@ -166,14 +168,14 @@ decodeResponse response =
             {
                 status = NotAsked,
                 error = "",
-                data = Model.emptyInfo
+                data = Info.initialModel
             }
 
         RemoteData.Loading ->
             {
                 status = Loading,
                 error = "",
-                data = Model.emptyInfo
+                data = Info.initialModel
             }
 
         RemoteData.Success info ->
@@ -187,5 +189,5 @@ decodeResponse response =
             {
                 status = Error,
                 error = (toString error),
-                data = Model.emptyInfo
+                data = Info.initialModel
             }

@@ -3,7 +3,6 @@ import Html.Styled exposing (..)
 import Css exposing (..)
 import Html.Styled.Attributes exposing (..)
 import Html.Styled.Events exposing (..)
-import Model exposing (..)
 import Msgs exposing (..)
 import Views.Info
 import Views.Sequence
@@ -17,6 +16,8 @@ import String.Interpolate exposing (interpolate)
 import Json.Encode exposing (string)
 import Colors
 import String.Extra
+import Model.AppModel exposing (..)
+import Model.CytoscapeItem exposing (..)
 
 
 -- css

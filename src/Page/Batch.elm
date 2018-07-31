@@ -3,12 +3,13 @@ import Html.Styled exposing (..)
 import Css exposing (..)
 import Html.Styled.Attributes exposing (..)
 import Html.Styled.Events exposing (..)
-import Model exposing (..)
 import Msgs exposing (..)
 import Views.Navbar
 import FileReader exposing (NativeFile)
 import String.Interpolate exposing (interpolate)
 import Views.Footer
+import Model.AppModel exposing (..)
+import Model.BatchPage as BatchPage exposing (..)
 
 tableItemCSS: List Style
 tableItemCSS =
@@ -156,12 +157,12 @@ view model =
                                         name "output" ,
                                         value "enzymes",
                                         Html.Styled.Attributes.checked (case model.batchPage.outputType of 
-                                                                        Model.Enzymes ->
+                                                                        BatchPage.Enzymes ->
                                                                             True
                                                                         _ ->
                                                                             False
                                         ),
-                                        onClick (Msgs.SwitchBatchOutput Model.Enzymes),
+                                        onClick (Msgs.SwitchBatchOutput BatchPage.Enzymes),
                                         css [
                                             marginTop (px 10),
                                             marginRight (px 10)
@@ -177,12 +178,12 @@ view model =
                                         name "output" ,
                                         value "ptmppi",
                                         Html.Styled.Attributes.checked (case model.batchPage.outputType of 
-                                                                        Model.PTMPPI ->
+                                                                        BatchPage.PTMPPI ->
                                                                             True
                                                                         _ ->
                                                                             False
                                         ),
-                                        onClick (Msgs.SwitchBatchOutput Model.PTMPPI),
+                                        onClick (Msgs.SwitchBatchOutput BatchPage.PTMPPI),
                                         css [
                                             marginTop (px 10),
                                             marginRight (px 10)

@@ -4,7 +4,6 @@ import Html.Styled.Events
 import Css exposing (..)
 import Html.Styled.Attributes exposing (..)
 import Msgs exposing (..)
-import Model exposing (..)
 import RemoteData exposing (WebData)
 import String.Interpolate exposing (interpolate)
 import Views.Loading
@@ -12,6 +11,9 @@ import Views.Error
 import Misc
 import Filter
 import Html.Styled.Events exposing (..)
+import Model.PTMDependentPPI exposing (..)
+import Model.CytoscapeItem exposing (..)
+import Model.Misc exposing (..)
 
 -- returns the substrate view
 view: PTMDependentPPIData -> (List CytoscapeItem) -> Bool -> Html Msg 
@@ -66,7 +68,7 @@ viewWithSection childView =
                 childView             
             ]
 
-renderPTMTable: List (PTMDependentPPI Entity Source) -> String -> (List CytoscapeItem) -> Html Msg
+renderPTMTable: List PTMDependentPPI -> String -> (List CytoscapeItem) -> Html Msg
 renderPTMTable ptmDependentPPIList filterTerm cytoscapeItems =
         div [id "ptmdependentppi_table", css [
             displayFlex,
@@ -141,7 +143,7 @@ renderPTMTable ptmDependentPPIList filterTerm cytoscapeItems =
         
         ]
 
-ptmDependentPPIRow: (List CytoscapeItem) -> (PTMDependentPPI Entity Source) -> Html Msg
+ptmDependentPPIRow: (List CytoscapeItem) -> PTMDependentPPI -> Html Msg
 ptmDependentPPIRow cytoscapeItems ptmdependentppi = 
     div [css [
         displayFlex,
@@ -212,7 +214,7 @@ ptmDependentPPIRow cytoscapeItems ptmdependentppi =
         ]
     ]
 
-decodeResponse: WebData (List (PTMDependentPPI Entity Source)) -> PTMDependentPPIData 
+decodeResponse: WebData (List PTMDependentPPI) -> PTMDependentPPIData 
 decodeResponse response = 
     case response of
         RemoteData.NotAsked ->

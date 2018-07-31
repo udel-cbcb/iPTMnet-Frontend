@@ -2,7 +2,6 @@ module Page.Home exposing (..)
 import Html.Styled exposing (..)
 import Css exposing (..)
 import Html.Styled.Attributes exposing (..)
-import Model exposing (..)
 import Msgs exposing (..)
 import Html.Styled.Events exposing (onClick,onWithOptions,on)
 import Json.Decode as Decode
@@ -13,6 +12,8 @@ import Ionicon
 import Views.AdvancedSearch exposing (..)
 import Views.Footer exposing (..)
 import String.Extra
+import Model.AppModel exposing (..)
+import Model.SearchOptions exposing (..)
 
 {-|
 When clicking a link we want to prevent the default browser behaviour which is to load a new page.

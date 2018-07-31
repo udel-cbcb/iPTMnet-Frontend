@@ -4,13 +4,13 @@ import Css exposing (..)
 import Html.Styled.Attributes exposing (..)
 import Msgs exposing (..)
 import Views.Alignment
-import Model
 import Ionicon
 import Colors
-import RemoteData exposing (WebData)
+import Model.AlignmentViewer exposing (..)
+import Model.Misc exposing (..)
 
 -- returns the sequence view
-view: Model.AlignmentViewer -> Html Msg 
+view: AlignmentViewer -> Html Msg 
 view alignmentViewer =
     div [id "sequence_viewer", css [marginTop (px 20)] ][
         div [css [
@@ -26,14 +26,14 @@ view alignmentViewer =
                 --- Views.Alignment.view alignmentViewer
                 -- viewLoading
                 (case alignmentViewer.status of 
-                Model.NotAsked ->
+                NotAsked ->
                     div [] []
-                Model.Loading ->
+                Loading ->
                     viewLoading
-                Model.Error ->
+                Error ->
                     -- viewError model.searchPage.searchData.error model.searchPage.showErrorMsg Msgs.OnSearchResultErrorButtonClicked
                     div [] []
-                Model.Success ->
+                Success ->
                     Views.Alignment.view alignmentViewer)
         ]
     ]

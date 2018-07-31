@@ -5,7 +5,6 @@ import Html.Styled.Attributes exposing (..)
 import Html.Styled.Events exposing (..)
 import Msgs exposing (..)
 import RemoteData exposing (WebData)
-import Model exposing (..)
 import String.Interpolate exposing (interpolate)
 import String.Extra exposing (..)
 import Views.Loading 
@@ -13,6 +12,10 @@ import Views.Error
 import Misc
 import String
 import Filter
+import Model.Proteoform exposing (..)
+import Model.Misc exposing (..)
+import Model.CytoscapeItem exposing (..)
+import Model.Enzyme exposing (..)
 
 -- returns the substrate view
 view: ProteoformsData -> (List CytoscapeItem) -> Bool ->  Html Msg 
@@ -66,7 +69,7 @@ viewWithSection childView =
                 childView             
             ]
 
-decodeResponse: WebData (List (Proteoform Enzyme Source)) -> ProteoformsData 
+decodeResponse: WebData (List Proteoform ) -> ProteoformsData 
 decodeResponse response = 
     case response of
         RemoteData.NotAsked ->
@@ -103,7 +106,7 @@ decodeResponse response =
 
 
 
-renderProteoformTable: List (Proteoform Enzyme Source) -> String -> (List CytoscapeItem) -> Html Msg
+renderProteoformTable: List (Proteoform ) -> String -> (List CytoscapeItem) -> Html Msg
 renderProteoformTable proteoformList filterTerm cytoscapeItems =
         div [id "proteoforms_table", css [
             displayFlex,
@@ -165,7 +168,7 @@ renderProteoformTable proteoformList filterTerm cytoscapeItems =
         
         ]
 
-proteoformRow: (List CytoscapeItem) -> (Proteoform Enzyme Source) -> Html Msg
+proteoformRow: (List CytoscapeItem) -> Proteoform -> Html Msg
 proteoformRow cytoscapeItems proteoform = 
     div [css [
         displayFlex,
