@@ -88,7 +88,7 @@ fetchBatchEnzymes kinases =
     let 
         json_body = Json.Encode.list (List.map kinaseToJson kinases)
     in
-        Http.post "http://aws3.proteininformationresource.org/batch_ptm_enzymes" (Http.jsonBody json_body) batchEnzymeListDecoder 
+        Http.post (Misc.url ++ "/batch_ptm_enzymes") (Http.jsonBody json_body) batchEnzymeListDecoder 
         |> RemoteData.sendRequest
         |> Cmd.map Msgs.OnFetchBatchEnzymes
 
@@ -97,7 +97,7 @@ fetchBatchPTMPPI kinases =
     let 
         json_body = Json.Encode.list (List.map kinaseToJson kinases)
     in
-        Http.post "http://aws3.proteininformationresource.org/batch_ptm_ppi" (Http.jsonBody json_body) batchPTMPPIListDecoder 
+        Http.post (Misc.url ++ "/batch_ptm_ppi") (Http.jsonBody json_body) batchPTMPPIListDecoder 
         |> RemoteData.sendRequest
         |> Cmd.map Msgs.OnFetchBatchPTMPPI
 
