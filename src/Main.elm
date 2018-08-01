@@ -37,6 +37,7 @@ import Model.Kinase as Kinase exposing (..)
 import Model.BatchPage as BatchPage exposing (..)
 import Model.StatisticsPage as StatisticsPage exposing (..)
 import Model.AlignmentViewer as AlignmentViewer exposing (..)
+import Misc exposing (..)
 
 init : Navigation.Location -> ( Model, Cmd Msg )
 init location =
@@ -96,6 +97,12 @@ update msg model =
                            |> Model.setHomePage model
             in
                 (newModel, Cmd.none)
+        Msgs.OnHomePageSearchKeyDown key ->
+            if key == 13 then
+                update (performSearch model.homePage.searchOptions) model
+            else
+                (model, Cmd.none)
+            
         Msgs.SetSelectedPTMTypes ptm_types -> 
             let
                 newModel = SearchOptions.setSelectedPTMTypes model.homePage.searchOptions ptm_types

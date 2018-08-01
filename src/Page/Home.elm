@@ -3,7 +3,7 @@ import Html.Styled exposing (..)
 import Css exposing (..)
 import Html.Styled.Attributes exposing (..)
 import Msgs exposing (..)
-import Html.Styled.Events exposing (onClick,onWithOptions,on)
+import Html.Styled.Events exposing (..)
 import Json.Decode as Decode
 import String.Interpolate exposing (interpolate)
 import Colors exposing (..)
@@ -14,6 +14,7 @@ import Views.Footer exposing (..)
 import String.Extra
 import Model.AppModel exposing (..)
 import Model.SearchOptions exposing (..)
+import Misc exposing (..)
 
 {-|
 When clicking a link we want to prevent the default browser behaviour which is to load a new page.
@@ -29,44 +30,6 @@ onLinkClick message =
     in
         onWithOptions "click" options (Decode.succeed message)
 
-buildPTMType: String -> String
-buildPTMType ptm_type =
-    interpolate "ptm_type={0}" [ptm_type]
-
-buildOrganism: String -> String
-buildOrganism organism = 
-    interpolate "organism={0}" [organism]
-
-isNotEmpty : String -> Bool
-isNotEmpty string =
-    not (String.Extra.isBlank string) 
-
-buildSearchUrl: SearchOptions -> String
-buildSearchUrl searchOptions =
-    let
-        ptm_types = case (List.length searchOptions.ptm_types) > 0 of
-                        True -> interpolate "&{0}" [(String.join "&" (List.map buildPTMType searchOptions.ptm_types))]
-                        False -> ""
-        
-        taxon_codes = searchOptions.organisms_defaults
-                      ++ 
-                      (
-                        String.Extra.clean searchOptions.organisms_user  
-                        |> String.split ","
-                        |> List.map String.Extra.clean
-                        |> List.filter isNotEmpty 
-                      )
-                       
-        taxons = case (List.length taxon_codes) > 0 of 
-                            True -> interpolate "&{0}" [(String.join "&" (List.map buildOrganism taxon_codes))] 
-                            False -> ""
-
-    in
-        interpolate "/search/search_term={0}&term_type={1}&role={2}{3}{4}" [searchOptions.searchTerm,
-                                                                            searchOptions.searchTermType,
-                                                                            searchOptions.role,
-                                                                            ptm_types,
-                                                                            taxons]
 
 view : Model -> Html Msg
 view model =
@@ -216,6 +179,7 @@ view model =
                    input [
                         id "input_search_term",
                         Html.Styled.Events.onInput Msgs.OnHomePageSearchInputChange,
+                        onKeyDown Msgs.OnHomePageSearchKeyDown,
                         css [
                             Css.width (px 400),
                             Css.property "height" "98%",

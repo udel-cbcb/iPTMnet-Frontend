@@ -32,6 +32,7 @@ type Msg
     | OnFetchStatistics (WebData (Statistics))
     | OnFetchAlignment (WebData (Array Alignment))
     | OnHomePageSearchInputChange String
+    | OnHomePageSearchKeyDown Int
     | OnAdvancedSearchVisibilityChange Bool
     | OnFetchSearchResults (WebData (List SearchResult))
     | OnFileChange (List NativeFile)
