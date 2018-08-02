@@ -10,6 +10,7 @@
     "css-loader": "^0.28.11",
     "elm-webpack-loader": "^4.5.0",
     "file-loader": "^1.1.11",
+    "mark.js": "^8.11.1",
     "style-loader": "^0.21.0",
     "uglify-js": "^3.3.24",
     "uglifyjs-webpack-plugin": "^1.2.5",

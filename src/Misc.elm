@@ -8,6 +8,8 @@ import Html.Styled.Events exposing (on, keyCode, onInput)
 import Json.Decode as Json
 import String.Extra
 import Model.SearchOptions exposing (..)
+import Regex
+import Array
 
 buildPMID: String -> Html Msg
 buildPMID pmid =
@@ -62,3 +64,12 @@ performSearch searchOptions =
     case (String.Extra.clean searchOptions.searchTerm) == "" of 
                                       False -> Msgs.ChangeLocation (buildSearchUrl searchOptions)
                                       True -> ChangeLocation "/"
+
+extractSearchTerm : String -> String
+extractSearchTerm queryString =
+    Regex.find (Regex.AtMost 1) (Regex.regex "=\\d*\\w*&") queryString
+    |> List.map (\item -> item.match)
+    |> List.head
+    |> Maybe.withDefault ""
+    |> String.Extra.replace "=" ""
+    |> String.Extra.replace "&" ""

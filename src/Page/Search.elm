@@ -4,7 +4,6 @@ import Css exposing (..)
 import Html.Styled.Attributes exposing (..)
 import Html.Styled.Events exposing (..)
 import Msgs exposing (..)
-import RemoteData exposing (WebData)
 import String.Interpolate exposing (interpolate)
 import Views.Navbar
 import Ionicon.Ios
@@ -14,6 +13,7 @@ import Ionicon
 import Model.AppModel exposing (..)
 import Model.Misc exposing (..)
 import Model.SearchResult exposing (..)
+import Model.SearchPage exposing (..)
 
 view : Model -> Html Msg
 view model =  
@@ -28,18 +28,14 @@ view model =
                 Views.Navbar.view model.navbar,
 
                 (case model.searchPage.searchData.status of 
-                NotAsked ->
+                0 ->
                     div [] []
-                Loading ->
+                1 ->
                     viewLoading
-                Error ->
-                    viewError model.searchPage.searchData.error model.searchPage.showErrorMsg Msgs.OnSearchResultErrorButtonClicked
-                Success ->
-                    case (List.length model.searchPage.searchData.data) of
-                    0 ->
-                        viewEmpty
-                    _ ->
-                        viewSearchTable model),            
+                2 ->
+                    viewSuccess model.searchPage
+                _ ->
+                    viewError model.searchPage.searchData.error model.searchPage.showErrorMsg Msgs.OnSearchResultErrorButtonClicked),         
 
                 div[
                     id "filler",
@@ -101,6 +97,7 @@ viewLoading =
             ]
         ]
     ]
+
 
 
 viewEmpty: Html Msg 
@@ -287,8 +284,117 @@ viewError errorMsg isMsgVisible erroButtonMsg =
         ]
     ]
 
-viewSearchTable : Model -> Html Msg
-viewSearchTable model =  
+viewSuccess: SearchPage -> Html Msg
+viewSuccess searchPage = 
+    div [
+        id "content",
+        css [
+            displayFlex,
+            flexDirection column
+        ]
+    ][  
+        div [
+            id "search_info",
+            css [
+                displayFlex,
+                flexDirection row,
+                alignItems center,
+                marginTop (px 20),
+                marginBottom (px 10)
+            ]
+        ][
+            div [
+                css [
+                    marginLeft (px 20),
+                    marginRight (px 20)
+                ]
+            ][
+                text "Showing results for : ",
+                span [
+                    css [
+                        fontWeight bold
+                    ]
+                ][
+                    text searchPage.searchTerm
+                ]
+            ],
+
+            div [
+                css [
+                    displayFlex,
+                    flexDirection row,
+                    marginLeft auto,
+                    marginRight (px 50),
+                    alignItems center
+                ]
+            ][
+                div [
+                    css [
+                        border (px 1),
+                        borderStyle solid,
+                        borderColor (hex "#232323ff"),
+                        Css.height (px 30),
+                        Css.width (px 30),
+                        textAlign center,
+                        lineHeight (px 30),
+                        hover [
+                            cursor pointer
+                        ]
+                    ],
+                    onClick Msgs.OnClickPrevSearchResults
+                ][
+                    text "<"
+                ],
+                div [
+                    css [
+                        marginLeft (px 20),
+                        marginRight (px 20)
+                    ]
+                ][
+                    let
+                        startIndex = ((searchPage.selectedIndex * entriesPerPage) + 1)
+                        endIndex = (startIndex + (entriesPerPage - 1))
+                        actualEndIndex = (if endIndex > searchPage.searchData.count then
+                                             searchPage.searchData.count
+                                          else
+                                             endIndex  
+                                         )
+                        progress = (interpolate "{0}-{1} of {2}" [toString startIndex, toString actualEndIndex, toString searchPage.searchData.count] ) 
+                    in
+                        text progress
+                ],
+                div [
+                    css [
+                        border (px 1),
+                        borderStyle solid,
+                        borderColor (hex "#232323ff"),
+                        Css.height (px 30),
+                        Css.width (px 30),
+                        textAlign center,
+                        lineHeight (px 30),
+                        hover [
+                            cursor pointer
+                        ]
+                    ],
+                    onClick Msgs.OnClickNextSearchResults
+                ][
+                    text ">"
+                ]   
+            ]
+
+        ],
+
+        -- search table
+        (if List.length searchPage.searchData.data > 0 then
+            viewSearchTable searchPage 
+         else
+            viewEmpty)
+        
+
+    ]
+
+viewSearchTable : SearchPage -> Html Msg
+viewSearchTable searchPage =  
     div [id "search_table", css [
                     displayFlex,
                     flexDirection column,
@@ -298,7 +404,7 @@ viewSearchTable model =
                     div [id "search_table_header", css [
                         displayFlex,
                         flexDirection row,
-                        backgroundColor (hex "#eff1f2"),
+                        -- backgroundColor (hex "#eff1f2"),
                         paddingTop (px 10),
                         paddingBottom (px 10),
                         fontWeight bold,
@@ -316,26 +422,30 @@ viewSearchTable model =
                             input [type_ "checkbox", css[marginLeft (px 5), marginRight (px 15)]][],
                             text "iPTM ID"
                         ],
-                        div [css [flex (num 3),
-                                marginRight (px 10)         
+                        div [css [flex (num 2),
+                                marginRight (px 10),
+                                paddingLeft (px 8)         
                                 ]] 
                         [
                             text "Protein Name"
                         ],
                         div [css [flex (num 1.5),
-                            marginRight (px 20)         
+                            marginRight (px 20),
+                            paddingLeft (px 5)         
                             ]]
                         [
                             text "Gene Name"
                         ],
                         div [css [flex (num 1.5),
-                                marginRight (px 20)
+                                marginRight (px 20),
+                                paddingLeft (px 5)
                                 ]]
                         [
                             text "Organism"
                         ],
                         div [css [flex (num 1),
-                                marginRight (px 20)
+                                marginRight (px 20),
+                                paddingLeft (px 10)
                                 ]]
                         [
                             text "Substrate Role"
@@ -369,14 +479,14 @@ viewSearchTable model =
                     ],
 
                     -- rows
-                    div [] (List.map searchResultRow model.searchPage.searchData.data)               
+                    div [] (List.map (searchResultRow searchPage.searchTerm) searchPage.searchData.data)               
 
                 ]
 
 
-searchResultRow: SearchResult  -> Html Msg
-searchResultRow searchResult = 
-    div [id "search_table_header", css [
+searchResultRow: String -> SearchResult  -> Html Msg
+searchResultRow searchTerm searchResult = 
+    div [id "search_table_row", css [
                     displayFlex,
                     flexDirection row,
                     paddingTop (px 10),
@@ -391,28 +501,34 @@ searchResultRow searchResult =
                             paddingLeft (px 5),
                             displayFlex,
                             flexDirection row,
-                            alignItems center
+                            alignItems center,
+                            fontSize (Css.em 0.90),
+                            Css.property "word-break" "break-all"
                         ]]
                     [
                         input [type_ "checkbox", css[marginLeft (px 5), marginRight (px 15)]][],
-                        a [href (interpolate "/entry/{0}" [searchResult.iptm_id] )] [text (interpolate "iPTM:{0}/{1}" [searchResult.iptm_id])]
+                        a [href (interpolate "/entry/{0}" [searchResult.iptm_id] )] [text (interpolate "iPTM:{0}/ {1}" [searchResult.iptm_id,searchResult.uniprot_ac])]
                     ],
-                    div [css [flex (num 3),
-                            marginRight (px 10)         
-                            ]] 
-                    [
-                        text searchResult.protein_name
-                    ],
+                    div [css [flex (num 2),
+                            marginRight (px 10)        
+                            ]][
+                                text searchResult.protein_name
+                            ]
+                    ,
                     div [css [flex (num 1.5),
-                        marginRight (px 20)         
+                        marginRight (px 20),
+                        Css.property "word-break" "break-all"          
                         ]]
                     [
-                        span [] [text (interpolate "Name: {0} " [searchResult.gene_name]),
-                        br[][],
+                        span [] [
+                            span [][text "Name: "],
+                            span [][text searchResult.gene_name],
+                            br[][],
                         text (interpolate "Synonyms: {0} " [String.join "," searchResult.synonyms])] 
                     ],
                     div [css [flex (num 1.5),
-                            marginRight (px 20)
+                            marginRight (px 20),
+                            Css.property "word-break" "break-all"
                             ]]
                     [
                         text ( interpolate "{0} ({1})" [searchResult.organism.common_name,searchResult.organism.species] )
@@ -421,31 +537,36 @@ searchResultRow searchResult =
                             marginRight (px 20),
                             displayFlex,
                             flexDirection row,
-                            alignItems center
+                            alignItems center,
+                            Css.property "word-break" "break-all"
                             ]]
                     [
                         viewSubstrateRole searchResult.substrate_role searchResult.substrate_num
                     ],
                     div [css [flex (num 1),
-                            marginRight (px 20)
+                            marginRight (px 20),
+                            Css.property "word-break" "break-all"
                             ]]
                     [
                         viewEnzymeRole searchResult.enzyme_num searchResult.enzyme_role
                     ],
                     div [css [flex (num 1.5),
-                            marginRight (px 20)
+                            marginRight (px 20),
+                            Css.property "word-break" "break-all"
                         ]]
                     [
                         viewPTMDepPPIRole searchResult.ptm_dependent_ppi_role searchResult.ptm_dependent_ppi_num                        
                     ],
                     div [css [flex (num 0.5),
-                            marginRight (px 20)
+                            marginRight (px 20),
+                            Css.property "word-break" "break-all"
                             ]]
                     [
                         text (toString searchResult.sites)
                     ],
                     div [css [flex (num 0.5),
-                            marginRight (px 20)
+                            marginRight (px 20),
+                            Css.property "word-break" "break-all"
                             ]]
                     [
                         text (toString searchResult.isoforms)
@@ -580,34 +701,3 @@ viewPTMDepPPIRole ptm_dep_ppi_role ptm_dep_ppi_num =
                             ]
                         ]
                 ]
-
-decodeResponse: WebData (List SearchResult ) -> SearchData 
-decodeResponse response = 
-    case response of
-        RemoteData.NotAsked ->
-            {
-                status = NotAsked,
-                error = "",
-                data = []
-            }
-
-        RemoteData.Loading ->
-            {
-                status = Loading,
-                error = "",
-                data = []
-            }
-
-        RemoteData.Success searchResultList ->
-            {
-                status = Success,
-                error = "",
-                data = searchResultList
-            }
-
-        RemoteData.Failure error ->
-            {
-                status = Error,
-                error = (toString error),
-                data = []
-            }

@@ -1,19 +1,29 @@
 module Model.SearchResult exposing (..)
-import Model.Misc exposing (..)
 import Model.Organism exposing (..)
 import Json.Decode exposing (..)
 import Json.Decode.Pipeline exposing (..)
 
 type alias SearchData = 
     {
-        status: RequestState,
+        status: Int,
         error: String,
+        count: Int,
         data: List SearchResult    
+    }
+
+initialSearchData : SearchData 
+initialSearchData = 
+    {
+        status = 0,
+        error = "",
+        count = 0,
+        data = []
     }
 
 type alias SearchResult = 
     {
         iptm_id:String,
+        uniprot_ac: String,
         protein_name: String,
         gene_name: String,
         synonyms: (List String),
@@ -32,6 +42,7 @@ searchResultDecoder: Decoder SearchResult
 searchResultDecoder =
     decode SearchResult
         |> required "iptm_id" string
+        |> required "uniprot_ac" string
         |> required "protein_name" string
         |> optional "gene_name" string ""
         |> required "synonyms" (list string)
@@ -48,3 +59,11 @@ searchResultDecoder =
 searchResultListDecoder: Decoder (List SearchResult)
 searchResultListDecoder =
     list searchResultDecoder
+
+rawSearchResultDecoder: Decoder SearchData
+rawSearchResultDecoder =
+    decode SearchData
+        |> required "status" int
+        |> required "error" string
+        |> required "count" int
+        |> required "data" searchResultListDecoder

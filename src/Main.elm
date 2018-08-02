@@ -38,6 +38,7 @@ import Model.BatchPage as BatchPage exposing (..)
 import Model.StatisticsPage as StatisticsPage exposing (..)
 import Model.AlignmentViewer as AlignmentViewer exposing (..)
 import Misc exposing (..)
+import Misc as ViewMisc
 
 init : Navigation.Location -> ( Model, Cmd Msg )
 init location =
@@ -147,20 +148,38 @@ update msg model =
                 (newModel, Cmd.none)   
 
         -- Search Page
-        Msgs.OnFetchSearchResults response -> 
+        Msgs.OnFetchSearchResults searchData -> 
             let
-                newModel = Page.Search.decodeResponse response
-                |> SearchPage.setSearchData model.searchPage
-                |> Model.setSearchPage model
+                newModel = SearchPage.setSearchData model.searchPage searchData
+                           |> Model.setSearchPage model
             in
-                ( newModel, Cmd.none)
+                ( newModel, Ports.highlight newModel.searchPage.searchTerm)
 
         Msgs.OnSearchResultErrorButtonClicked ->
             let
                 newModel = SearchPage.setSearchShowErrorMsg (not model.searchPage.showErrorMsg) model.searchPage
                            |> Model.setSearchPage model
             in
-                ( newModel, Cmd.none)      
+                ( newModel, Cmd.none)
+        Msgs.OnClickNextSearchResults -> 
+            let
+                newModel = SearchPage.setSelectedIndex (model.searchPage.selectedIndex + 1) model.searchPage
+                           |> Model.setSearchPage model
+                queryString = newModel.searchPage.queryString
+                startIndex = newModel.searchPage.selectedIndex * SearchPage.entriesPerPage
+                endIndex = startIndex + SearchPage.entriesPerPage   
+            in
+                (newModel, Commands.fetchSearchResults queryString startIndex endIndex)
+        Msgs.OnClickPrevSearchResults -> 
+            let
+                newModel = SearchPage.setSelectedIndex (model.searchPage.selectedIndex - 1) model.searchPage
+                           |> Model.setSearchPage model
+                queryString = newModel.searchPage.queryString
+                startIndex = newModel.searchPage.selectedIndex + SearchPage.entriesPerPage
+                endIndex = startIndex + SearchPage.entriesPerPage   
+            in
+                (newModel, Commands.fetchSearchResults queryString startIndex endIndex)
+                      
 
         -- Entry Page
         Msgs.OnFetchInfo response ->
@@ -395,13 +414,12 @@ update msg model =
         -- Alignment
         Msgs.OnFetchAlignment response -> 
             let 
-                alignmentViewer = Views.Alignment.decodeResponse (Debug.log "response" response)
+                alignmentViewer = Views.Alignment.decodeResponse response
                 newModel = Model.setAlignmentViewer model alignmentViewer
             in
                 (newModel, Cmd.none)
         Msgs.OnSequenceHover rowIndex columnIndex ->
             let 
-                _ = Debug.log "hover_index -> " ((toString rowIndex) ++ " : " ++ (toString columnIndex))
                 newModel = AlignmentViewer.setSelectedAlignmentRowIndex rowIndex model.alignmentViewer
                           |> AlignmentViewer.setSelectedAlignmentColumnIndex columnIndex
                           |> Model.setAlignmentViewer model
@@ -411,8 +429,8 @@ update msg model =
 
 -- SUBSCRIPTIONS
 subscriptions : Model -> Sub Msg
-subscriptions model =
-    Sub.none
+subscriptions _ =
+    Ports.onSearchDone Msgs.OnFetchSearchResults
 
 -- MAIN
 main : Program Never Model Msg
