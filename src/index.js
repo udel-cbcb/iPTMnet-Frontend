@@ -29,50 +29,60 @@ app.ports.highlight.subscribe(function (word) {
  * 3 - Error
  */
 app.ports.performSearch.subscribe(function (url) {
-    try{
-        const request = new XMLHttpRequest();
-        request.open("GET", url);
-        request.onreadystatechange=(e)=>{
-            if(request.readyState == XMLHttpRequest.LOADING){
-                var searchData = {
-                    status: 1,
-                    error: "",
-                    count: 10,
-                    data: []
-                }
-                app.ports.onSearchDone.send(searchData);
-            }
-            else if(request.readyState == XMLHttpRequest.DONE ){
-                if (request.status == 200) {
-                    var searchData = {
-                        status : 2,
-                        error : "",
-                        count: 10,
-                        data: JSON.parse(request.responseText)
+    const request = new XMLHttpRequest();
+        try{
+            request.open("GET", url);
+            request.onreadystatechange=(e)=>{
+                try{
+                    if(request.readyState == XMLHttpRequest.LOADING){
+                        var searchData = {
+                            status: 1,
+                            error: "",
+                            count: 0,
+                            data: []
+                        }
+                        app.ports.onSearchDone.send(searchData);
                     }
-                    app.ports.onSearchDone.send(searchData);
-                }else{
+                    else if(request.readyState == XMLHttpRequest.DONE ){
+                        if (request.status == 200) {
+                            var searchData = {
+                                status : 2,
+                                error : "",
+                                count: parseInt(request.getResponseHeader("count"),10),
+                                data: JSON.parse(request.responseText)
+                            }
+                            app.ports.onSearchDone.send(searchData);
+                        }else{
+                            var searchData = {
+                                status : 3,
+                                error : request.responseText,
+                                count: 0,
+                                data: []
+                            }
+                            app.ports.onSearchDone.send(searchData);
+                        }
+                        
+                    }
+                }catch(err){
                     var searchData = {
                         status : 3,
-                        error : request.responseText,
-                        count: 10,
+                        error : err.message,
+                        count: 0,
                         data: []
                     }
                     app.ports.onSearchDone.send(searchData);
-                }
-                
+                }            
             }
+            request.send();
+        }catch(err){
+            var searchData = {
+                status : 3,
+                error : err.message,
+                count: 0,
+                data: []
+            }
+            app.ports.onSearchDone.send(searchData);
         }
-        request.send();
-    }catch(err){
-        var searchData = {
-            status: 3,
-            error: err.message,
-            count: 10,
-            data: []
-        }
-        app.ports.onSearchDone.send(searchData);
-    }
 });
 
 

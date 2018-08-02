@@ -185,11 +185,13 @@ handleRoute model location =
                                                              ])
             Routing.SearchRoute queryString  -> 
                 let 
-                    newModel = SearchPage.setSearchTerm model.searchPage (ViewMisc.extractSearchTerm queryString)
+                    newModel = SearchPage.setSearchTerm SearchPage.initialModel (ViewMisc.extractSearchTerm queryString)
+                               |> SearchPage.setSelectedIndex 0
+                               |> SearchPage.setQueryString queryString
                                |> AppModel.setSearchPage model 
                                |> AppModel.setRoute currentRoute   
                 in
-                    (newModel, Cmd.batch[fetchSearchResults queryString 0 28])
+                    (newModel, Cmd.batch[fetchSearchResults queryString 0 SearchPage.entriesPerPage])
             Routing.BatchRoute ->
                 (AppModel.setRoute currentRoute model, Cmd.none )
             Routing.BatchResultRoute ->

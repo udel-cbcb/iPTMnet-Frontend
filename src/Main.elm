@@ -160,7 +160,26 @@ update msg model =
                 newModel = SearchPage.setSearchShowErrorMsg (not model.searchPage.showErrorMsg) model.searchPage
                            |> Model.setSearchPage model
             in
-                ( newModel, Cmd.none)      
+                ( newModel, Cmd.none)
+        Msgs.OnClickNextSearchResults -> 
+            let
+                newModel = SearchPage.setSelectedIndex (model.searchPage.selectedIndex + 1) model.searchPage
+                           |> Model.setSearchPage model
+                queryString = newModel.searchPage.queryString
+                startIndex = newModel.searchPage.selectedIndex * SearchPage.entriesPerPage
+                endIndex = startIndex + SearchPage.entriesPerPage   
+            in
+                (newModel, Commands.fetchSearchResults queryString startIndex endIndex)
+        Msgs.OnClickPrevSearchResults -> 
+            let
+                newModel = SearchPage.setSelectedIndex (model.searchPage.selectedIndex - 1) model.searchPage
+                           |> Model.setSearchPage model
+                queryString = newModel.searchPage.queryString
+                startIndex = newModel.searchPage.selectedIndex + SearchPage.entriesPerPage
+                endIndex = startIndex + SearchPage.entriesPerPage   
+            in
+                (newModel, Commands.fetchSearchResults queryString startIndex endIndex)
+                      
 
         -- Entry Page
         Msgs.OnFetchInfo response ->

@@ -65,4 +65,6 @@ type Msg
     | OnTaxonsUserInput String
     | OnBatchTabClick String
     | OnSequenceHover Int Int
+    | OnClickNextSearchResults
+    | OnClickPrevSearchResults
 

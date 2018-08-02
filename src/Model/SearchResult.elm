@@ -11,6 +11,15 @@ type alias SearchData =
         data: List SearchResult    
     }
 
+initialSearchData : SearchData 
+initialSearchData = 
+    {
+        status = 0,
+        error = "",
+        count = 0,
+        data = []
+    }
+
 type alias SearchResult = 
     {
         iptm_id:String,
