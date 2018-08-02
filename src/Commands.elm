@@ -60,11 +60,13 @@ fetchSubstrates id =
     |> RemoteData.sendRequest
     |> Cmd.map Msgs.OnFetchSubstrates
 
-fetchSearchResults: String -> Cmd Msg
-fetchSearchResults query_params = 
-    Http.get (interpolate (Misc.url ++ "/search?{0}") [query_params]) Model.SearchResult.searchResultListDecoder
-    |> RemoteData.sendRequest
-    |> Cmd.map Msgs.OnFetchSearchResults
+fetchSearchResults: String -> Int -> Int -> Cmd Msg
+fetchSearchResults query_params start_index end_index= 
+    let
+        url = (interpolate (Misc.url ++ "/search?{0}&paginate=true&start_index={1}&end_index={2}") [query_params,toString start_index,toString end_index])
+    in
+        Ports.performSearch url
+     
 
 fetchMSA: String -> Cmd Msg 
 fetchMSA id =
@@ -181,13 +183,13 @@ handleRoute model location =
                                                              fetchSubstrates id,
                                                              fetchMSA id
                                                              ])
-            Routing.SearchRoute queryString -> 
+            Routing.SearchRoute queryString  -> 
                 let 
                     newModel = SearchPage.setSearchTerm model.searchPage (ViewMisc.extractSearchTerm queryString)
                                |> AppModel.setSearchPage model 
                                |> AppModel.setRoute currentRoute   
                 in
-                    (newModel, Cmd.batch[fetchSearchResults queryString])
+                    (newModel, Cmd.batch[fetchSearchResults queryString 0 28])
             Routing.BatchRoute ->
                 (AppModel.setRoute currentRoute model, Cmd.none )
             Routing.BatchResultRoute ->

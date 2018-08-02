@@ -4,7 +4,6 @@ import Css exposing (..)
 import Html.Styled.Attributes exposing (..)
 import Html.Styled.Events exposing (..)
 import Msgs exposing (..)
-import RemoteData exposing (WebData)
 import String.Interpolate exposing (interpolate)
 import Views.Navbar
 import Ionicon.Ios
@@ -14,7 +13,7 @@ import Ionicon
 import Model.AppModel exposing (..)
 import Model.Misc exposing (..)
 import Model.SearchResult exposing (..)
-import Misc exposing (..)
+
 
 view : Model -> Html Msg
 view model =  
@@ -29,18 +28,18 @@ view model =
                 Views.Navbar.view model.navbar,
 
                 (case model.searchPage.searchData.status of 
-                NotAsked ->
+                0 ->
                     div [] []
-                Loading ->
+                1 ->
                     viewLoading
-                Error ->
-                    viewError model.searchPage.searchData.error model.searchPage.showErrorMsg Msgs.OnSearchResultErrorButtonClicked
-                Success ->
+                2 ->
                     case (List.length model.searchPage.searchData.data) of
                     0 ->
                         viewEmpty
                     _ ->
-                        viewSearchTable model),            
+                        viewSearchTable model   
+                _ ->
+                    viewError model.searchPage.searchData.error model.searchPage.showErrorMsg Msgs.OnSearchResultErrorButtonClicked),         
 
                 div[
                     id "filler",
@@ -583,34 +582,3 @@ viewPTMDepPPIRole ptm_dep_ppi_role ptm_dep_ppi_num =
                             ]
                         ]
                 ]
-
-decodeResponse: WebData (List SearchResult ) -> SearchData 
-decodeResponse response = 
-    case response of
-        RemoteData.NotAsked ->
-            {
-                status = NotAsked,
-                error = "",
-                data = []
-            }
-
-        RemoteData.Loading ->
-            {
-                status = Loading,
-                error = "",
-                data = []
-            }
-
-        RemoteData.Success searchResultList ->
-            {
-                status = Success,
-                error = "",
-                data = searchResultList
-            }
-
-        RemoteData.Failure error ->
-            {
-                status = Error,
-                error = (toString error),
-                data = []
-            }

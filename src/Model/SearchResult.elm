@@ -1,13 +1,13 @@
 module Model.SearchResult exposing (..)
-import Model.Misc exposing (..)
 import Model.Organism exposing (..)
 import Json.Decode exposing (..)
 import Json.Decode.Pipeline exposing (..)
 
 type alias SearchData = 
     {
-        status: RequestState,
+        status: Int,
         error: String,
+        count: Int,
         data: List SearchResult    
     }
 
@@ -50,3 +50,11 @@ searchResultDecoder =
 searchResultListDecoder: Decoder (List SearchResult)
 searchResultListDecoder =
     list searchResultDecoder
+
+rawSearchResultDecoder: Decoder SearchData
+rawSearchResultDecoder =
+    decode SearchData
+        |> required "status" int
+        |> required "error" string
+        |> required "count" int
+        |> required "data" searchResultListDecoder

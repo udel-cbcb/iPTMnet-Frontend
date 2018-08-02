@@ -148,11 +148,10 @@ update msg model =
                 (newModel, Cmd.none)   
 
         -- Search Page
-        Msgs.OnFetchSearchResults response -> 
+        Msgs.OnFetchSearchResults searchData -> 
             let
-                newModel = Page.Search.decodeResponse response
-                |> SearchPage.setSearchData model.searchPage
-                |> Model.setSearchPage model
+                newModel = SearchPage.setSearchData model.searchPage searchData
+                           |> Model.setSearchPage model
             in
                 ( newModel, Ports.highlight newModel.searchPage.searchTerm)
 
@@ -396,13 +395,12 @@ update msg model =
         -- Alignment
         Msgs.OnFetchAlignment response -> 
             let 
-                alignmentViewer = Views.Alignment.decodeResponse (Debug.log "response" response)
+                alignmentViewer = Views.Alignment.decodeResponse response
                 newModel = Model.setAlignmentViewer model alignmentViewer
             in
                 (newModel, Cmd.none)
         Msgs.OnSequenceHover rowIndex columnIndex ->
             let 
-                _ = Debug.log "hover_index -> " ((toString rowIndex) ++ " : " ++ (toString columnIndex))
                 newModel = AlignmentViewer.setSelectedAlignmentRowIndex rowIndex model.alignmentViewer
                           |> AlignmentViewer.setSelectedAlignmentColumnIndex columnIndex
                           |> Model.setAlignmentViewer model
@@ -412,8 +410,8 @@ update msg model =
 
 -- SUBSCRIPTIONS
 subscriptions : Model -> Sub Msg
-subscriptions model =
-    Sub.none
+subscriptions _ =
+    Ports.onSearchDone Msgs.OnFetchSearchResults
 
 -- MAIN
 main : Program Never Model Msg

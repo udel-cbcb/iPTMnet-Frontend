@@ -29,8 +29,9 @@ initialModel =
         query_params = "",
         searchTerm = "",
         searchData = {
-            status = NotAsked,
+            status = 0,
             error = "",
+            count = 0,
             data = []
         },
         showErrorMsg = False

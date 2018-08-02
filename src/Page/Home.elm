@@ -5,7 +5,6 @@ import Html.Styled.Attributes exposing (..)
 import Msgs exposing (..)
 import Html.Styled.Events exposing (..)
 import Json.Decode as Decode
-import String.Interpolate exposing (interpolate)
 import Colors exposing (..)
 import Views.Navbar
 import Ionicon
@@ -13,7 +12,6 @@ import Views.AdvancedSearch exposing (..)
 import Views.Footer exposing (..)
 import String.Extra
 import Model.AppModel exposing (..)
-import Model.SearchOptions exposing (..)
 import Misc exposing (..)
 
 {-|

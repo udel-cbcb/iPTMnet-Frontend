@@ -34,7 +34,7 @@ type Msg
     | OnHomePageSearchInputChange String
     | OnHomePageSearchKeyDown Int
     | OnAdvancedSearchVisibilityChange Bool
-    | OnFetchSearchResults (WebData (List SearchResult))
+    | OnFetchSearchResults SearchData
     | OnFileChange (List NativeFile)
     | OnFileContent (Result FileReader.Error String)
     | OnFetchBatchEnzymes  (WebData (List BatchEnzyme))
