@@ -14,6 +14,7 @@ import Ionicon
 import Model.AppModel exposing (..)
 import Model.Misc exposing (..)
 import Model.SearchResult exposing (..)
+import Misc exposing (..)
 
 view : Model -> Html Msg
 view model =  
@@ -369,14 +370,14 @@ viewSearchTable model =
                     ],
 
                     -- rows
-                    div [] (List.map searchResultRow model.searchPage.searchData.data)               
+                    div [] (List.map (searchResultRow model.homePage.searchOptions.searchTerm) model.searchPage.searchData.data)               
 
                 ]
 
 
-searchResultRow: SearchResult  -> Html Msg
-searchResultRow searchResult = 
-    div [id "search_table_header", css [
+searchResultRow: String -> SearchResult  -> Html Msg
+searchResultRow searchTerm searchResult = 
+    div [id "search_table_row", css [
                     displayFlex,
                     flexDirection row,
                     paddingTop (px 10),
@@ -395,20 +396,22 @@ searchResultRow searchResult =
                         ]]
                     [
                         input [type_ "checkbox", css[marginLeft (px 5), marginRight (px 15)]][],
-                        a [href (interpolate "/entry/{0}" [searchResult.iptm_id] )] [text (interpolate "iPTM:{0}/{1}" [searchResult.iptm_id])]
+                        a [href (interpolate "/entry/{0}" [searchResult.iptm_id] )] [text (interpolate "iPTM:{0}/{1}" [searchResult.iptm_id,searchResult.uniprot_ac])]
                     ],
                     div [css [flex (num 3),
                             marginRight (px 10)         
-                            ]] 
-                    [
-                        text searchResult.protein_name
-                    ],
+                            ]][
+                                text searchResult.protein_name
+                            ]
+                    ,
                     div [css [flex (num 1.5),
                         marginRight (px 20)         
                         ]]
                     [
-                        span [] [text (interpolate "Name: {0} " [searchResult.gene_name]),
-                        br[][],
+                        span [] [
+                            span [][text "Name: "],
+                            span [][text searchResult.gene_name],
+                            br[][],
                         text (interpolate "Synonyms: {0} " [String.join "," searchResult.synonyms])] 
                     ],
                     div [css [flex (num 1.5),

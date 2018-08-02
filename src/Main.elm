@@ -38,6 +38,7 @@ import Model.BatchPage as BatchPage exposing (..)
 import Model.StatisticsPage as StatisticsPage exposing (..)
 import Model.AlignmentViewer as AlignmentViewer exposing (..)
 import Misc exposing (..)
+import Misc as ViewMisc
 
 init : Navigation.Location -> ( Model, Cmd Msg )
 init location =
@@ -153,7 +154,7 @@ update msg model =
                 |> SearchPage.setSearchData model.searchPage
                 |> Model.setSearchPage model
             in
-                ( newModel, Cmd.none)
+                ( newModel, Ports.highlight newModel.searchPage.searchTerm)
 
         Msgs.OnSearchResultErrorButtonClicked ->
             let

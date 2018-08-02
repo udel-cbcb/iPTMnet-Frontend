@@ -14,6 +14,7 @@ type alias SearchData =
 type alias SearchResult = 
     {
         iptm_id:String,
+        uniprot_ac: String,
         protein_name: String,
         gene_name: String,
         synonyms: (List String),
@@ -32,6 +33,7 @@ searchResultDecoder: Decoder SearchResult
 searchResultDecoder =
     decode SearchResult
         |> required "iptm_id" string
+        |> required "uniprot_ac" string
         |> required "protein_name" string
         |> optional "gene_name" string ""
         |> required "synonyms" (list string)

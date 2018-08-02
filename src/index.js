@@ -2,6 +2,7 @@
 
 // Require index.html so it gets copied to dist
 require('./index.html');
+const Mark = require('mark.js');
 
 var Elm = require('./Main.elm');
 var mountNode = document.getElementById('main');
@@ -11,4 +12,13 @@ var app = Elm.Main.embed(mountNode);
 
 app.ports.scrollToDiv.subscribe(function (element_name) {
     document.getElementById(element_name).scrollIntoView();
+});
+
+app.ports.highlight.subscribe(function (word) {
+    setTimeout(()=>{
+        console.log(word);
+        var context = document.getElementById("search_table");
+        var instance = new Mark(context);
+        instance.mark(word);
+    },1000);
 });

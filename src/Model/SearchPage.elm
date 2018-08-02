@@ -5,6 +5,7 @@ import Model.SearchResult exposing (..)
 type alias SearchPage = 
     {
         query_params : String,
+        searchTerm : String,
         searchData: SearchData,
         showErrorMsg: Bool
     }
@@ -12,6 +13,10 @@ type alias SearchPage =
 setSearchData : SearchPage -> SearchData -> SearchPage
 setSearchData searchPage newData =
     { searchPage | searchData = newData }
+
+setSearchTerm : SearchPage -> String -> SearchPage
+setSearchTerm searchPage newSearchTerm =
+    { searchPage | searchTerm = newSearchTerm }
 
 setSearchShowErrorMsg: Bool -> SearchPage -> SearchPage
 setSearchShowErrorMsg newValue searchPage =
@@ -22,6 +27,7 @@ initialModel : SearchPage
 initialModel =
     {
         query_params = "",
+        searchTerm = "",
         searchData = {
             status = NotAsked,
             error = "",

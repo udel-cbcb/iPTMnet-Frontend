@@ -25,6 +25,9 @@ import Model.BatchPTMPPI exposing (..)
 import Model.Statistics exposing (..)
 import Model.AppModel as AppModel exposing (..)
 import Model.Navbar as Navbar
+import Ports
+import Misc as ViewMisc
+import Model.SearchPage as SearchPage exposing (..)
 
 fetchInfo: String -> Cmd Msg
 fetchInfo id = 
@@ -179,7 +182,12 @@ handleRoute model location =
                                                              fetchMSA id
                                                              ])
             Routing.SearchRoute queryString -> 
-                (AppModel.setRoute currentRoute model, fetchSearchResults queryString )
+                let 
+                    newModel = SearchPage.setSearchTerm model.searchPage (ViewMisc.extractSearchTerm queryString)
+                               |> AppModel.setSearchPage model 
+                               |> AppModel.setRoute currentRoute   
+                in
+                    (newModel, Cmd.batch[fetchSearchResults queryString])
             Routing.BatchRoute ->
                 (AppModel.setRoute currentRoute model, Cmd.none )
             Routing.BatchResultRoute ->

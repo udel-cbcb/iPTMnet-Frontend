@@ -1,3 +1,5 @@
 port module Ports exposing (..)
 
 port scrollToDiv : String -> Cmd msg
+
+port highlight : String -> Cmd msg
