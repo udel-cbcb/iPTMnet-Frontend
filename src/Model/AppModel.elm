@@ -7,6 +7,7 @@ import Model.BatchPage as BatchPage exposing (..)
 import Model.StatisticsPage as StatisticsPage exposing (..)
 import Model.AlignmentViewer as AlignmentViewer exposing (..)
 import Model.Misc exposing (..)
+import Model.BrowsePage as BrowsePage exposing (..)
 
 import Routing
 
@@ -19,41 +20,9 @@ type alias Model =
         entryPage: EntryPage,
         batchPage: BatchPage,
         statisticsPage: StatisticsPage,
-        alignmentViewer: AlignmentViewer        
+        alignmentViewer: AlignmentViewer,
+        browsePage: BrowsePage         
     }
-
-setRoute: Routing.Route -> Model -> Model
-setRoute new_route model = 
-    {model | route = new_route }
-
-setNavbar: Model -> Navbar -> Model
-setNavbar model newNavbar =
-    {model | navbar = newNavbar}
-
-setHomePage : Model -> HomePage -> Model
-setHomePage model newHomePage = 
-    { model | homePage = newHomePage}
-
-setSearchPage : Model -> SearchPage -> Model
-setSearchPage model newSearchPage = 
-    { model | searchPage = newSearchPage}
-
-setEntryPage : Model -> EntryPage -> Model
-setEntryPage model newEntryPage = 
-    { model | entryPage = newEntryPage}
-
-setBatchPage: Model -> BatchPage -> Model
-setBatchPage model newBatchPage = 
-    { model | batchPage = newBatchPage }
-
-setStatisticsPage : Model -> StatisticsPage -> Model
-setStatisticsPage model newPage = 
-    { model | statisticsPage = newPage}
-
-setAlignmentViewer : Model -> AlignmentViewer -> Model
-setAlignmentViewer model newAlignmentViewer = 
-    {model | alignmentViewer = newAlignmentViewer}
-
 
 initialModel : Routing.Route -> Model
 initialModel route = 
@@ -92,9 +61,46 @@ initialModel route =
             inputText = ""
         },
         statisticsPage = StatisticsPage.initialModel,
-
-        alignmentViewer = defaultAlignmentViewer
+        alignmentViewer = defaultAlignmentViewer,
+        browsePage = BrowsePage.initialModel
 
     }
+
+setRoute: Routing.Route -> Model -> Model
+setRoute new_route model = 
+    {model | route = new_route }
+
+setNavbar: Model -> Navbar -> Model
+setNavbar model newNavbar =
+    {model | navbar = newNavbar}
+
+setHomePage : Model -> HomePage -> Model
+setHomePage model newHomePage = 
+    { model | homePage = newHomePage}
+
+setSearchPage : Model -> SearchPage -> Model
+setSearchPage model newSearchPage = 
+    { model | searchPage = newSearchPage}
+
+setBrowsePage : Model -> BrowsePage -> Model
+setBrowsePage model newBrowsePage = 
+    { model | browsePage = newBrowsePage}
+
+setEntryPage : Model -> EntryPage -> Model
+setEntryPage model newEntryPage = 
+    { model | entryPage = newEntryPage}
+
+setBatchPage: Model -> BatchPage -> Model
+setBatchPage model newBatchPage = 
+    { model | batchPage = newBatchPage }
+
+setStatisticsPage : Model -> StatisticsPage -> Model
+setStatisticsPage model newPage = 
+    { model | statisticsPage = newPage}
+
+setAlignmentViewer : Model -> AlignmentViewer -> Model
+setAlignmentViewer model newAlignmentViewer = 
+    {model | alignmentViewer = newAlignmentViewer}
+
 
 

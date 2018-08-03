@@ -85,4 +85,62 @@ app.ports.performSearch.subscribe(function (url) {
         }
 });
 
+app.ports.performBrowse.subscribe(function (url) {
+    const request = new XMLHttpRequest();
+        try{
+            request.open("GET", url);
+            console.log(url);
+            request.onreadystatechange=(e)=>{
+                try{
+                    if(request.readyState == XMLHttpRequest.LOADING){
+                        var browseData = {
+                            status: 1,
+                            error: "",
+                            count: 0,
+                            data: []
+                        }
+                        app.ports.onBrowseDone.send(browseData);
+                    }
+                    else if(request.readyState == XMLHttpRequest.DONE ){
+                        if (request.status == 200) {
+                            var browseData = {
+                                status : 2,
+                                error : "",
+                                count: parseInt(request.getResponseHeader("count"),10),
+                                data: JSON.parse(request.responseText)
+                            }
+                            app.ports.onBrowseDone.send(browseData);
+                        }else{
+                            var browseData = {
+                                status : 3,
+                                error : request.responseText,
+                                count: 0,
+                                data: []
+                            }
+                            app.ports.onBrowseDone.send(browseData);
+                        }
+                        
+                    }
+                }catch(err){
+                    var browseData = {
+                        status : 3,
+                        error : err.message,
+                        count: 0,
+                        data: []
+                    }
+                    app.ports.onBrowseDone.send(browseData);
+                }            
+            }
+            request.send();
+        }catch(err){
+            var browseData = {
+                status : 3,
+                error : err.message,
+                count: 0,
+                data: []
+            }
+            app.ports.onBrowseDone.send(browseData);
+        }
+});
+
 

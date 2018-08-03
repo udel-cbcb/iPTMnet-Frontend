@@ -15,7 +15,6 @@ import Model.Proteoform as Proteoform
 import Model.PTMDependentPPI as PTMDependentPPI
 import Model.ProteoformPPI as ProteoformPPI
 import Model.Substrate as Substrate
-import Model.SearchResult
 import Model.Alignment
 import Model.BatchPage
 import Model.Kinase exposing (..)
@@ -28,6 +27,7 @@ import Model.Navbar as Navbar
 import Ports
 import Misc as ViewMisc
 import Model.SearchPage as SearchPage exposing (..)
+import Model.BrowsePage as BrowsePage exposing (..)
 
 fetchInfo: String -> Cmd Msg
 fetchInfo id = 
@@ -66,7 +66,13 @@ fetchSearchResults query_params start_index end_index=
         url = (interpolate (Misc.url ++ "/search?{0}&paginate=true&start_index={1}&end_index={2}") [query_params,toString start_index,toString end_index])
     in
         Ports.performSearch url
-     
+
+fetchBrowseResults: String -> Int -> Int -> Cmd Msg
+fetchBrowseResults query_params start_index end_index= 
+    let
+        url = (interpolate (Misc.url ++ "/browse?{0}&start_index={1}&end_index={2}") [query_params,toString start_index,toString end_index])
+    in
+        Ports.performBrowse url     
 
 fetchMSA: String -> Cmd Msg 
 fetchMSA id =
@@ -196,5 +202,13 @@ handleRoute model location =
                 (AppModel.setRoute currentRoute model, Cmd.none )
             Routing.BatchResultRoute ->
                 (AppModel.setRoute currentRoute model, (fetchBatchData model.batchPage.outputType model.batchPage.kinases) )
+            Routing.BrowseRoute ->
+                let
+                    newModel = BrowsePage.setSelectedIndex 0 model.browsePage
+                               |> BrowsePage.setQueryString  "term_type=All&role=Enzyme%20or%20Substrate"
+                               |> AppModel.setBrowsePage model
+                               |> AppModel.setRoute currentRoute 
+                in
+                    (newModel, fetchBrowseResults "term_type=All&role=Enzyme%20or%20Substrate" 0 20 )
             Routing.NotFoundRoute ->
                 (AppModel.setRoute currentRoute model, Cmd.none )

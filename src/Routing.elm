@@ -12,7 +12,8 @@ type Route
     | EntryRoute String
     | SearchRoute String
     | BatchRoute
-    | BatchResultRoute 
+    | BatchResultRoute
+    | BrowseRoute 
     | NotFoundRoute
 
 
@@ -32,6 +33,7 @@ matchers =
         , UrlParser.map SearchRoute (s "search" </> string)
         , UrlParser.map BatchRoute (s "batch")
         , UrlParser.map BatchResultRoute (s "batch-result")
+        , UrlParser.map BrowseRoute (s "browse")
         ]
 
 

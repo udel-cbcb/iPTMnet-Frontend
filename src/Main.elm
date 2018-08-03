@@ -39,6 +39,8 @@ import Model.StatisticsPage as StatisticsPage exposing (..)
 import Model.AlignmentViewer as AlignmentViewer exposing (..)
 import Misc exposing (..)
 import Misc as ViewMisc
+import Page.Browse
+import Model.BrowsePage as BrowsePage exposing (..)
 
 init : Navigation.Location -> ( Model, Cmd Msg )
 init location =
@@ -79,6 +81,9 @@ view model =
             |> toUnstyled
         Routing.BatchResultRoute ->
             Page.BatchResult.view model
+            |> toUnstyled
+        Routing.BrowseRoute ->
+            Page.Browse.view model
             |> toUnstyled
         Routing.NotFoundRoute ->
             div [] []
@@ -426,11 +431,47 @@ update msg model =
             in
                 (newModel,Cmd.none)
 
+        -- Browse
+        Msgs.OnFetchBrowseResults browseData ->
+            let
+                newModel = BrowsePage.setBrowseData browseData model.browsePage
+                           |> Model.setBrowsePage model
+            in
+                (newModel, Cmd.none)
+        Msgs.OnBrowseResultErrorButtonClicked ->
+            let
+                newModel = BrowsePage.setBrowseShowErrorMsg (not model.browsePage.showErrorMsg) model.browsePage
+                           |> Model.setBrowsePage model
+            in
+                ( newModel, Cmd.none)
+        Msgs.OnClickNextBrowseResults -> 
+            let
+                newModel = BrowsePage.setSelectedIndex (model.browsePage.selectedIndex + 1) model.browsePage
+                           |> Model.setBrowsePage model
+                queryString = newModel.browsePage.queryString
+                startIndex = newModel.browsePage.selectedIndex * BrowsePage.entriesPerPage
+                endIndex = startIndex + BrowsePage.entriesPerPage   
+            in
+                (newModel, Commands.fetchBrowseResults queryString startIndex endIndex)
+        Msgs.OnClickPrevBrowseResults -> 
+            let
+                newModel = BrowsePage.setSelectedIndex (model.browsePage.selectedIndex - 1) model.browsePage
+                           |> Model.setBrowsePage model
+                queryString = newModel.browsePage.queryString
+                startIndex = newModel.browsePage.selectedIndex + BrowsePage.entriesPerPage
+                endIndex = startIndex + BrowsePage.entriesPerPage   
+            in
+                (newModel, Commands.fetchBrowseResults queryString startIndex endIndex)
+
 
 -- SUBSCRIPTIONS
 subscriptions : Model -> Sub Msg
 subscriptions _ =
-    Ports.onSearchDone Msgs.OnFetchSearchResults
+    Sub.batch [
+        Ports.onSearchDone Msgs.OnFetchSearchResults,
+        Ports.onBrowseDone Msgs.OnFetchBrowseResults
+    ]
+    
 
 -- MAIN
 main : Program Never Model Msg

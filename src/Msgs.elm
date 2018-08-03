@@ -17,6 +17,7 @@ import Model.BatchEnzyme exposing (..)
 import Model.BatchPTMPPI exposing (..)
 import Model.BatchPage
 import Model.CytoscapeItem exposing (..)
+import Model.BrowseResult exposing (..)
 
 
 -- MESSAGES
@@ -67,4 +68,8 @@ type Msg
     | OnSequenceHover Int Int
     | OnClickNextSearchResults
     | OnClickPrevSearchResults
+    | OnFetchBrowseResults BrowseData
+    | OnBrowseResultErrorButtonClicked
+    | OnClickNextBrowseResults
+    | OnClickPrevBrowseResults
 

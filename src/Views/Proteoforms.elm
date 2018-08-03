@@ -179,9 +179,10 @@ proteoformRow cytoscapeItems proteoform =
             backgroundColor (hex "#f4f4f4")
         ]
     ]] [
-        div [css [flex (num 2),
+        div [css [flex (num 2.2),
                   marginLeft (px 5),
-                  marginRight (px 20)
+                  marginRight (px 20),
+                  Css.property "word-break" "break-all" 
                  ]] 
         [
             (

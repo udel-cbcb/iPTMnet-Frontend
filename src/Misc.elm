@@ -9,7 +9,7 @@ import Json.Decode as Json
 import String.Extra
 import Model.SearchOptions exposing (..)
 import Regex
-import Array
+
 
 buildPMID: String -> Html Msg
 buildPMID pmid =

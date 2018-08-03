@@ -147,7 +147,7 @@ renderSubstrateTable substrateData =
                     paddingBottom (px 10),
                     fontWeight bold
             ]] [
-                div [css [flex (num 1),
+                div [css [flex (num 1.6),
                           marginLeft (px 20),
                           marginRight (px 20),
                           paddingLeft (px 5)
@@ -155,7 +155,7 @@ renderSubstrateTable substrateData =
                 [
                     text "Site"
                 ],
-                div [css [flex (num 1.2),
+                div [css [flex (num 2),
                           marginRight (px 20)         
                          ]] 
                 [
@@ -218,35 +218,40 @@ substrateRow substrate =
                 div [css [flex (num 1),
                           marginLeft (px 20),
                           marginRight (px 20),
-                          paddingLeft (px 5)
+                          paddingLeft (px 5),
+                          Css.property "word-break" "break-all"  
                     ]]
                 [
                     text substrate.site
                 ],
-                div [css [flex (num 1.2),
-                          marginRight (px 20)         
+                div [css [flex (num 1.6),
+                          marginRight (px 20),
+                          Css.property "word-break" "break-all"         
                          ]] 
                 [
                     text substrate.ptm_type
                 ],
                 div [css [flex (num 3),
-                     marginRight (px 20)         
+                     marginRight (px 20),
+                     Css.property "word-break" "break-all"           
                     ]] (List.map buildEnzyme substrate.enzymes |> List.intersperse (span [css [display inline]] [text ", "])) ,
                 div [css [flex (num 1),
-                          marginRight (px 20)
+                          marginRight (px 20),
+                          Css.property "word-break" "break-all"  
                          ]]
                 [
                     Views.Score.view substrate.score
                 ],
                 div [css [flex (num 3),
-                          marginRight (px 20)
+                          marginRight (px 20),
+                          Css.property "word-break" "break-all"  
                          ]]
                 [
                     div [] (List.map buildSource substrate.sources |> List.intersperse (span [css [display inline]] [text ", "]))
                 ],
                 div [css [flex (num 3),
                           marginRight (px 20),
-                          Css.property "word-wrap" "break-word"
+                          Css.property "word-break" "break-all"  
                          ]]
                 (
                     List.map Misc.buildPMID substrate.pmids 
