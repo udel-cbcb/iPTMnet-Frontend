@@ -282,7 +282,7 @@ view model =
                             text "Advanced search"
                         ],
                         a [
-                            href "/entry/Q15796",
+                            href (pathname ++ "entry/Q15796"),
                             Html.Styled.Attributes.target "_blank",
                             css[
                                 marginRight (px 20),
