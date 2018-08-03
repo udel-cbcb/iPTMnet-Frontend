@@ -507,7 +507,7 @@ searchResultRow searchTerm searchResult =
                         ]]
                     [
                         input [type_ "checkbox", css[marginLeft (px 5), marginRight (px 15)]][],
-                        a [href (interpolate "/entry/{0}" [searchResult.iptm_id] )] [text (interpolate "iPTM:{0}/ {1}" [searchResult.iptm_id,searchResult.uniprot_ac])]
+                        a [href (interpolate (pathname ++ "entry/{0}") [searchResult.iptm_id] )] [text (interpolate "iPTM:{0}/ {1}" [searchResult.iptm_id,searchResult.uniprot_ac])]
                     ],
                     div [css [flex (num 2),
                             marginRight (px 10)        

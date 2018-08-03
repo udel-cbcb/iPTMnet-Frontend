@@ -86,7 +86,9 @@ view model =
             Page.Browse.view model
             |> toUnstyled
         Routing.NotFoundRoute ->
-            div [] []
+            div [] [
+                text "Not found"
+            ]
         
 
 -- UPDATE

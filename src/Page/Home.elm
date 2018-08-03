@@ -13,6 +13,7 @@ import Views.Footer exposing (..)
 import String.Extra
 import Model.AppModel exposing (..)
 import Misc exposing (..)
+import Model.Misc exposing (..)
 
 {-|
 When clicking a link we want to prevent the default browser behaviour which is to load a new page.
@@ -296,7 +297,7 @@ view model =
                                 text "Sample Report"
                         ],
                         a [
-                            href "/batch",
+                            href (pathname ++ "batch"),
                             css[
                                 marginLeft auto,
                                 marginRight (px 20),

@@ -494,7 +494,7 @@ browseResultRow browseResult =
                         ]]
                     [
                         input [type_ "checkbox", css[marginLeft (px 5), marginRight (px 15)]][],
-                        a [href (interpolate "/entry/{0}" [browseResult.iptm_id] )] [text (interpolate "iPTM:{0}/ {1}" [browseResult.iptm_id,browseResult.uniprot_ac])]
+                        a [href (interpolate (pathname ++ "entry/{0}") [browseResult.iptm_id] )] [text (interpolate "iPTM:{0}/ {1}" [browseResult.iptm_id,browseResult.uniprot_ac])]
                     ],
                     div [css [flex (num 2),
                             marginRight (px 10)        

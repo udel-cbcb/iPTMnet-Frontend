@@ -9,6 +9,7 @@ import Json.Decode as Json
 import String.Extra
 import Model.SearchOptions exposing (..)
 import Regex
+import Model.Misc exposing (..)
 
 
 buildPMID: String -> Html Msg
@@ -41,7 +42,7 @@ buildSearchUrl searchOptions =
                             False -> ""
 
     in
-        interpolate "/search/search_term={0}&term_type={1}&role={2}{3}{4}" [searchOptions.searchTerm,
+        interpolate (pathname ++ "search/search_term={0}&term_type={1}&role={2}{3}{4}") [searchOptions.searchTerm,
                                                                             searchOptions.searchTermType,
                                                                             searchOptions.role,
                                                                             ptm_types,

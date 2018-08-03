@@ -10,6 +10,7 @@ import Ionicon exposing (..)
 import Ionicon.Ios exposing (..)
 import Views.AdvancedSearch exposing (..)
 import Model.Navbar exposing (..)
+import Model.Misc exposing (..)
 
 navBarItemCSS: List Style
 navBarItemCSS = 
@@ -44,7 +45,7 @@ view navbar =
                     div [
                         id "nav_home",
                         css navigationItem,
-                        onClick (ChangeLocation "/")
+                        onClick (ChangeLocation (pathname ++ "home"))
                     ][
                         text "iPTMnet"
                     ],
@@ -55,7 +56,7 @@ view navbar =
                     div [
                         id "nav_browse",
                         css navigationItem,
-                        onClick (ChangeLocation "/browse")
+                        onClick (ChangeLocation (pathname ++ "browse"))
                     ][
                         text "Browse"
                     ],
@@ -70,7 +71,7 @@ view navbar =
                     div [
                         id "nav_stats",
                         css navigationItem,
-                        onClick (ChangeLocation "/statistics")
+                        onClick (ChangeLocation (pathname ++ "statistics"))
                     ][
                         text "Statistics"
                     ],
@@ -81,7 +82,7 @@ view navbar =
                     div [
                         id "nav_api",
                         css navigationItem,
-                        onClick (ChangeLocation "/api")
+                        onClick (ChangeLocation (pathname ++ "api"))
                     ][
                         text "Api"
                     ],
@@ -92,7 +93,7 @@ view navbar =
                     div [
                         id "nav_help",
                         css navigationItem,
-                        onClick (ChangeLocation "/help")
+                        onClick (ChangeLocation (pathname ++ "help"))
                     ][
                         text "Help"
                     ],
@@ -103,7 +104,7 @@ view navbar =
                     div [
                         id "nav_license",
                         css navigationItem,
-                        onClick (ChangeLocation "/license")
+                        onClick (ChangeLocation (pathname ++ "license"))
                     ][
                         text "License"
                     ],
@@ -114,7 +115,7 @@ view navbar =
                     div [
                         id "nav_citation",
                         css navigationItem,
-                        onClick (ChangeLocation "/citation")
+                        onClick (ChangeLocation (pathname ++ "citation"))
                     ][
                         text "Citation"
                     ],
@@ -126,7 +127,7 @@ view navbar =
                     div [
                         id "nav_about",
                         css navigationItem,
-                        onClick (ChangeLocation "/about")
+                        onClick (ChangeLocation (pathname ++ "about"))
                     ][
                         text "About"
                     ],

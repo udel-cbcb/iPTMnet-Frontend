@@ -1,6 +1,7 @@
 from nginx:1.13.12
 
 ENV API_URL="http://localhost:8088"
+ENV PATHNAME="/iptmnet/web/"
 
 # copy the website
 COPY ./dist /usr/share/nginx/html

@@ -10,6 +10,7 @@ import String.Interpolate exposing (interpolate)
 import Views.Footer
 import Model.AppModel exposing (..)
 import Model.BatchPage as BatchPage exposing (..)
+import Model.Misc exposing (..)
 
 tableItemCSS: List Style
 tableItemCSS =
@@ -197,7 +198,7 @@ view model =
                                     marginTop (px 20),
                                     alignSelf center
                                 ],
-                                onClick (Msgs.ChangeLocation "batch-result")
+                                onClick (Msgs.ChangeLocation (pathname ++ "batch-result"))
                             ][
                                 text "Submit"
                             ]

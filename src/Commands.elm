@@ -201,7 +201,10 @@ handleRoute model location =
             Routing.BatchRoute ->
                 (AppModel.setRoute currentRoute model, Cmd.none )
             Routing.BatchResultRoute ->
-                (AppModel.setRoute currentRoute model, (fetchBatchData model.batchPage.outputType model.batchPage.kinases) )
+                let
+                    _ = Debug.log "batch-result" "int batch result page" 
+                in
+                    (AppModel.setRoute currentRoute model, (fetchBatchData model.batchPage.outputType model.batchPage.kinases) )
             Routing.BrowseRoute ->
                 let
                     newModel = BrowsePage.setSelectedIndex 0 model.browsePage
