@@ -92,12 +92,7 @@ buildLabel selectedIndex index alignment =
                 Css.property "min-height" "25px",
                 displayFlex,
                 alignItems center,
-                paddingLeft (px 20),
-                hover [
-                    cursor pointer,
-                    backgroundColor (hex "#329CDA"),
-                    color (hex "#ffffff")
-                ]
+                paddingLeft (px 20)
             ]        
         ][
             div [
