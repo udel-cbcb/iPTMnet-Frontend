@@ -412,7 +412,8 @@ update msg model =
         -- Statistics
         Msgs.OnFetchStatistics response -> 
             let
-                statistics = Page.Statistics.decodeResponse response
+                _ = Debug.log "response" response
+                statistics =  Page.Statistics.decodeResponse response
                 newModel = StatisticsPage.setStatistics model.statisticsPage statistics
                           |> Model.setStatisticsPage model
             in

@@ -238,10 +238,11 @@ view model =
                     id "table_events",
                     css [
                         marginTop (px 20),
-                        borderCollapse collapse,
+                        borderCollapse separate,
+                        borderSpacing2 (px 0) (px 15),
                         Css.property "width" "100%"
                     ]
-                ][
+                ]([
                     -- header
                     tr [
                         css [
@@ -317,7 +318,7 @@ view model =
                         ]
 
                     ]       
-                ],
+                ] ++ List.map eventRow model.statisticsPage.statisticsData.data.event),
 
                 -- top organisms
                 div [
@@ -333,10 +334,11 @@ view model =
                     id "table_organisms",
                     css [
                         marginTop (px 20),
-                        borderCollapse collapse,
+                        borderCollapse separate,
+                        borderSpacing2 (px 0) (px 15),
                         Css.property "width" "100%"
                     ]
-                ][
+                ]([
                     -- header
                     tr [
                         css [
@@ -412,7 +414,7 @@ view model =
                         ]
 
                     ]       
-                ],
+                ] ++ (List.map organismRow model.statisticsPage.statisticsData.data.organism)),
 
                 -- source
                 div [
@@ -428,10 +430,11 @@ view model =
                     id "table_source",
                     css [
                         marginTop (px 20),
-                        borderCollapse collapse,
+                        borderCollapse separate,
+                        borderSpacing2 (px 0) (px 15),
                         Css.property "width" "100%"
                     ]
-                ][
+                ]([
                     -- header
                     tr [
                         css [
@@ -507,17 +510,240 @@ view model =
                         ]
 
                     ]       
-                ]
-
-            ],
+                ] ++ (List.map sourceRow model.statisticsPage.statisticsData.data.source))
+            ] ,
 
             div[
                 id "filler",css [alignSelf stretch ]]
             [],
 
             Views.Footer.view 
-
     ]
+
+sourceRow : Source -> Html Msg
+sourceRow source =
+                tr [
+                    css [
+                            fontSize (Css.em 0.90)
+                        ]
+                    ][
+                        td [][
+                            text source.name
+                        ],
+
+                        td [
+                            css [
+                            ]
+                        ][
+                            text (toString source.substrates_protein)
+                        ],
+
+                        td [
+                            css [
+                            ]
+                        ][
+                            text (toString source.substrates_proteoforms)
+                        ],
+
+                        td [
+                            css [
+                                flexGrow (num 1)
+                            ]
+                        ][
+                            text (toString source.sites)
+                        ],
+
+                        td [
+                            css [
+                                flexGrow (num 1)
+                            ]
+                        ][
+                            text (toString  source.enzymes)
+                        ],
+
+                        td [
+                            css [
+                                flexGrow (num 1)
+                            ]
+                        ][
+                            text (toString  source.enzyme_substrate_pairs)
+                        ],
+
+                        td [
+                            css [
+                                flexGrow (num 1)
+                            ]
+                        ][
+                            text (toString  source.enzyme_substrate_site)
+                        ],
+
+                        td [
+                            css [
+                                flexGrow (num 1)
+                            ]
+                        ][
+                            text (toString  source.ptm_dependent_ppi)
+                        ],
+
+                        td [
+                            css [
+                                flexGrow (num 1)
+                            ]
+                        ][
+                            text (toString  source.pmids)
+                        ]
+
+                    ]
+
+organismRow : Organism -> Html Msg
+organismRow organism =
+                tr [
+                    css [
+                            fontSize (Css.em 0.90)
+                        ]
+                    ][
+                        td [][
+                            text organism.name
+                        ],
+
+                        td [
+                            css [
+                            ]
+                        ][
+                            text (toString organism.substrates_protein)
+                        ],
+
+                        td [
+                            css [
+                            ]
+                        ][
+                            text (toString organism.substrates_proteoforms)
+                        ],
+
+                        td [
+                            css [
+                                flexGrow (num 1)
+                            ]
+                        ][
+                            text (toString organism.sites)
+                        ],
+
+                        td [
+                            css [
+                                flexGrow (num 1)
+                            ]
+                        ][
+                            text (toString  organism.enzymes)
+                        ],
+
+                        td [
+                            css [
+                                flexGrow (num 1)
+                            ]
+                        ][
+                            text (toString  organism.enzyme_substrate_pairs)
+                        ],
+
+                        td [
+                            css [
+                                flexGrow (num 1)
+                            ]
+                        ][
+                            text (toString  organism.enzyme_substrate_site)
+                        ],
+
+                        td [
+                            css [
+                                flexGrow (num 1)
+                            ]
+                        ][
+                            text (toString  organism.ptm_dependent_ppi)
+                        ],
+
+                        td [
+                            css [
+                                flexGrow (num 1)
+                            ]
+                        ][
+                            text (toString  organism.pmids)
+                        ]
+
+                ]
+
+eventRow : Event -> Html Msg
+eventRow event =
+                tr [
+                    css [
+                            fontSize (Css.em 0.90)
+                        ]
+                    ][
+                        td [][
+                            text event.name
+                        ],
+
+                        td [
+                            css [
+                            ]
+                        ][
+                            text (toString event.substrates_protein)
+                        ],
+
+                        td [
+                            css [
+                            ]
+                        ][
+                            text (toString event.substrates_proteoforms)
+                        ],
+
+                        td [
+                            css [
+                                flexGrow (num 1)
+                            ]
+                        ][
+                            text (toString event.sites)
+                        ],
+
+                        td [
+                            css [
+                                flexGrow (num 1)
+                            ]
+                        ][
+                            text (toString  event.enzymes)
+                        ],
+
+                        td [
+                            css [
+                                flexGrow (num 1)
+                            ]
+                        ][
+                            text (toString  event.enzyme_substrate_pairs)
+                        ],
+
+                        td [
+                            css [
+                                flexGrow (num 1)
+                            ]
+                        ][
+                            text (toString  event.enzyme_substrate_site)
+                        ],
+
+                        td [
+                            css [
+                                flexGrow (num 1)
+                            ]
+                        ][
+                            text (toString  event.ptm_dependent_ppi)
+                        ],
+
+                        td [
+                            css [
+                                flexGrow (num 1)
+                            ]
+                        ][
+                            text (toString  event.pmids)
+                        ]
+
+                ]
 
 decodeResponse: WebData (Statistics) -> StatisticsData 
 decodeResponse response = 
@@ -540,7 +766,7 @@ decodeResponse response =
             {
                 status = Success,
                 error = "",
-                data = statistics
+                data = Debug.log "statistics" statistics
             }
 
         RemoteData.Failure error ->

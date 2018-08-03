@@ -9,8 +9,8 @@ type RequestState =
 
 url : String
 url = 
-    "https://research.bioinformatics.udel.edu/iptmnet/api"
-    -- "http://localhost:8088"
+    --"https://research.bioinformatics.udel.edu/iptmnet/api"
+    "http://localhost:8088"
 
 pathname : String
 pathname =

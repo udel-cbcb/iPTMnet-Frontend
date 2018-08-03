@@ -171,7 +171,7 @@ handleRoute model location =
                               -- set the proper route
                               |> AppModel.setRoute currentRoute
                 in
-                    (newModel, Cmd.none )
+                    (newModel, fetchStatistics )
             Routing.LicenseRoute -> 
                 let
                               -- hide the search bar in navigation
