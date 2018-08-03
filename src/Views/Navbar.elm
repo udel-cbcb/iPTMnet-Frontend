@@ -90,10 +90,18 @@ view navbar =
                         id "seperator",
                         css Styles.Home.navigationSeperator
                     ][],
-                    div [
+                    a [
                         id "nav_help",
-                        css navigationItem,
-                        onClick (ChangeLocation (pathname ++ "help"))
+                        css (navigationItem ++ [
+                            Css.link [
+                                textDecoration none
+                            ],
+                            Css.visited [
+                                textDecoration none
+                            ]
+                        ]) ,
+                        Html.Styled.Attributes.target "_",
+                        href ("https://research.bioinformatics.udel.edu/iptmnet/static/iptmnet/files/iPTMnet_Help.pdf")
                     ][
                         text "Help"
                     ],
