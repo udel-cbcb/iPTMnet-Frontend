@@ -80,7 +80,7 @@ const styles = StyleSheet.create({
   navbar_container: {
     position: "sticky",
     top: 0,
-    boxShadow: "0,4,8,#83838354"
+    boxShadow: "0px 4px 8px #83838354"
   },
 
   navbarItem : {

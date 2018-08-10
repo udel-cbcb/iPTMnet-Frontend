@@ -10,6 +10,7 @@
     -->
     <link rel="manifest" href="%PUBLIC_URL%/manifest.json">
     <link rel="shortcut icon" href="%PUBLIC_URL%/favicon.ico">
+    <link href="https://unpkg.com/ionicons@4.3.0/dist/css/ionicons.min.css" rel="stylesheet">
     <!--
       Notice the use of %PUBLIC_URL% in the tags above.
       It will be replaced with the URL of the `public` folder during the build.
@@ -37,4 +38,39 @@
       To create a production bundle, use `npm run build` or `yarn build`.
     -->
   </body>
+
+  <style>
+    
+    @font-face {
+        font-family: 'Ionicons'; /*a name to be used later*/
+        src: url('./fonts/ionicons.woff'); /*URL to font*/
+    }
+    
+    @-ms-keyframes spin {
+       from { -ms-transform: rotate(0deg); }
+       to { -ms-transform: rotate(360deg); }
+    }
+    
+    @-moz-keyframes spin {
+       from { -moz-transform: rotate(0deg); }
+       to { -moz-transform: rotate(360deg); }
+    }
+    
+    @-webkit-keyframes spin {
+        from { -webkit-transform: rotate(0deg); }
+        to { -webkit-transform: rotate(360deg); }
+    }
+    
+    @keyframes spin {
+        from {
+            transform:rotate(0deg);
+        }
+        to {
+            transform:rotate(360deg);
+        }
+    }
+
+      
+  </style>
+
 </html>
