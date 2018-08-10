@@ -3,12 +3,17 @@ import {Route, RouteComponentProps} from 'react-router-dom';
 
 import Home from "./pages/Home"
 import Browse from "./pages/Browse"
-import Entry from "./pages/Entry"
 import Statistics from "./pages/Statistics"
 import Api from "./pages/Api"
 import License from "./pages/License"
 import About from "./pages/About"
 import Citation from "./pages/Citation"
+import { EntryPageConnected } from './containers/EntryContainer';
+import store from 'src/redux/store';
+import * as EntryActions from "src/redux/actions/EntryActions";
+import { ThunkDispatch } from 'redux-thunk';
+import { Action } from 'src/redux/action';
+import { Store } from 'redux';
 
 class App extends React.Component {
   
@@ -28,7 +33,9 @@ class App extends React.Component {
   }
 
   private buildEntry(prop:RouteComponentProps<any>) {
-    return <Entry id={prop.match.params.id}/>;
+    const thunkDispatch : ThunkDispatch<Store,void,Action> = store.dispatch; 
+    thunkDispatch(EntryActions.loadInfo(prop.match.params.id));
+    return <EntryPageConnected/>;
   }
 
 }

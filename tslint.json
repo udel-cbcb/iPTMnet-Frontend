@@ -5,7 +5,8 @@
     "ordered-imports": false,
     "jsx-self-close": false,
     "object-literal-sort-keys": false,
-    "no-console": false  
+    "no-console": false,
+    "variable-name": [false, "ban-keywords", "check-format", "allow-leading-underscore","allow-snake-case"]  
   },
   "linterOptions": {
     "exclude": [
