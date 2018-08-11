@@ -3,11 +3,20 @@ import { css,StyleSheet,minify } from 'aphrodite';
 
 minify(false);
 
-class SearchBox extends React.Component {
+interface ISearchBoxProps{
+   onSearchIconClick: () => any 
+}
+
+class SearchBox extends React.Component<ISearchBoxProps,{}> {
+
+    constructor(props: ISearchBoxProps) {
+        super(props);
+    }  
+
     public render(){
         return (
             <div id="div_search_box" className={css(styles.searchBox)} >
-                <div id="div_advanced_search_icon" className={css(styles.advancedSearchIcon)} >
+                <div id="div_advanced_search_icon" className={css(styles.advancedSearchIcon)} onClick={this.props.onSearchIconClick} >
                   <div style={{margin: "auto"}}>
                       &#xf13d;
                   </div>
@@ -23,10 +32,10 @@ class SearchBox extends React.Component {
                             Uniprot
                         </option>
                         <option value="name" className={css(styles.searchTermTypeOption)} >
-                            Name
+                            Protein/Gene Name
                         </option>
                         <option value="pmid" className={css(styles.searchTermTypeOption)} >
-                            Name
+                            PMID
                         </option>
                     </select>
                 </div>
@@ -88,7 +97,6 @@ const styles = StyleSheet.create({
         flexDirection: "row",
         alignItems: "center",
         height: 50,
-        width: 164,
         backgroundColor: "#329CDA",
         boxShadow: "0px 3px 5px #83838354",
         ":hover": {
@@ -101,7 +109,6 @@ const styles = StyleSheet.create({
         borderStyle: "none",
         backgroundColor: "transparent",
         color: "#fbfbfb",
-        width: 164,
         fontSize: "1em",
         paddingLeft: 20,
         paddingRight: 10,
