@@ -8,12 +8,12 @@ import Api from "./pages/Api"
 import License from "./pages/License"
 import About from "./pages/About"
 import Citation from "./pages/Citation"
-import { EntryPageConnected } from './containers/EntryContainer';
 import store from 'src/redux/store';
 import * as EntryActions from "src/redux/actions/EntryActions";
 import { ThunkDispatch } from 'redux-thunk';
 import { Action } from 'src/redux/action';
 import { Store } from 'redux';
+import Entry from 'src/pages/Entry';
 
 class App extends React.Component {
   
@@ -35,7 +35,7 @@ class App extends React.Component {
   private buildEntry(prop:RouteComponentProps<any>) {
     const thunkDispatch : ThunkDispatch<Store,void,Action> = store.dispatch; 
     thunkDispatch(EntryActions.loadInfo(prop.match.params.id));
-    return <EntryPageConnected/>;
+    return <Entry id={prop.match.params.id}/>;
   }
 
 }

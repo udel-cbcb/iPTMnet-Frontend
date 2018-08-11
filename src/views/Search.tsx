@@ -7,13 +7,13 @@ interface ISearchState {
 }
 
 class Search extends React.Component<{},ISearchState> {
-
+    
     constructor(props: {},state:ISearchState = {isAdvancedVisisble:false}) {
         super(props);
         this.state = state;
         this.onSearchBoxClicked = this.onSearchBoxClicked.bind(this);
     }
-
+   
     public render(){
         return (
             <div>
@@ -31,10 +31,10 @@ class Search extends React.Component<{},ISearchState> {
                     <div id="advanced_search" className={css(styles.advancedSearch)} onClick={this.onSearchBoxClicked} >
                         Advanced search
                     </div>
-                    <a id="sample_report" href="/entry/Q15796" className={css(styles.sampleReport)} >
+                    <a id="sample_report" target="_" href="/entry/Q15796" className={css(styles.sampleReport)} >
                         Sample Report
                     </a>
-                    <a id="batch_retrieval" href="/batch" className={css(styles.batchRetrieval)} >
+                    <a id="batch_retrieval" target="_" href="/batch" className={css(styles.batchRetrieval)} >
                         Batch Retrieval
                     </a>
                 </div>

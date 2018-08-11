@@ -18,8 +18,8 @@ class Info extends React.Component<IInfoProps,{}> {
 
     constructor(props: IInfoProps) {
         super(props);
-    }  
-
+    }
+        
     public render() {
         if(this.props.info.status === RequestState.SUCCESS){
             return (

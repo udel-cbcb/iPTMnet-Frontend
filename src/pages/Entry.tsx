@@ -10,8 +10,13 @@ class Entry extends React.Component<IEntryProps,{}> {
 
   constructor(props: IEntryProps) {
     super(props);
+    this.componentDidMount = this.componentDidMount.bind(this);
   }
 
+  public componentDidMount() {
+      document.title = "Report : " + this.props.id;
+  }
+  
   public render() {
     return (
       <div>
