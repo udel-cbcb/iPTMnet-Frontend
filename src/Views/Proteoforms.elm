@@ -5,7 +5,6 @@ import Html.Styled.Attributes exposing (..)
 import Html.Styled.Events exposing (..)
 import Msgs exposing (..)
 import RemoteData exposing (WebData)
-import Model exposing (..)
 import String.Interpolate exposing (interpolate)
 import String.Extra exposing (..)
 import Views.Loading 
@@ -13,17 +12,21 @@ import Views.Error
 import Misc
 import String
 import Filter
+import Model.Proteoform exposing (..)
+import Model.Misc exposing (..)
+import Model.CytoscapeItem exposing (..)
+import Model.Enzyme exposing (..)
 
 -- returns the substrate view
-view: ProteoformsData -> Bool -> Html Msg 
-view data showErrorMsg= 
+view: ProteoformsData -> (List CytoscapeItem) -> Bool ->  Html Msg 
+view data cytoscapeItems showErrorMsg= 
     case data.status of
         NotAsked ->
             div [][]
         Loading ->
             viewWithSection Views.Loading.view
         Success ->
-            viewWithSection (renderProteoformTable data.data data.filterTerm) 
+            viewWithSection (renderProteoformTable data.data data.filterTerm cytoscapeItems) 
         Error ->
             viewWithSection (Views.Error.view data.error showErrorMsg Msgs.OnProteoformsErrorButtonClicked)
         
@@ -66,7 +69,7 @@ viewWithSection childView =
                 childView             
             ]
 
-decodeResponse: WebData (List (Proteoform Enzyme Source)) -> ProteoformsData 
+decodeResponse: WebData (List Proteoform ) -> ProteoformsData 
 decodeResponse response = 
     case response of
         RemoteData.NotAsked ->
@@ -103,8 +106,8 @@ decodeResponse response =
 
 
 
-renderProteoformTable: List (Proteoform Enzyme Source) -> String -> Html Msg
-renderProteoformTable proteoformList filterTerm =
+renderProteoformTable: List (Proteoform ) -> String -> (List CytoscapeItem) -> Html Msg
+renderProteoformTable proteoformList filterTerm cytoscapeItems =
         div [id "proteoforms_table", css [
             displayFlex,
             flexDirection column,
@@ -158,15 +161,15 @@ renderProteoformTable proteoformList filterTerm =
             ],
 
             -- rows
-            div [] (List.map proteoformRow (case String.length filterTerm of
+            div [] (List.map (proteoformRow cytoscapeItems) (case String.length filterTerm of
                                              0 -> proteoformList
                                              _ -> List.filter (Filter.proteoforms filterTerm) proteoformList)
                    ) 
         
         ]
 
-proteoformRow: (Proteoform Enzyme Source) -> Html Msg
-proteoformRow proteoform = 
+proteoformRow: (List CytoscapeItem) -> Proteoform -> Html Msg
+proteoformRow cytoscapeItems proteoform = 
     div [css [
         displayFlex,
         flexDirection row,
@@ -176,17 +179,25 @@ proteoformRow proteoform =
             backgroundColor (hex "#f4f4f4")
         ]
     ]] [
-        div [css [flex (num 2),
+        div [css [flex (num 2.2),
                   marginLeft (px 5),
-                  marginRight (px 20)
+                  marginRight (px 20),
+                  Css.property "word-break" "break-all" 
                  ]] 
         [
-            input [
-                type_ "checkbox",
-                css[marginLeft (px 5),
-                    marginRight (px 10)],
-                onClick (Msgs.ToggleCytoscapeItem {id_1 = proteoform.pro_id ,id_2 = proteoform.ptm_enzyme.pro_id,item_type = "pro" })
-                ][],
+            (
+                let
+                    cytoscapeItem = {id_1 = proteoform.pro_id ,id_2 = proteoform.ptm_enzyme.pro_id,item_type = "pro" } 
+                    isChecked = List.member cytoscapeItem cytoscapeItems
+                in
+                    input [
+                        type_ "checkbox",
+                        css[marginLeft (px 5),
+                            marginRight (px 10)],
+                        onClick (Msgs.ToggleCytoscapeItem cytoscapeItem),
+                        Html.Styled.Attributes.checked isChecked
+                ][]
+            ),
             a [href (interpolate "http://purl.obolibrary.org/obo/{0}" [(replace ":" "_" proteoform.pro_id )]), Html.Styled.Attributes.target "_blank"] [text proteoform.pro_id],
             span [] [text (interpolate " ({0})" [proteoform.label])]
         ],
@@ -226,4 +237,3 @@ buildEnzyme entity =
         [
 
         ]
-

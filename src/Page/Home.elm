@@ -2,17 +2,18 @@ module Page.Home exposing (..)
 import Html.Styled exposing (..)
 import Css exposing (..)
 import Html.Styled.Attributes exposing (..)
-import Model exposing (..)
 import Msgs exposing (..)
-import Html.Styled.Events exposing (onClick,onWithOptions)
+import Html.Styled.Events exposing (..)
 import Json.Decode as Decode
-import String.Interpolate exposing (interpolate)
 import Colors exposing (..)
-import Styles.Home exposing (..)
+import Views.Navbar
 import Ionicon
 import Views.AdvancedSearch exposing (..)
 import Views.Footer exposing (..)
 import String.Extra
+import Model.AppModel exposing (..)
+import Misc exposing (..)
+import Model.Misc exposing (..)
 
 {-|
 When clicking a link we want to prevent the default browser behaviour which is to load a new page.
@@ -28,9 +29,6 @@ onLinkClick message =
     in
         onWithOptions "click" options (Decode.succeed message)
 
-buildSearchUrl: HomePage -> String
-buildSearchUrl homePage =
-    interpolate "/search/search_term={0}&term_type=All&role=Enzyme%20or%20Substrate" [homePage.searchInput]
 
 view : Model -> Html Msg
 view model =
@@ -50,102 +48,7 @@ view model =
             flexDirection column,
             alignSelf stretch
             ]] [
-                div [
-                    id "header_image",
-                    css [
-                        Css.height (px 0),
-                        backgroundColor (hex "#f2f2f2")
-                    ]
-                ][
-                    
-                ],
-
-                div [
-                    id "home_page_navigation",
-                    css [
-                        Css.height (px 40),
-                        backgroundColor Colors.navigationBackground,
-                        displayFlex,
-                        flexDirection row,
-                        alignItems center
-                    ]
-                ][
-                    div [
-                        id "nav_home",
-                        css navigationItem
-                    ][
-                        text "iPTMnet"
-                    ],
-                    div [
-                        id "seperator",
-                        css Styles.Home.navigationSeperator
-                    ][],
-                    div [
-                        id "nav_browse",
-                        css navigationItem
-                    ][
-                        text "Browse"
-                    ],
-                    div [
-                        id "seperator",
-                        css [
-                            Css.property "height" "50%",
-                            Css.width (px 1),
-                            backgroundColor Colors.navigationSeperator
-                        ]
-                    ][],
-                    div [
-                        id "nav_stats",
-                        css navigationItem
-                    ][
-                        text "Statistics"
-                    ],
-                    div [
-                        id "seperator",
-                        css Styles.Home.navigationSeperator
-                    ][],
-                    div [
-                        id "nav_help",
-                        css navigationItem
-                    ][
-                        text "Help"
-                    ],
-                    div [
-                        id "seperator",
-                        css Styles.Home.navigationSeperator
-                    ][],
-                    div [
-                        id "nav_license",
-                        css navigationItem
-                    ][
-                        text "License"
-                    ],
-                    div [
-                        id "seperator",
-                        css Styles.Home.navigationSeperator
-                    ][],
-                    div [
-                        id "nav_citation",
-                        css navigationItem
-                    ][
-                        text "Citation"
-                    ],
-                    div [
-                        id "seperator",
-                        css Styles.Home.navigationSeperator
-                    ][],
-                    div [
-                        id "nav_about",
-                        css navigationItem
-                    ][
-                        text "About"
-                    ],
-                    div [
-                        id "seperator",
-                        css Styles.Home.navigationSeperator
-                    ][]
-                ]
-
+                Views.Navbar.view model.navbar
             ],
         
         div [id "body", css [
@@ -275,6 +178,7 @@ view model =
                    input [
                         id "input_search_term",
                         Html.Styled.Events.onInput Msgs.OnHomePageSearchInputChange,
+                        onKeyDown Msgs.OnHomePageSearchKeyDown,
                         css [
                             Css.width (px 400),
                             Css.property "height" "98%",
@@ -328,8 +232,9 @@ view model =
                                 ],
                                 hover [
                                     cursor pointer
-                                ]
-                            ]][
+                                ] 
+                            ]
+                            ][
                                 option [value "all",css[color Colors.infoText]][text "All"],
                                 option [value "uniprot",css[color Colors.infoText]] [text "Uniprot AC/ID"],
                                 option [value "name",css[color Colors.infoText]] [text "Protein/Gene Name"],
@@ -348,7 +253,7 @@ view model =
                 ],
 
                 -- advanced search
-                Views.AdvancedSearch.view model False,
+                Views.AdvancedSearch.view model.homePage.searchOptions model.homePage.advancedSearchVisibility False,
 
                 -- misc
                     div [
@@ -363,22 +268,21 @@ view model =
                             color Colors.miscText
                         ]
                     ] [
-                        a [
-                            href "#",
-                            css[
-                                marginRight (px 20),
-                                link [
-                                    color Colors.miscText
-                                ],
-                                visited [
-                                    color Colors.miscText
+                        div [
+                            css [
+                                color Colors.miscText,
+                                paddingRight (px 20),
+                                textDecoration underline,
+                                hover [
+                                    cursor pointer
                                 ]
-                            ]]
-                            [
-                                text "Advanced search"
+                            ],
+                            onClick (Msgs.OnAdvancedSearchVisibilityChange (not model.homePage.advancedSearchVisibility))
+                        ][
+                            text "Advanced search"
                         ],
                         a [
-                            href "/entry/Q15796",
+                            href (pathname ++ "entry/Q15796"),
                             Html.Styled.Attributes.target "_blank",
                             css[
                                 marginRight (px 20),
@@ -393,8 +297,7 @@ view model =
                                 text "Sample Report"
                         ],
                         a [
-                            href "/batch",
-                            Html.Styled.Attributes.target "_blank",
+                            href (pathname ++ "batch"),
                             css[
                                 marginLeft auto,
                                 marginRight (px 20),
@@ -422,8 +325,8 @@ view model =
                     ][
                         button [
                             id "btn_search",
-                            onClick ( case (String.Extra.clean model.homePage.searchInput) == "" of 
-                                      False -> ChangeLocation (buildSearchUrl model.homePage)
+                            onClick ( case (String.Extra.clean model.homePage.searchOptions.searchTerm) == "" of 
+                                      False -> ChangeLocation (buildSearchUrl model.homePage.searchOptions)
                                       True -> ChangeLocation "/"),
                             css [
                                 backgroundColor Colors.searchButton,

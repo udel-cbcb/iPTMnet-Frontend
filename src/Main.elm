@@ -2,7 +2,7 @@ module Main exposing (..)
 import Html exposing (..)
 import Html.Styled exposing (toUnstyled)
 import Page.Entry
-import Model exposing (..)
+import Page.License
 import Msgs exposing (Msg)
 import Commands exposing (..)
 import Navigation
@@ -12,14 +12,35 @@ import Views.Proteoforms
 import Views.PTMDependentPPI
 import Views.ProteoformPPI
 import Views.Substrate
+import Views.Alignment
 import Page.Home
 import Page.Search
 import Page.Batch
 import Page.BatchResult
+import Page.Citation
+import Page.About
+import Page.Api
+import Page.Statistics
 import Ports
 import List
-import Filter
-
+import Model.AppModel as Model exposing (..)
+import Model.HomePage as HomePage exposing (..)
+import Model.SearchOptions as SearchOptions exposing (..)
+import Model.SearchPage as SearchPage exposing (..)
+import Model.EntryPage as EntryPage exposing (..)
+import Model.Substrate as Substrate exposing (..)
+import Model.Tab as Tab exposing (..)
+import Model.Proteoform as Proteoform exposing (..)
+import Model.PTMDependentPPI as PTMDependentPPI exposing (..)
+import Model.ProteoformPPI as ProteoformPPI exposing (..)
+import Model.Kinase as Kinase exposing (..)
+import Model.BatchPage as BatchPage exposing (..)
+import Model.StatisticsPage as StatisticsPage exposing (..)
+import Model.AlignmentViewer as AlignmentViewer exposing (..)
+import Misc exposing (..)
+import Misc as ViewMisc
+import Page.Browse
+import Model.BrowsePage as BrowsePage exposing (..)
 
 init : Navigation.Location -> ( Model, Cmd Msg )
 init location =
@@ -34,6 +55,21 @@ view model =
         Routing.HomeRoute -> 
             Page.Home.view model
             |> toUnstyled
+        Routing.CitationRoute -> 
+            Page.Citation.view model
+            |> toUnstyled
+        Routing.LicenseRoute -> 
+            Page.License.view model
+            |> toUnstyled
+        Routing.AboutRoute -> 
+            Page.About.view model
+            |> toUnstyled
+        Routing.StatisticsRoute -> 
+            Page.Statistics.view model
+            |> toUnstyled
+        Routing.ApiRoute -> 
+            Page.Api.view model
+            |> toUnstyled
         Routing.EntryRoute id ->
             Page.Entry.view model
             |> toUnstyled
@@ -46,8 +82,13 @@ view model =
         Routing.BatchResultRoute ->
             Page.BatchResult.view model
             |> toUnstyled
+        Routing.BrowseRoute ->
+            Page.Browse.view model
+            |> toUnstyled
         Routing.NotFoundRoute ->
-            div [] []
+            div [] [
+                text "Not found"
+            ]
         
 
 -- UPDATE
@@ -59,66 +100,126 @@ update msg model =
 
         -- Home Page
         Msgs.OnHomePageSearchInputChange newContent ->
-            let newModel = Model.setSearchInput model.homePage newContent
+            let newModel = SearchOptions.setSearchInput model.homePage.searchOptions newContent
+                           |> HomePage.setSearchOptions model.homePage
                            |> Model.setHomePage model
+            in
+                (newModel, Cmd.none)
+        Msgs.OnHomePageSearchKeyDown key ->
+            if key == 13 then
+                update (performSearch model.homePage.searchOptions) model
+            else
+                (model, Cmd.none)
+            
+        Msgs.SetSelectedPTMTypes ptm_types -> 
+            let
+                newModel = SearchOptions.setSelectedPTMTypes model.homePage.searchOptions ptm_types
+                           |> HomePage.setSearchOptions model.homePage
+                           |> Model.setHomePage model
+            in
+                (newModel, Cmd.none)
+        Msgs.SetSelectedTaxons taxons -> 
+            let
+                newModel = SearchOptions.setSelectedTaxons model.homePage.searchOptions taxons
+                           |> HomePage.setSearchOptions model.homePage
+                           |> Model.setHomePage model
+            in
+                (newModel, Cmd.none)
+        Msgs.OnTermTypeSelected newTermType ->
+            let
+                newModel = SearchOptions.setSearchTermType model.homePage.searchOptions newTermType
+                            |> HomePage.setSearchOptions model.homePage
+                            |> Model.setHomePage model
+            in
+                (newModel,Cmd.none)    
+        Msgs.OnTaxonsUserInput newTaxons -> 
+            let 
+                newModel = SearchOptions.setOrganismsUser model.homePage.searchOptions newTaxons
+                            |> HomePage.setSearchOptions model.homePage
+                            |> Model.setHomePage model        
             in
                 (newModel, Cmd.none)
 
         Msgs.OnAdvancedSearchVisibilityChange is_visible ->
             let 
-                newModel = Model.setHomePageAdvancedSearchVisibility is_visible model.homePage
+                newModel = HomePage.setHomePageAdvancedSearchVisibility is_visible model.homePage
                           |> Model.setHomePage model
             in
                 (newModel, Cmd.none)
+        Msgs.SearchRoleChanged new_role ->
+            let 
+                newModel = SearchOptions.setSearchRole model.homePage.searchOptions new_role
+                           |> HomePage.setSearchOptions model.homePage
+                           |> Model.setHomePage model                           
+            in     
+                (newModel, Cmd.none)   
 
         -- Search Page
-        Msgs.OnFetchSearchResults response -> 
+        Msgs.OnFetchSearchResults searchData -> 
             let
-                newModel = Page.Search.decodeResponse response
-                |> Model.setSearchData model.searchPage
-                |> Model.setSearchPage model
+                newModel = SearchPage.setSearchData model.searchPage searchData
+                           |> Model.setSearchPage model
             in
-                ( newModel, Cmd.none)
+                ( newModel, Ports.highlight newModel.searchPage.searchTerm)
 
         Msgs.OnSearchResultErrorButtonClicked ->
             let
-                newModel = Model.setSearchShowErrorMsg (not model.searchPage.showErrorMsg) model.searchPage
+                newModel = SearchPage.setSearchShowErrorMsg (not model.searchPage.showErrorMsg) model.searchPage
                            |> Model.setSearchPage model
             in
-                ( newModel, Cmd.none)      
+                ( newModel, Cmd.none)
+        Msgs.OnClickNextSearchResults -> 
+            let
+                newModel = SearchPage.setSelectedIndex (model.searchPage.selectedIndex + 1) model.searchPage
+                           |> Model.setSearchPage model
+                queryString = newModel.searchPage.queryString
+                startIndex = newModel.searchPage.selectedIndex * SearchPage.entriesPerPage
+                endIndex = startIndex + SearchPage.entriesPerPage   
+            in
+                (newModel, Commands.fetchSearchResults queryString startIndex endIndex)
+        Msgs.OnClickPrevSearchResults -> 
+            let
+                newModel = SearchPage.setSelectedIndex (model.searchPage.selectedIndex - 1) model.searchPage
+                           |> Model.setSearchPage model
+                queryString = newModel.searchPage.queryString
+                startIndex = newModel.searchPage.selectedIndex + SearchPage.entriesPerPage
+                endIndex = startIndex + SearchPage.entriesPerPage   
+            in
+                (newModel, Commands.fetchSearchResults queryString startIndex endIndex)
+                      
 
         -- Entry Page
         Msgs.OnFetchInfo response ->
             let
                 newModel = Views.Info.decodeResponse response
-                        |> Model.setInfo model.entryPage
+                        |> EntryPage.setInfo model.entryPage
                         |> Model.setEntryPage model
             in
                 ( newModel, Cmd.none)
         Msgs.OnFetchProteoform response -> 
             let
                 newModel = Views.Proteoforms.decodeResponse response
-                |> Model.setProteoformsData model.entryPage
+                |> EntryPage.setProteoformsData model.entryPage
                 |> Model.setEntryPage model
             in
                 ( newModel, Cmd.none)
         Msgs.OnFetchPTMDependentPPI response -> 
             let
                 newModel = Views.PTMDependentPPI.decodeResponse response
-                |> Model.setPTMDependentPPIData model.entryPage
+                |> EntryPage.setPTMDependentPPIData model.entryPage
                 |> Model.setEntryPage model
             in
                 ( newModel, Cmd.none)
         Msgs.OnFetchProteoformPPI response -> 
             let
                 newModel = Views.ProteoformPPI.decodeResponse response
-                |> Model.setProteoformPPIData model.entryPage
+                |> EntryPage.setProteoformPPIData model.entryPage
                 |> Model.setEntryPage model
             in
                 ( newModel, Cmd.none)
         Msgs.OnFetchSubstrates response -> 
             let
-                newModel = Model.setSubstrateData model.entryPage (Views.Substrate.decodeResponse response)
+                newModel = EntryPage.setSubstrateData model.entryPage (Views.Substrate.decodeResponse response)
                            |> Model.setEntryPage model
             in
                 ( newModel, Cmd.none)        
@@ -128,46 +229,67 @@ update msg model =
             Commands.handleRoute model location
         Msgs.OnInfoErrorButtonClicked ->
             let 
-                newModel = Model.setShowInfoErrorMsg (not model.entryPage.showInfoErrorMsg) model.entryPage
+                newModel = EntryPage.setShowInfoErrorMsg (not model.entryPage.showInfoErrorMsg) model.entryPage
                           |> Model.setEntryPage model
             in
             (newModel, Cmd.none)
         Msgs.OnSubstrateErrorButtonClicked ->
             let 
-                newModel = Model.setShowSubstrateErrorMsg (not model.entryPage.showSubstrateErrorMsg) model.entryPage
+                newModel = EntryPage.setShowSubstrateErrorMsg (not model.entryPage.showSubstrateErrorMsg) model.entryPage
                           |> Model.setEntryPage model
             in
             (newModel, Cmd.none)
         Msgs.OnSubstrateTabClick clickedTab -> 
             let 
-                newModel = Model.setSelectedSubstrateTab clickedTab model.entryPage.substrateData.tabData
-                               |> Model.setSubstrateTabData model.entryPage.substrateData
-                               |> Model.setSubstrateData model.entryPage
+                newModel = Tab.setSelectedTab clickedTab model.entryPage.substrateData.tabData
+                               |> Substrate.setSubstrateTabData model.entryPage.substrateData
+                               |> EntryPage.setSubstrateData model.entryPage
                                |> Model.setEntryPage model
             in
                 (newModel, Cmd.none)
         Msgs.OnProteoformsErrorButtonClicked ->
             let 
-                newModel = Model.setShowProteoformsErrorMsg (not model.entryPage.showProteoformsErrorMsg) model.entryPage
+                newModel = EntryPage.setShowProteoformsErrorMsg (not model.entryPage.showProteoformsErrorMsg) model.entryPage
                           |> Model.setEntryPage model
             in
             (newModel, Cmd.none)
+        Msgs.OnSubstrateSearch searchTerm ->
+            let 
+                newModel = Substrate.setSubstrateFilterTerm model.entryPage.substrateData searchTerm
+                           |> EntryPage.setSubstrateData model.entryPage
+                           |> Model.setEntryPage model
+            in 
+            (newModel, Cmd.none)
         Msgs.OnProteoformSearch searchTerm ->
             let 
-                newModel = Model.setProteoformsFilterTerm model.entryPage.proteoformsData searchTerm
-                           |> Model.setProteoformsData model.entryPage
+                newModel = Proteoform.setProteoformsFilterTerm model.entryPage.proteoformsData searchTerm
+                           |> EntryPage.setProteoformsData model.entryPage
                            |> Model.setEntryPage model
             in 
             (newModel, Cmd.none)
         Msgs.OnPTMDepPPIErrorButtonClicked ->
             let 
-                newModel = Model.setShowPTMDepPPIErrorMsg (not model.entryPage.showPTMDepPPIErrorMsg) model.entryPage
+                newModel = EntryPage.setShowPTMDepPPIErrorMsg (not model.entryPage.showPTMDepPPIErrorMsg) model.entryPage
                           |> Model.setEntryPage model
             in
             (newModel, Cmd.none)
+        Msgs.OnPTMPPISearch searchTerm ->
+            let 
+                newModel = PTMDependentPPI.setPTMDependentPPIFilterTerm model.entryPage.ptmDependentPPIData searchTerm
+                           |> EntryPage.setPTMDependentPPIData model.entryPage
+                           |> Model.setEntryPage model
+            in 
+            (newModel, Cmd.none)
+        Msgs.OnProteoformPPISearch searchTerm ->
+            let 
+                newModel = ProteoformPPI.setProteoformPPIFilterTerm model.entryPage.proteoformPPIData searchTerm
+                           |> EntryPage.setProteoformPPIData model.entryPage
+                           |> Model.setEntryPage model
+            in 
+            (newModel, Cmd.none)
         Msgs.OnProteoformsPPIErrorButtonClicked ->
             let 
-                newModel = Model.setShowProteoformsPPIErrorMsg (not model.entryPage.showProteoformsPPIErrorMsg) model.entryPage
+                newModel = EntryPage.setShowProteoformsPPIErrorMsg (not model.entryPage.showProteoformsPPIErrorMsg) model.entryPage
                           |> Model.setEntryPage model
             in
             (newModel, Cmd.none)
@@ -180,28 +302,36 @@ update msg model =
             case List.member cytoscapeItem model.entryPage.cytoscapeItems of
                 True -> 
                     let 
-                        newModel = Model.setCytoscapeItems model.entryPage (List.filter (\ e -> e /= cytoscapeItem) model.entryPage.cytoscapeItems)
+                        newModel = EntryPage.setCytoscapeItems model.entryPage (List.filter (\ e -> e /= cytoscapeItem) model.entryPage.cytoscapeItems)
                         |> Model.setEntryPage model
                     in
                         (newModel, Cmd.none) 
                 False -> 
                     let 
-                        newModel = Model.setCytoscapeItems model.entryPage (List.append model.entryPage.cytoscapeItems [cytoscapeItem])
+                        newModel = EntryPage.setCytoscapeItems model.entryPage (List.append model.entryPage.cytoscapeItems [cytoscapeItem])
                         |> Model.setEntryPage model
                     in
                         (newModel, Cmd.none)
-        
+        Msgs.RemoveCytoscapeItem cytoscapeItem -> 
+            let 
+                newModel = EntryPage.setCytoscapeItems model.entryPage (List.filter (\ e -> e /= cytoscapeItem) model.entryPage.cytoscapeItems)
+                |> Model.setEntryPage model
+            in
+                (newModel, Cmd.none)
+        Msgs.CytoscapeClearClicked ->
+            let 
+                newModel = EntryPage.setCytoscapeItems model.entryPage []
+                |> Model.setEntryPage model
+            in
+                (newModel, Cmd.none)      
+            
 
         -- Batch
         Msgs.OnFileChange file ->
             case file of
                 -- Only handling case of a single file
                 [ f ] ->
-                    let 
-                        _ = Debug.log "msg" f
-                    in
-                        (model, Commands.getFileContents f)
-
+                    (model, Commands.getFileContents f)
                 _ ->
                     (model, Cmd.none)
 
@@ -209,9 +339,9 @@ update msg model =
             case res of
                 Ok content ->
                     let 
-                        kinases = Model.toKinaseList content
-                        newModel = Model.setKinases kinases model.batchPage
-                                   |> Model.setBatchInputText content 
+                        kinases = Kinase.toKinaseList content
+                        newModel = BatchPage.setKinases kinases model.batchPage
+                                   |> BatchPage.setBatchInputText content 
                                    |> Model.setBatchPage model  
                     in
                         ( newModel , Cmd.none )
@@ -221,9 +351,9 @@ update msg model =
         
         Msgs.OnBatchInputChanged newContent ->
             let 
-                kinases = Model.toKinaseList newContent
-                newModel = Model.setKinases kinases model.batchPage 
-                           |> Model.setBatchInputText newContent
+                kinases = Kinase.toKinaseList newContent
+                newModel = BatchPage.setKinases kinases model.batchPage 
+                           |> BatchPage.setBatchInputText newContent
                            |> Model.setBatchPage model  
             in
                 ( newModel , Cmd.none )
@@ -232,16 +362,16 @@ update msg model =
             let 
                 exampleInput = "Q15796\tK\t19\nQ15796\tT\t8\nP04637\tK\t120\nP04637\tS\t149\nP04637\tS\t378\nP04637\tS\t392\nP42356\tS\t199"
 
-                newModel = Model.setBatchInputText exampleInput model.batchPage
-                           |> Model.setKinases (Model.toKinaseList exampleInput)
+                newModel = BatchPage.setBatchInputText exampleInput model.batchPage
+                           |> BatchPage.setKinases (Kinase.toKinaseList exampleInput)
                            |> Model.setBatchPage model
             in
                 (newModel, Cmd.none) 
 
         Msgs.OnBatchClearClicked ->
             let 
-                newModel = Model.setBatchInputText " " model.batchPage
-                           |> Model.setKinases []
+                newModel = BatchPage.setBatchInputText " " model.batchPage
+                           |> BatchPage.setKinases []
                            |> Model.setBatchPage model
             in
                 (newModel, Cmd.none) 
@@ -250,33 +380,101 @@ update msg model =
         Msgs.OnFetchBatchEnzymes response ->
             let 
                 newModel = 
-                    Page.BatchResult.decodeEnzymeResponse response
-                    |> Model.setBatchEnzymeData model.batchPage
+                    Page.BatchResult.decodeEnzymeResponse response model.batchPage.kinases
+                    |> BatchPage.setBatchEnzymeData model.batchPage
                     |> Model.setBatchPage model
             in
                 (newModel, Cmd.none)
 
         Msgs.OnFetchBatchPTMPPI response ->
             let 
-                _ = Debug.log "ptm_ppi" response
+                newModel = 
+                    Page.BatchResult.decodePTMPPIResponse response model.batchPage.kinases
+                    |> BatchPage.setBatchPTMPPIData model.batchPage
+                    |> Model.setBatchPage model
             in
-                (model, Cmd.none)
+                (newModel, Cmd.none)
 
         Msgs.SwitchBatchOutput output ->
             let 
-                newModel = Model.setBatchOutput model.batchPage output
+                newModel = BatchPage.setBatchOutput model.batchPage output
                            |> Model.setBatchPage model
                             
             in
                 (newModel, Cmd.none)
-        
+        Msgs.OnBatchTabClick newTab ->
+            let 
+                newModel = BatchPage.setSelectedBatchTab model.batchPage newTab
+                               |> Model.setBatchPage model
+            in
+                (newModel, Cmd.none)           
+
+        -- Statistics
+        Msgs.OnFetchStatistics response -> 
+            let
+                _ = Debug.log "response" response
+                statistics =  Page.Statistics.decodeResponse response
+                newModel = StatisticsPage.setStatistics model.statisticsPage statistics
+                          |> Model.setStatisticsPage model
+            in
+                (newModel, Cmd.none)       
             
+        -- Alignment
+        Msgs.OnFetchAlignment response -> 
+            let 
+                alignmentViewer = Views.Alignment.decodeResponse response
+                newModel = Model.setAlignmentViewer model alignmentViewer
+            in
+                (newModel, Cmd.none)
+        Msgs.OnSequenceHover rowIndex columnIndex ->
+            let 
+                newModel = AlignmentViewer.setSelectedAlignmentRowIndex rowIndex model.alignmentViewer
+                          |> AlignmentViewer.setSelectedAlignmentColumnIndex columnIndex
+                          |> Model.setAlignmentViewer model
+            in
+                (newModel,Cmd.none)
+
+        -- Browse
+        Msgs.OnFetchBrowseResults browseData ->
+            let
+                newModel = BrowsePage.setBrowseData browseData model.browsePage
+                           |> Model.setBrowsePage model
+            in
+                (newModel, Cmd.none)
+        Msgs.OnBrowseResultErrorButtonClicked ->
+            let
+                newModel = BrowsePage.setBrowseShowErrorMsg (not model.browsePage.showErrorMsg) model.browsePage
+                           |> Model.setBrowsePage model
+            in
+                ( newModel, Cmd.none)
+        Msgs.OnClickNextBrowseResults -> 
+            let
+                newModel = BrowsePage.setSelectedIndex (model.browsePage.selectedIndex + 1) model.browsePage
+                           |> Model.setBrowsePage model
+                queryString = newModel.browsePage.queryString
+                startIndex = newModel.browsePage.selectedIndex * BrowsePage.entriesPerPage
+                endIndex = startIndex + BrowsePage.entriesPerPage   
+            in
+                (newModel, Commands.fetchBrowseResults queryString startIndex endIndex)
+        Msgs.OnClickPrevBrowseResults -> 
+            let
+                newModel = BrowsePage.setSelectedIndex (model.browsePage.selectedIndex - 1) model.browsePage
+                           |> Model.setBrowsePage model
+                queryString = newModel.browsePage.queryString
+                startIndex = newModel.browsePage.selectedIndex + BrowsePage.entriesPerPage
+                endIndex = startIndex + BrowsePage.entriesPerPage   
+            in
+                (newModel, Commands.fetchBrowseResults queryString startIndex endIndex)
 
 
 -- SUBSCRIPTIONS
 subscriptions : Model -> Sub Msg
-subscriptions model =
-    Sub.none
+subscriptions _ =
+    Sub.batch [
+        Ports.onSearchDone Msgs.OnFetchSearchResults,
+        Ports.onBrowseDone Msgs.OnFetchBrowseResults
+    ]
+    
 
 -- MAIN
 main : Program Never Model Msg

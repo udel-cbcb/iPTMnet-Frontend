@@ -9,7 +9,8 @@ import Styles.Home exposing (..)
 import Ionicon exposing (..)
 import Ionicon.Ios exposing (..)
 import Views.AdvancedSearch exposing (..)
-import Model exposing (..)
+import Model.Navbar exposing (..)
+import Model.Misc exposing (..)
 
 navBarItemCSS: List Style
 navBarItemCSS = 
@@ -20,8 +21,8 @@ navBarItemCSS =
          fontSize (px 13)
         ]
 
-view: Model -> Html Msg
-view model = 
+view: Navbar -> Html Msg
+view navbar = 
         div [
             id "nav_bar_container",
             css [
@@ -44,7 +45,7 @@ view model =
                     div [
                         id "nav_home",
                         css navigationItem,
-                        onClick (ChangeLocation "/")
+                        onClick (ChangeLocation (pathname ++ "home"))
                     ][
                         text "iPTMnet"
                     ],
@@ -54,7 +55,8 @@ view model =
                     ][],
                     div [
                         id "nav_browse",
-                        css navigationItem
+                        css navigationItem,
+                        onClick (ChangeLocation (pathname ++ "browse"))
                     ][
                         text "Browse"
                     ],
@@ -68,7 +70,8 @@ view model =
                     ][],
                     div [
                         id "nav_stats",
-                        css navigationItem
+                        css navigationItem,
+                        onClick (ChangeLocation (pathname ++ "statistics"))
                     ][
                         text "Statistics"
                     ],
@@ -77,8 +80,28 @@ view model =
                         css Styles.Home.navigationSeperator
                     ][],
                     div [
+                        id "nav_api",
+                        css navigationItem,
+                        onClick (ChangeLocation (pathname ++ "api"))
+                    ][
+                        text "Api"
+                    ],
+                    div [
+                        id "seperator",
+                        css Styles.Home.navigationSeperator
+                    ][],
+                    a [
                         id "nav_help",
-                        css navigationItem
+                        css (navigationItem ++ [
+                            Css.link [
+                                textDecoration none
+                            ],
+                            Css.visited [
+                                textDecoration none
+                            ]
+                        ]) ,
+                        Html.Styled.Attributes.target "_",
+                        href ("https://research.bioinformatics.udel.edu/iptmnet/static/iptmnet/files/iPTMnet_Help.pdf")
                     ][
                         text "Help"
                     ],
@@ -88,7 +111,8 @@ view model =
                     ][],
                     div [
                         id "nav_license",
-                        css navigationItem
+                        css navigationItem,
+                        onClick (ChangeLocation (pathname ++ "license"))
                     ][
                         text "License"
                     ],
@@ -98,17 +122,20 @@ view model =
                     ][],
                     div [
                         id "nav_citation",
-                        css navigationItem
+                        css navigationItem,
+                        onClick (ChangeLocation (pathname ++ "citation"))
                     ][
                         text "Citation"
                     ],
+                    
                     div [
                         id "seperator",
                         css Styles.Home.navigationSeperator
                     ][],
                     div [
                         id "nav_about",
-                        css navigationItem
+                        css navigationItem,
+                        onClick (ChangeLocation (pathname ++ "about"))
                     ][
                         text "About"
                     ],
@@ -124,7 +151,11 @@ view model =
                             marginRight (px 20),
                             displayFlex,
                             flexDirection row,
-                            alignItems center
+                            alignItems center,
+                            (case navbar.isSearchVisible of
+                                        True -> Css.property "visibility" "visible"
+                                        False -> Css.property "visibility" "hidden"
+                                       )
                         ]
                     ][
                         div 
@@ -236,7 +267,7 @@ view model =
                                     backgroundColor Colors.selectBackgroundHover
                                 ]
                             ],
-                            Html.Styled.Events.onClick (Msgs.OnAdvancedSearchVisibilityChange (not model.homePage.advancedSearchVisibility))
+                            Html.Styled.Events.onClick (Msgs.OnAdvancedSearchVisibilityChange (not navbar.advancedSearchVisibility))
                         ][
                             div [
                                 css [
@@ -256,7 +287,7 @@ view model =
                     backgroundColor Colors.advancedSearchExpandBackground
                 ]
             ][
-                Views.AdvancedSearch.view model True
+                Views.AdvancedSearch.view navbar.searchOptions navbar.isSearchVisible True
             ]
             
         ]

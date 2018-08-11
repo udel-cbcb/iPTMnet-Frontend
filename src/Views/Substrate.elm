@@ -4,7 +4,6 @@ import Css exposing (..)
 import Html.Styled.Attributes exposing (..)
 import Msgs exposing (..)
 import RemoteData exposing (WebData)
-import Model exposing (..)
 import Dict exposing (..)
 import String.Interpolate exposing (interpolate)
 import String.Extra exposing (..)
@@ -14,6 +13,13 @@ import Views.Tabs
 import Views.Score
 import Styles.Generic
 import Misc
+import Html.Styled.Events
+import Filter
+import Model.Substrate exposing (..)
+import Model.Misc exposing (..)
+import Model.SubstrateEnzyme exposing (..)
+import Model.Source exposing (..)
+import Model.Tab exposing (..)
 
 -- returns the substrate view
 view: SubstrateData -> String -> String -> Bool -> Html Msg 
@@ -24,7 +30,7 @@ view  data entryID geneName showErrorMsg =
         Loading ->
             viewWithSection Views.Loading.view entryID geneName
         Success ->
-            viewWithSection (renderSubstrateTable data) entryID geneName
+            viewWithSection (renderSubstrateTable data ) entryID geneName
         Error ->
             viewWithSection (Views.Error.view data.error showErrorMsg Msgs.OnSubstrateErrorButtonClicked) entryID geneName
 
@@ -48,20 +54,7 @@ viewWithSection childView entryID geneName =
             
         ]
 
-
-renderView: SubstrateData -> Html Msg
-renderView data =
-    case data.status of
-        NotAsked ->
-            text "No yet requested"
-        Loading ->
-            text "Loading"
-        Success ->
-            renderSubstrateTable data
-        Error ->
-            text data.error
-
-renderSubstrateTable: Model.SubstrateData -> Html Msg
+renderSubstrateTable: SubstrateData -> Html Msg
 renderSubstrateTable substrateData =
         div [
             id "div_substrate_table_container",
@@ -121,10 +114,13 @@ renderSubstrateTable substrateData =
                 ]
             ][
                 
-                div [id "substrate_search" ,css [
-                                                marginLeft auto,
-                                                alignSelf center
-                                                ]]
+                div [id "substrate_search",
+                    css [
+                            marginLeft auto,
+                            alignSelf center
+                        ],
+                    Html.Styled.Events.onInput Msgs.OnSubstrateSearch
+                ]
                     [
                         span [css [marginRight (px 10), fontSize (Css.em 1)]] [text "Search:"],
                         input [] []
@@ -151,7 +147,7 @@ renderSubstrateTable substrateData =
                     paddingBottom (px 10),
                     fontWeight bold
             ]] [
-                div [css [flex (num 1),
+                div [css [flex (num 1.6),
                           marginLeft (px 20),
                           marginRight (px 20),
                           paddingLeft (px 5)
@@ -159,7 +155,7 @@ renderSubstrateTable substrateData =
                 [
                     text "Site"
                 ],
-                div [css [flex (num 1.2),
+                div [css [flex (num 2),
                           marginRight (px 20)         
                          ]] 
                 [
@@ -195,15 +191,20 @@ renderSubstrateTable substrateData =
             ],
             -- rows
             case Dict.get substrateData.tabData.selectedTab substrateData.data of 
-                Just substrates -> 
-                    div [] (List.map substrateRow substrates) 
+                Just substrates ->
+                    let
+                        filteredList = (case String.length substrateData.filterTerm of
+                                             0 -> substrates
+                                             _ -> List.filter (Filter.substrate substrateData.filterTerm) substrates)
+                    in 
+                        div [] (List.map substrateRow filteredList) 
                 Nothing -> 
                     div [] []
         ]
 
         ]
 
-substrateRow: Substrate Source SubstrateEnzyme -> Html Msg
+substrateRow: Substrate -> Html Msg
 substrateRow substrate = 
         div [css [
         displayFlex,
@@ -217,35 +218,40 @@ substrateRow substrate =
                 div [css [flex (num 1),
                           marginLeft (px 20),
                           marginRight (px 20),
-                          paddingLeft (px 5)
+                          paddingLeft (px 5),
+                          Css.property "word-break" "break-all"  
                     ]]
                 [
                     text substrate.site
                 ],
-                div [css [flex (num 1.2),
-                          marginRight (px 20)         
+                div [css [flex (num 1.6),
+                          marginRight (px 20),
+                          Css.property "word-break" "break-all"         
                          ]] 
                 [
                     text substrate.ptm_type
                 ],
                 div [css [flex (num 3),
-                     marginRight (px 20)         
+                     marginRight (px 20),
+                     Css.property "word-break" "break-all"           
                     ]] (List.map buildEnzyme substrate.enzymes |> List.intersperse (span [css [display inline]] [text ", "])) ,
                 div [css [flex (num 1),
-                          marginRight (px 20)
+                          marginRight (px 20),
+                          Css.property "word-break" "break-all"  
                          ]]
                 [
                     Views.Score.view substrate.score
                 ],
                 div [css [flex (num 3),
-                          marginRight (px 20)
+                          marginRight (px 20),
+                          Css.property "word-break" "break-all"  
                          ]]
                 [
                     div [] (List.map buildSource substrate.sources |> List.intersperse (span [css [display inline]] [text ", "]))
                 ],
                 div [css [flex (num 3),
                           marginRight (px 20),
-                          Css.property "word-wrap" "break-word"
+                          Css.property "word-break" "break-all"  
                          ]]
                 (
                     List.map Misc.buildPMID substrate.pmids 
@@ -276,7 +282,7 @@ buildSource source =
         text source.name
     ]
 
-decodeResponse: WebData (Dict String (List (Substrate Source SubstrateEnzyme))) -> SubstrateData 
+decodeResponse: WebData (Dict String (List Substrate )) -> SubstrateData 
 decodeResponse response = 
     case response of
         RemoteData.NotAsked ->
@@ -285,9 +291,10 @@ decodeResponse response =
                 error = "",
                 data = Dict.empty,
                 tabData = {
-                    tabs = ["Substrate 1", "Substrate 2", "Substrate 3"],
+                    tabs = [],
                     selectedTab = ""
-                }
+                },
+                filterTerm = ""
             }
 
         RemoteData.Loading ->
@@ -296,23 +303,29 @@ decodeResponse response =
                 error = "",
                 data = Dict.empty,
                 tabData = {
-                    tabs = ["Substrate 1", "Substrate 2", "Substrate 3"],
+                    tabs = [],
                     selectedTab = ""
-                }
+                },
+                filterTerm = ""
             }
 
         RemoteData.Success substrateTable ->
-            {
-                status = Success,
-                error = "",
-                data = substrateTable,
-                tabData = {
-                    tabs = Dict.keys substrateTable,
-                    selectedTab = Dict.keys substrateTable
-                                  |> List.head 
-                                  |> Maybe.withDefault ""
+            let 
+                tabs = Dict.toList substrateTable
+                           |> List.map toTab 
+            in
+                {
+                    status = Success,
+                    error = "",
+                    data = substrateTable,
+                    tabData = {
+                        tabs = tabs,
+                        selectedTab = Dict.keys substrateTable
+                                    |> List.head 
+                                    |> Maybe.withDefault ""
+                    },
+                    filterTerm = ""
                 }
-            }
 
         RemoteData.Failure error ->
             {
@@ -320,9 +333,17 @@ decodeResponse response =
                 error = (toString error),
                 data = Dict.empty,
                 tabData = {
-                    tabs = ["Substrate 1", "Substrate 2", "Substrate 3"],
+                    tabs = [],
                     selectedTab = ""
-                }
+                },
+                filterTerm = ""
             }
+
+toTab : ( String, List Substrate )  -> Tab
+toTab substrate_list =
+    {
+        title = Tuple.first substrate_list,
+        count = (Tuple.second substrate_list) |> List.length
+    }
 
 

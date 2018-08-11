@@ -2,13 +2,15 @@ module Views.Info exposing (..)
 import Html.Styled exposing (..)
 import Css exposing (..)
 import Html.Styled.Attributes exposing (..)
-import Model exposing (..)
 import Msgs exposing (..)
 import RemoteData exposing (WebData)
 import String.Interpolate exposing (interpolate)
 import String
 import Views.Error
 import Views.Loading
+import Model.Info as Info exposing (..)
+import Model.Misc exposing (..)
+import Model.Pro exposing (..)
 
 -- css
 geneInfoTableCSS: List Style
@@ -119,38 +121,45 @@ view data isErrorVisible =
                                 span [css tableValueCSS,align "left"] [text (interpolate "{0} ({1})" [data.data.organism.species,data.data.organism.common_name])] 
                             ]
                         ],
-
-                    div [id "pro_table", css proInfoTableCSS] [
-                            div [css tableRowCSS] [
-                                span [css tableKeysCSS] [text "PRO ID"],
-                                span [css tableValueCSS] [
-                                    a [href (interpolate "http://purl.obolibrary.org/obo/PR_{0}" [data.data.uniprot_ac] ), Html.Styled.Attributes.target "_blank"] [text (data.data.pro.id)]] 
-                            ],
-                            div [css tableRowCSS] [
-                                span [css tableKeysCSS] [text "PRO Name"],
-                                span [css tableValueCSS] [text data.data.pro.name] 
-                            ],
-                            div [css tableRowCSS] [
-                                span [css tableKeysCSS] [text "Definition"],
-                                span [css tableValueCSS] [text data.data.pro.definition] 
-                            ],
-                            div [css tableRowCSS] [
-                                span [css tableKeysCSS] [text "Short Label"],
-                                span [css tableValueCSS] [text data.data.pro.short_label] 
-                            ],
-                            div [css tableRowCSS] [
-                                span [css tableKeysCSS] [text "Category"],
-                                span [css tableValueCSS] [text data.data.pro.category] 
-                            ]
-
-                        ]
-                    ]
+                        viewPro data.data.pro data.data.uniprot_ac
+                    ]                    
 
                 Error ->
                     (Views.Error.view data.error isErrorVisible Msgs.OnInfoErrorButtonClicked)
 
             ]
 
+viewPro: Maybe PRO -> String -> Html Msg
+viewPro maybe_pro uniprot_ac =  
+        case maybe_pro of
+            Just pro ->
+                div [id "pro_table", css proInfoTableCSS]
+                    [
+                            div [css tableRowCSS] [
+                                span [css tableKeysCSS] [text "PRO ID"],
+                                span [css tableValueCSS] [
+                                    a [href (interpolate "http://purl.obolibrary.org/obo/PR_{0}" [uniprot_ac] ), Html.Styled.Attributes.target "_blank"] [text (pro.id)]] 
+                            ],
+                            div [css tableRowCSS] [
+                                span [css tableKeysCSS] [text "PRO Name"],
+                                span [css tableValueCSS] [text pro.name] 
+                            ],
+                            div [css tableRowCSS] [
+                                span [css tableKeysCSS] [text "Definition"],
+                                span [css tableValueCSS] [text pro.definition] 
+                            ],
+                            div [css tableRowCSS] [
+                                span [css tableKeysCSS] [text "Short Label"],
+                                span [css tableValueCSS] [text pro.short_label] 
+                            ],
+                            div [css tableRowCSS] [
+                                span [css tableKeysCSS] [text "Category"],
+                                span [css tableValueCSS] [text pro.category] 
+                            ]
+                    ]
+                       
+            Nothing -> 
+                div [] []
 
 decodeResponse: WebData Info -> InfoData 
 decodeResponse response = 
@@ -159,14 +168,14 @@ decodeResponse response =
             {
                 status = NotAsked,
                 error = "",
-                data = Model.emptyInfo
+                data = Info.initialModel
             }
 
         RemoteData.Loading ->
             {
                 status = Loading,
                 error = "",
-                data = Model.emptyInfo
+                data = Info.initialModel
             }
 
         RemoteData.Success info ->
@@ -180,5 +189,5 @@ decodeResponse response =
             {
                 status = Error,
                 error = (toString error),
-                data = Model.emptyInfo
+                data = Info.initialModel
             }

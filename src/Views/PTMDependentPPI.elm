@@ -1,18 +1,23 @@
 module Views.PTMDependentPPI exposing (..)
 import Html.Styled exposing (..)
+import Html.Styled.Events 
 import Css exposing (..)
 import Html.Styled.Attributes exposing (..)
 import Msgs exposing (..)
-import Model exposing (..)
 import RemoteData exposing (WebData)
 import String.Interpolate exposing (interpolate)
 import Views.Loading
 import Views.Error
 import Misc
+import Filter
+import Html.Styled.Events exposing (..)
+import Model.PTMDependentPPI exposing (..)
+import Model.CytoscapeItem exposing (..)
+import Model.Misc exposing (..)
 
 -- returns the substrate view
-view: PTMDependentPPIData -> Bool -> Html Msg 
-view data showErrorMsg = 
+view: PTMDependentPPIData -> (List CytoscapeItem) -> Bool -> Html Msg 
+view data cytoscapeItems showErrorMsg = 
     case data.status of
         NotAsked ->
             div [][]
@@ -21,7 +26,7 @@ view data showErrorMsg =
         Success ->
             case (List.length data.data) of
             0 -> div [][]
-            _ ->  viewWithSection (renderPTMTable data.data)
+            _ ->  viewWithSection (renderPTMTable data.data data.filterTerm cytoscapeItems)
         Error ->
             viewWithSection (Views.Error.view data.error showErrorMsg Msgs.OnPTMDepPPIErrorButtonClicked)
 
@@ -48,10 +53,13 @@ viewWithSection childView =
                     span [css [
                         fontSize (Css.em 1.5)
                     ]][text "PTM Dependent PPI"],
-                    div [id "ptm_dep_ppi__search" ,css [
-                                                        marginLeft auto,
-                                                        alignSelf center
-                                                    ]]
+                    div [id "ptm_dep_ppi__search" ,
+                        css [
+                                marginLeft auto,
+                                alignSelf center
+                            ],
+                        Html.Styled.Events.onInput Msgs.OnPTMPPISearch
+                        ]
                     [
                         span [css [marginRight (px 10), fontSize (Css.em 1)]] [text "Search:"],
                         input [] []
@@ -60,8 +68,8 @@ viewWithSection childView =
                 childView             
             ]
 
-renderPTMTable: List (PTMDependentPPI Entity Source) -> Html Msg
-renderPTMTable ptmDependentPPIList =
+renderPTMTable: List PTMDependentPPI -> String -> (List CytoscapeItem) -> Html Msg
+renderPTMTable ptmDependentPPIList filterTerm cytoscapeItems =
         div [id "ptmdependentppi_table", css [
             displayFlex,
             flexDirection column,
@@ -128,12 +136,15 @@ renderPTMTable ptmDependentPPIList =
             ],
 
             -- rows
-            div [] (List.map ptmDependentPPIRow ptmDependentPPIList) 
+            div [] (List.map (ptmDependentPPIRow cytoscapeItems) (case String.length filterTerm of
+                                             0 -> ptmDependentPPIList
+                                             _ -> List.filter (Filter.ptmDependentPPI filterTerm) ptmDependentPPIList)
+                   ) 
         
         ]
 
-ptmDependentPPIRow: (PTMDependentPPI Entity Source) -> Html Msg
-ptmDependentPPIRow ptmdependentppi = 
+ptmDependentPPIRow: (List CytoscapeItem) -> PTMDependentPPI -> Html Msg
+ptmDependentPPIRow cytoscapeItems ptmdependentppi = 
     div [css [
         displayFlex,
         flexDirection row,
@@ -148,7 +159,19 @@ ptmDependentPPIRow ptmdependentppi =
                   marginRight (px 20)
                  ]] 
         [
-            input [type_ "checkbox", css[marginLeft (px 5), marginRight (px 10)]][],
+            (
+                let
+                    cytoscapeItem = {id_1 = ptmdependentppi.substrate.uniprot_id ,id_2 = ptmdependentppi.interactant.uniprot_id,item_type = "ptm_ppi" } 
+                    isChecked = List.member cytoscapeItem cytoscapeItems
+                in
+                    input [
+                        type_ "checkbox",
+                        css[marginLeft (px 5),
+                            marginRight (px 10)],
+                        onClick (Msgs.ToggleCytoscapeItem cytoscapeItem),
+                        Html.Styled.Attributes.checked isChecked
+                ][]
+            ),
             span [] [text (interpolate " {0}" [ptmdependentppi.ptm_type])]
         ],
         div [css [flex (num 1),
@@ -191,33 +214,37 @@ ptmDependentPPIRow ptmdependentppi =
         ]
     ]
 
-decodeResponse: WebData (List (PTMDependentPPI Entity Source)) -> PTMDependentPPIData 
+decodeResponse: WebData (List PTMDependentPPI) -> PTMDependentPPIData 
 decodeResponse response = 
     case response of
         RemoteData.NotAsked ->
             {
                 status = NotAsked,
                 error = "",
-                data = []
+                data = [],
+                filterTerm = ""
             }
 
         RemoteData.Loading ->
             {
                 status = Loading,
                 error = "",
-                data = []
+                data = [],
+                filterTerm = ""
             }
 
         RemoteData.Success ptmDependentPPIList ->
             {
                 status = Success,
                 error = "",
-                data = ptmDependentPPIList
+                data = ptmDependentPPIList,
+                filterTerm = ""
             }
 
         RemoteData.Failure error ->
             {
                 status = Error,
                 error = (toString error),
-                data = []
+                data = [],
+                filterTerm = ""
             }

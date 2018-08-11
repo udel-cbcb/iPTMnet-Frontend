@@ -1,19 +1,20 @@
 module Views.AdvancedSearch exposing (..)
-import Model exposing (..)
 import Html.Styled exposing (..)
+import Html.Styled.Events exposing (..)
 import Css exposing (..)
 import Html.Styled.Attributes exposing (..)
-import Model exposing (..)
 import Msgs exposing (..)
 import Colors exposing (..)
 import Styles.Home exposing (..)
+import List.Extra
+import Model.SearchOptions exposing (..)
 
-view : Model -> Bool -> Html Msg
-view model isInNavbar = 
+view : SearchOptions -> Bool -> Bool -> Html Msg
+view searchOptions advancedSearchVisibility isInNavbar = 
                 -- advanced search
                 div [
                     id "div_advanced_search",
-                    css ((Styles.Home.advancedSearch (model.homePage.advancedSearchVisibility)) ++ if isInNavbar then
+                    css ((Styles.Home.advancedSearch (advancedSearchVisibility)) ++ if isInNavbar then
                                                                                                     [
                                                                                                         Css.paddingTop (px 20),
                                                                                                         Css.paddingBottom (px 40),
@@ -56,13 +57,16 @@ view model isInNavbar =
                             
                              button [
                                  id "btn_select_all_ptm",
-                                 css Styles.Home.selectorButton
+                                 css Styles.Home.selectorButton,
+                                 onClick (Msgs.SetSelectedPTMTypes ["Acetylation","N-Glycosylation","O-Glycosylation","C-Glycosylation","S-Glycosylation",
+                                                                    "Methylation","Myristoylation","Phosphorylation","Sumoylation","Ubiquitination","S-Nitrosylation"])
                              ][
                                  text "All"
                              ],
                              button [
                                  id "btn_select_none_ptm",
-                                 css (Styles.Home.selectorButton ++ [marginLeft (px 20)])
+                                 css (Styles.Home.selectorButton ++ [marginLeft (px 20)]),
+                                 onClick (Msgs.SetSelectedPTMTypes [])
                              ][
                                  text "None"
                              ]
@@ -93,7 +97,9 @@ view model isInNavbar =
                                     input [
                                         id "cb_acetylation",
                                         type_ "checkbox",
-                                        css Styles.Home.ptmType
+                                        css Styles.Home.ptmType,
+                                        Html.Styled.Attributes.checked (List.member "Acetylation" searchOptions.ptm_types),
+                                        onClick (togglePTMType searchOptions.ptm_types "Acetylation")
                                     ][], text "Acetylation"
                                 ],
 
@@ -103,7 +109,9 @@ view model isInNavbar =
                                     input [
                                         id "cb_n_glycosylation",
                                         type_ "checkbox",
-                                        css Styles.Home.ptmType
+                                        css Styles.Home.ptmType,
+                                        Html.Styled.Attributes.checked (List.member "N-Glycosylation" searchOptions.ptm_types),
+                                        onClick (togglePTMType searchOptions.ptm_types "N-Glycosylation")
                                     ][], text "N-Glycosylation"
                                 ],
 
@@ -113,7 +121,9 @@ view model isInNavbar =
                                     input [
                                         id "cb_o_glycosylation",
                                         type_ "checkbox",
-                                        css Styles.Home.ptmType 
+                                        css Styles.Home.ptmType,
+                                        Html.Styled.Attributes.checked (List.member "O-Glycosylation" searchOptions.ptm_types),
+                                        onClick (togglePTMType searchOptions.ptm_types "O-Glycosylation") 
                                     ][], text "O-Glycosylation"
                                 ],
 
@@ -123,7 +133,9 @@ view model isInNavbar =
                                     input [
                                         id "cb_c_glycosylation",
                                         type_ "checkbox",
-                                        css Styles.Home.ptmType 
+                                        css Styles.Home.ptmType,
+                                        Html.Styled.Attributes.checked (List.member "C-Glycosylation" searchOptions.ptm_types),
+                                        onClick (togglePTMType searchOptions.ptm_types "C-Glycosylation") 
                                     ][], text "C-Glycosylation"
                                 ]
                             ],
@@ -141,7 +153,9 @@ view model isInNavbar =
                                     input [
                                         id "cb_s_glycosylation",
                                         type_ "checkbox",
-                                        css Styles.Home.ptmType 
+                                        css Styles.Home.ptmType,
+                                        Html.Styled.Attributes.checked (List.member "S-Glycosylation" searchOptions.ptm_types),
+                                        onClick (togglePTMType searchOptions.ptm_types "S-Glycosylation") 
                                     ][], text "S-Glycosylation"
                                 ],
 
@@ -151,7 +165,9 @@ view model isInNavbar =
                                     input [
                                         id "cb_methylation",
                                         type_ "checkbox",
-                                        css Styles.Home.ptmType 
+                                        css Styles.Home.ptmType,
+                                        Html.Styled.Attributes.checked (List.member "Methylation" searchOptions.ptm_types),
+                                        onClick (togglePTMType searchOptions.ptm_types "Methylation") 
                                     ][], text "Methylation"
                                 ],
 
@@ -161,7 +177,9 @@ view model isInNavbar =
                                     input [
                                         id "cb_c_myristoylation",
                                         type_ "checkbox",
-                                        css Styles.Home.ptmType 
+                                        css Styles.Home.ptmType,
+                                        Html.Styled.Attributes.checked (List.member "Myristoylation" searchOptions.ptm_types),
+                                        onClick (togglePTMType searchOptions.ptm_types "Myristolytation") 
                                     ][], text "Myristoylation"
                                 ],
 
@@ -171,7 +189,9 @@ view model isInNavbar =
                                     input [
                                         id "cb_c_phosphorylation",
                                         type_ "checkbox",
-                                        css Styles.Home.ptmType 
+                                        css Styles.Home.ptmType,
+                                        Html.Styled.Attributes.checked (List.member "Phosphorylation" searchOptions.ptm_types),
+                                        onClick (togglePTMType searchOptions.ptm_types "Phosphorylation")  
                                     ][], text "Phosphorylation"
                                 ]
 
@@ -190,7 +210,9 @@ view model isInNavbar =
                                     input [
                                         id "cb_s_sumoylation",
                                         type_ "checkbox",
-                                        css Styles.Home.ptmType 
+                                        css Styles.Home.ptmType,
+                                        Html.Styled.Attributes.checked (List.member "Sumoylation" searchOptions.ptm_types),
+                                        onClick (togglePTMType searchOptions.ptm_types "Sumoylation")    
                                     ][], text "Sumoylation"
                                 ],
 
@@ -200,7 +222,9 @@ view model isInNavbar =
                                     input [
                                         id "cb_ubiquitination",
                                         type_ "checkbox",
-                                        css Styles.Home.ptmType 
+                                        css Styles.Home.ptmType,
+                                        Html.Styled.Attributes.checked (List.member "Ubiquitination" searchOptions.ptm_types),
+                                        onClick (togglePTMType searchOptions.ptm_types "Ubiquitination") 
                                     ][], text "Ubiquitination"
                                 ],
 
@@ -210,7 +234,9 @@ view model isInNavbar =
                                     input [
                                         id "cb_s_nitrosylation",
                                         type_ "checkbox",
-                                        css Styles.Home.ptmType 
+                                        css Styles.Home.ptmType,
+                                        Html.Styled.Attributes.checked (List.member "S-Nitrosylation" searchOptions.ptm_types),
+                                        onClick (togglePTMType searchOptions.ptm_types "S-Nitrosylation")
                                     ][], text "S-Nitrosylation"
                                 ]
                             ]
@@ -260,7 +286,9 @@ view model isInNavbar =
                                     css [
                                         marginTop (px 10),
                                         marginRight (px 10)
-                                    ] 
+                                    ],
+                                    Html.Styled.Attributes.checked (searchOptions.role == "Enzyme or Substrate"),
+                                    onClick (Msgs.SearchRoleChanged "Enzyme or Substrate")
                                 ][],
                                 
                                 text "Enzyme or Substrate"
@@ -278,7 +306,9 @@ view model isInNavbar =
                                     css [
                                         marginTop (px 10),
                                         marginRight (px 10)
-                                    ] 
+                                    ],
+                                    Html.Styled.Attributes.checked (searchOptions.role == "Enzyme"),
+                                    onClick (Msgs.SearchRoleChanged "Enzyme") 
                                 ][],
                                 
                                 text "Enzyme"
@@ -296,7 +326,9 @@ view model isInNavbar =
                                     css [
                                         marginTop (px 10),
                                         marginRight (px 10)
-                                    ] 
+                                    ],
+                                    Html.Styled.Attributes.checked (searchOptions.role == "Substrate"),
+                                    onClick (Msgs.SearchRoleChanged "Substrate") 
                                 ][],
                                 
                                 text "Substrate"
@@ -304,20 +336,22 @@ view model isInNavbar =
                             ],
 
                             label [
-                                id "lbl_enzyme_or_substrate"
+                                id "lbl_enzyme_and_substrate"
                             ][ 
                                 input [
-                                    id "rb_enzyme_or_substrate",
+                                    id "rb_enzyme_and_substrate",
                                     type_ "radio",
                                     name "role" ,
-                                    value "enzyme_or_substrate",
+                                    value "enzyme_and_substrate",
                                     css [
                                         marginTop (px 10),
                                         marginRight (px 10)
-                                    ] 
+                                    ],
+                                    Html.Styled.Attributes.checked (searchOptions.role == "Enzyme and Substrate"),
+                                    onClick (Msgs.SearchRoleChanged "Enzyme and Substrate")
                                 ][],
                                 
-                                text "Enzyme Or Substrate"
+                                text "Enzyme and Substrate"
                                 
                             ]
 
@@ -355,13 +389,17 @@ view model isInNavbar =
                             
                              button [
                                  id "btn_select_all_organisms",
-                                 css Styles.Home.selectorButton
+                                 css Styles.Home.selectorButton,
+                                 onClick (Msgs.SetSelectedTaxons ["9606","9913","7215","4896","3880","10090",
+                                                                  "9031","124036","344310","35790","10114","7955",
+                                                                  "4932","4577"])
                              ][
                                  text "All"
                              ],
                              button [
                                  id "btn_select_none_organisms",
-                                 css (Styles.Home.selectorButton ++ [marginLeft (px 20)])
+                                 css (Styles.Home.selectorButton ++ [marginLeft (px 20)]),
+                                 onClick (Msgs.SetSelectedTaxons [""])
                              ][
                                  text "None"
                              ]
@@ -392,7 +430,9 @@ view model isInNavbar =
                                     input [
                                         id "cb_human",
                                         type_ "checkbox",
-                                        css Styles.Home.ptmType
+                                        css Styles.Home.ptmType,
+                                        Html.Styled.Attributes.checked (List.member "9606" searchOptions.organisms_defaults),
+                                        onClick (toggleTaxon searchOptions.organisms_defaults "9606")
                                     ][], text "Human"
                                 ],
 
@@ -402,7 +442,9 @@ view model isInNavbar =
                                     input [
                                         id "cb_cow",
                                         type_ "checkbox",
-                                        css Styles.Home.ptmType
+                                        css Styles.Home.ptmType,
+                                        Html.Styled.Attributes.checked (List.member "9913" searchOptions.organisms_defaults),
+                                        onClick (toggleTaxon searchOptions.organisms_defaults "9913")
                                     ][], text "Cow"
                                 ],
 
@@ -412,7 +454,8 @@ view model isInNavbar =
                                     input [
                                         id "cb_fruit_fly",
                                         type_ "checkbox",
-                                        css Styles.Home.ptmType 
+                                        css Styles.Home.ptmType,
+                                        Html.Styled.Attributes.checked (List.member "7215" searchOptions.organisms_defaults)
                                     ][], text "Fruit fly"
                                 ],
 
@@ -422,7 +465,8 @@ view model isInNavbar =
                                     input [
                                         id "cb_fission_yeast",
                                         type_ "checkbox",
-                                        css Styles.Home.ptmType 
+                                        css Styles.Home.ptmType,
+                                        Html.Styled.Attributes.checked (List.member "4896" searchOptions.organisms_defaults) 
                                     ][], text "Fission yeast"
                                 ]
                             ],
@@ -442,7 +486,8 @@ view model isInNavbar =
                                     input [
                                         id "cb_m_truncatula",
                                         type_ "checkbox",
-                                        css Styles.Home.ptmType 
+                                        css Styles.Home.ptmType,
+                                        Html.Styled.Attributes.checked (List.member "3880" searchOptions.organisms_defaults)  
                                     ][], text "M. truncatula"
                                 ],
 
@@ -452,7 +497,8 @@ view model isInNavbar =
                                     input [
                                         id "cb_mouse",
                                         type_ "checkbox",
-                                        css Styles.Home.ptmType 
+                                        css Styles.Home.ptmType,
+                                        Html.Styled.Attributes.checked (List.member "10090" searchOptions.organisms_defaults)  
                                     ][], text "Mouse"
                                 ],
 
@@ -462,7 +508,8 @@ view model isInNavbar =
                                     input [
                                         id "cb_chicken",
                                         type_ "checkbox",
-                                        css Styles.Home.ptmType 
+                                        css Styles.Home.ptmType,
+                                        Html.Styled.Attributes.checked (List.member "9031" searchOptions.organisms_defaults) 
                                     ][], text "Chicken"
                                 ],
 
@@ -472,7 +519,8 @@ view model isInNavbar =
                                     input [
                                         id "cb_c_elegans",
                                         type_ "checkbox",
-                                        css Styles.Home.ptmType 
+                                        css Styles.Home.ptmType,
+                                        Html.Styled.Attributes.checked (List.member "124036" searchOptions.organisms_defaults) 
                                     ][], text "C. elegans"
                                 ]
 
@@ -491,7 +539,8 @@ view model isInNavbar =
                                     input [
                                         id "cb_a_thaliana",
                                         type_ "checkbox",
-                                        css Styles.Home.ptmType 
+                                        css Styles.Home.ptmType,
+                                        Html.Styled.Attributes.checked (List.member "344310" searchOptions.organisms_defaults) 
                                     ][], text "A. Thaliana"
                                 ],
 
@@ -501,7 +550,8 @@ view model isInNavbar =
                                     input [
                                         id "cb_rice",
                                         type_ "checkbox",
-                                        css Styles.Home.ptmType 
+                                        css Styles.Home.ptmType,
+                                        Html.Styled.Attributes.checked (List.member "35790" searchOptions.organisms_defaults) 
                                     ][], text "Rice (japonica)"
                                 ],
 
@@ -511,7 +561,8 @@ view model isInNavbar =
                                     input [
                                         id "cb_rat",
                                         type_ "checkbox",
-                                        css Styles.Home.ptmType 
+                                        css Styles.Home.ptmType,
+                                        Html.Styled.Attributes.checked (List.member "10114" searchOptions.organisms_defaults) 
                                     ][], text "Rat"
                                 ],
 
@@ -521,7 +572,8 @@ view model isInNavbar =
                                     input [
                                         id "cb_zebrafish",
                                         type_ "checkbox",
-                                        css Styles.Home.ptmType 
+                                        css Styles.Home.ptmType,
+                                        Html.Styled.Attributes.checked (List.member "7955" searchOptions.organisms_defaults)  
                                     ][], text "Zebrafish"
                                 ]
                             ],
@@ -540,7 +592,8 @@ view model isInNavbar =
                                     input [
                                         id "cb_bakers_yeast",
                                         type_ "checkbox",
-                                        css Styles.Home.ptmType 
+                                        css Styles.Home.ptmType,
+                                        Html.Styled.Attributes.checked (List.member "4932" searchOptions.organisms_defaults) 
                                     ][], text "Bakers's Yeast"
                                 ],
 
@@ -550,7 +603,8 @@ view model isInNavbar =
                                     input [
                                         id "cb_maize",
                                         type_ "checkbox",
-                                        css Styles.Home.ptmType 
+                                        css Styles.Home.ptmType,
+                                        Html.Styled.Attributes.checked (List.member "4577" searchOptions.organisms_defaults) 
                                     ][], text "Maize"
                                 ]
                             ]
@@ -574,6 +628,7 @@ view model isInNavbar =
                                     paddingLeft (px 10),
                                     paddingRight (px 10)
                                 ],
+                                onInput Msgs.OnTaxonsUserInput, 
                                 placeholder "Enter organism taxon codes seperated by comma"
                             ][
 
@@ -581,3 +636,16 @@ view model isInNavbar =
                         ]
                     ]
                 ]
+
+
+togglePTMType : (List String) -> String -> Msg
+togglePTMType ptm_types ptm_type = 
+    case List.member ptm_type ptm_types of
+        True -> Msgs.SetSelectedPTMTypes (List.Extra.remove ptm_type ptm_types)
+        False -> Msgs.SetSelectedPTMTypes (ptm_types ++ [ptm_type])
+
+toggleTaxon : (List String) -> String -> Msg
+toggleTaxon taxons taxon = 
+    case List.member taxon taxons of
+        True -> Msgs.SetSelectedTaxons (List.Extra.remove taxon taxons)
+        False -> Msgs.SetSelectedTaxons (taxons ++ [taxon])

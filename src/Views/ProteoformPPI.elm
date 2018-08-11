@@ -4,16 +4,22 @@ import Css exposing (..)
 import Html.Styled.Attributes exposing (..)
 import Msgs exposing (..)
 import RemoteData exposing (WebData)
-import Model exposing (..)
 import String.Interpolate exposing (interpolate)
 import String.Extra exposing (..)
 import Views.Loading
 import Views.Error
 import Misc
+import Html.Styled.Events
+import Filter
+import Html.Styled.Events exposing (..)
+import Model.ProteoformPPI exposing (..)
+import Model.CytoscapeItem exposing (..)
+import Model.Misc exposing (..)
+import Model.Protein exposing (..)
 
 -- returns the substrate view
-view: ProteoformPPIData -> Bool -> Html Msg 
-view data showErrorMsg= 
+view: ProteoformPPIData -> (List CytoscapeItem) -> Bool -> Html Msg 
+view data cytoscapeItems showErrorMsg= 
     case data.status of
         NotAsked ->
             div [][]
@@ -22,7 +28,7 @@ view data showErrorMsg=
         Success ->
             case (List.length data.data) of
             0 -> div [][]
-            _ ->  viewWithSection (renderProteoformPPITable data.data)
+            _ ->  viewWithSection (renderProteoformPPITable data.data data.filterTerm cytoscapeItems)
         Error ->
             viewWithSection (Views.Error.view data.error showErrorMsg Msgs.OnProteoformsPPIErrorButtonClicked)
 
@@ -49,10 +55,13 @@ viewWithSection childView =
                     span [css [
                         fontSize (Css.em 1.5)
                     ]][text "ProteoformsPPI"],
-                    div [id "proteforms_ppi_search" ,css [
-                                                        marginLeft auto,
-                                                        alignSelf center
-                                                    ]]
+                    div [id "proteforms_ppi_search",
+                         css [
+                                marginLeft auto,
+                                alignSelf center
+                            ],
+                         Html.Styled.Events.onInput Msgs.OnProteoformPPISearch
+                        ]
                     [
                         span [css [marginRight (px 10), fontSize (Css.em 1)]] [text "Search:"],
                         input [] []
@@ -62,21 +71,8 @@ viewWithSection childView =
             ]
 
 
-renderView: ProteoformPPIData -> Html Msg
-renderView data =
-    case data.status of
-        NotAsked ->
-            text "No yet requested"
-        Loading ->
-            text "Loading"
-        Success ->
-            renderProteoformPPITable data.data
-        Error ->
-            text data.error
-
-
-renderProteoformPPITable: List (ProteoformPPI Protein Source) -> Html Msg
-renderProteoformPPITable proteoformPPIList =
+renderProteoformPPITable: List ProteoformPPI -> String -> (List CytoscapeItem) -> Html Msg
+renderProteoformPPITable proteoformPPIList filterTerm cytoscapeItems =
         div [id "proteoformppi_table", css [
             displayFlex,
             flexDirection column,
@@ -130,12 +126,15 @@ renderProteoformPPITable proteoformPPIList =
                 
             ],
             -- rows
-            div [] (List.map proteoformPPIRow proteoformPPIList) 
+            div [] (List.map (proteoformPPIRow cytoscapeItems) (case String.length filterTerm of
+                                             0 -> proteoformPPIList
+                                             _ -> List.filter (Filter.proteoformPPI filterTerm) proteoformPPIList)
+                    ) 
         
         ]
 
-proteoformPPIRow: (ProteoformPPI Protein Source) -> Html Msg
-proteoformPPIRow proteoformPPI = 
+proteoformPPIRow: (List CytoscapeItem) -> ProteoformPPI -> Html Msg
+proteoformPPIRow cytoscapeItems proteoformPPI = 
     div [css [
         displayFlex,
         flexDirection row,
@@ -151,7 +150,19 @@ proteoformPPIRow proteoformPPI =
                           paddingLeft (px 5)
                     ]]
                 [
-                    input [type_ "checkbox", css[marginLeft (px 5), marginRight (px 10)]][],
+                    (
+                        let
+                            cytoscapeItem = {id_1 = proteoformPPI.protein_1.pro_id ,id_2 = proteoformPPI.protein_2.pro_id,item_type = "pro_ppi" } 
+                            isChecked = List.member cytoscapeItem cytoscapeItems
+                        in
+                            input [
+                                type_ "checkbox",
+                                css[marginLeft (px 5),
+                                    marginRight (px 10)],
+                                onClick (Msgs.ToggleCytoscapeItem cytoscapeItem),
+                                Html.Styled.Attributes.checked isChecked
+                        ][]
+                    ),
                     a [href (interpolate "http://purl.obolibrary.org/obo/{0}" [(replace ":" "_" proteoformPPI.protein_1.pro_id )]), Html.Styled.Attributes.target "_blank"] [text proteoformPPI.protein_1.pro_id],
                     span [] [text (interpolate " ({0})" [proteoformPPI.protein_1.label])]
                 ],
@@ -193,34 +204,38 @@ buildProtein2 entity =
         ]
 
 
-decodeResponse: WebData (List (ProteoformPPI Protein Source)) -> ProteoformPPIData 
+decodeResponse: WebData (List ProteoformPPI ) -> ProteoformPPIData 
 decodeResponse response = 
     case response of
         RemoteData.NotAsked ->
             {
                 status = NotAsked,
                 error = "",
-                data = []
+                data = [],
+                filterTerm = ""
             }
 
         RemoteData.Loading ->
             {
                 status = Loading,
                 error = "",
-                data = []
+                data = [],
+                filterTerm = ""
             }
 
         RemoteData.Success proteoformsList ->
             {
                 status = Success,
                 error = "",
-                data = proteoformsList
+                data = proteoformsList,
+                filterTerm = ""
             }
 
         RemoteData.Failure error ->
             {
                 status = Error,
                 error = (toString error),
-                data = []
+                data = [],
+                filterTerm = ""
             }
 
