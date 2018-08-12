@@ -71,9 +71,9 @@ export function loadInfo(id: string) : ThunkAction<void,Store,void,Action> {
             if(res.status === 200){
                 const jsonConvert: JsonConvert = new JsonConvert();
                 const info = jsonConvert.deserializeObject(res.data,Info);
-                console.log(info);
                 dispatch(loadInfoSuccess(info));
             }else{
+                console.log(res.statusText + ":" + res.data);
                 dispatch(loadInfoError(res.statusText + ":" + res.data))
             }    
         }).catch((err)=>{

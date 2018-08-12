@@ -1,5 +1,6 @@
 import * as React from "react";
 import SearchBox from "src/views/SearchBar";
+import SearchOptions from "src/views/SearchOptions";
 import { StyleSheet, css } from 'aphrodite';
 
 interface ISearchState {
@@ -21,7 +22,7 @@ class Search extends React.Component<{},ISearchState> {
                 {(()=>{
                     if(this.state.isAdvancedVisisble){
                         return (<div>
-                            Advanced search
+                            <SearchOptions />
                         </div>);
                     }else{
                         return <div></div>;
