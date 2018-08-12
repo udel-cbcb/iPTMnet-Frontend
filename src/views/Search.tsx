@@ -17,7 +17,7 @@ class Search extends React.Component<{},ISearchState> {
    
     public render(){
         return (
-            <div>
+            <div id="div_search_container" className={css(styles.searchContainer)}  >
                 <SearchBox onSearchIconClick={this.onSearchBoxClicked} />
                 {(()=>{
                     if(this.state.isAdvancedVisisble){
@@ -39,6 +39,16 @@ class Search extends React.Component<{},ISearchState> {
                         Batch Retrieval
                     </a>
                 </div>
+
+                <div id="search_buttons" className={css(styles.searchButtonsContainer)} >
+                    <button id="btn_search" className={css(styles.searchButton)}  >
+                        Search
+                    </button>
+                    <button id="btn_reset" className={css(styles.resetButton)}  >
+                        Reset
+                    </button>
+                </div>
+
             </div>
             
             
@@ -52,6 +62,13 @@ class Search extends React.Component<{},ISearchState> {
 }
 
 const styles = StyleSheet.create({
+    
+    searchContainer: {
+        display: "flex",
+        flexDirection: "column",
+        alignItems: "stretch"
+    },  
+
     misc: {
         display: "flex",
         flexDirection: "row",
@@ -88,6 +105,53 @@ const styles = StyleSheet.create({
         },
         ":visited": {
             color: "#329CDA"
+        }
+    },
+
+    searchButtonsContainer : {
+        display: "flex",
+        flexDirection: "row",
+        alignSelf: "center",
+        marginTop: 30
+    },
+
+    searchButton : {
+        backgroundColor: "#329CDA",
+        width: 100,
+        fontSize: "1em",
+        paddingTop: 10,
+        paddingBottom: 10,
+        borderStyle: "none",
+        borderRadius: 25,
+        color: "#fbfbfb",
+        ":focus": {
+            outline: "none"
+        },
+        ":hover": {
+            cursor: ":pointer",
+            backgroundColor: "#258ecbff"
+        }
+    },
+
+    resetButton : {
+        backgroundColor: "transparent",
+        width: 100,
+        fontSize: "1em",
+        paddingTop: 10,
+        paddingBottom: 10,
+        marginLeft: 40,
+        borderStyle: "solid",
+        borderColor: "#329CDA",
+        borderRadius: 25,
+        borderWidth: 1,
+        color: "#131313ff",
+        ":focus": {
+            outline: "none"
+        },
+        ":hover": {
+            cursor: "pointer",
+            color: "#fbfbfb",
+            backgroundColor: "#329cda94"
         }
     }
 

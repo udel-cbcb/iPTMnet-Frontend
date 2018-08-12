@@ -19,7 +19,7 @@ class App extends React.Component {
   
   public render() {
     return (
-      <div>
+      <div style={{margin: 0,height: "100%"}} >
         <Route path="/" exact={true} component={Home} />
         <Route path="/browse" exact={true} component={Browse} />
         <Route path="/statistics" exact={true} component={Statistics} /> 

@@ -2,6 +2,7 @@ import * as React from 'react';
 import { css,StyleSheet,minify } from 'aphrodite';
 import Navbar from '../views/Navbar';
 import Search from 'src/views/Search';
+import Footer from '../views/Footer';
 
 minify(false);
 
@@ -38,10 +39,26 @@ class Home extends React.Component {
             </div>
 
             <Search />
-                                  
+
+            <div id="info" className={css(styles.info)}  >
+                <p>
+                  iPTMnet is a bioinformatics resource for integrated understanding of protein post-translational
+                  modifications (PTMs) in systems biology context.
+                </p>
+                <p>
+                  It connects multiple disparate bioinformatics tools and systems of text mining,
+                  data mining, analysis and visualization tools, and databases and ontologies into an integrated cross-cutting
+                  research resource to address the knowledge gaps in exploring and discovering PTM networks.
+                </p>
+            </div>                                
 
           </div>
+
+          <div id="filer" className={css(styles.filer)} />
+
         </div>
+
+        <Footer />
                  
       </div>
     );
@@ -50,7 +67,7 @@ class Home extends React.Component {
 
 const styles = StyleSheet.create({
   page : {
-    minHeight: "100%",
+    height: "100%",
     display: "flex",
     flexDirection: "column",
     alignItems: "center",
@@ -106,6 +123,21 @@ const styles = StyleSheet.create({
         color: "#329CDA"
     }
   },
+
+  info: {
+    display: "flex",
+    width: 680,
+    marginTop: 30,
+    flexDirection: "column",
+    alignItems: "center",
+    fontSize: "1em",
+    color: "#606060ff"
+  },
+
+
+  filer: {
+    alignSelf: "stretch"
+  }
 
   
 
