@@ -21,9 +21,9 @@ class Search extends React.Component<{},ISearchState> {
                 <SearchBox onSearchIconClick={this.onSearchBoxClicked} />
                 {(()=>{
                     if(this.state.isAdvancedVisisble){
-                        return (<div>
+                        return (
                             <SearchOptions />
-                        </div>);
+                        );
                     }else{
                         return <div></div>;
                     }
@@ -66,7 +66,7 @@ const styles = StyleSheet.create({
     searchContainer: {
         display: "flex",
         flexDirection: "column",
-        alignItems: "stretch"
+        alignItems: "stretch",
     },  
 
     misc: {
