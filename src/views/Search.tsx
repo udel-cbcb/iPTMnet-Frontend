@@ -1,15 +1,22 @@
 import * as React from "react";
-import SearchBox from "src/views/SearchBar";
-import SearchOptions from "src/views/SearchOptions";
+import SearchBox from "./SearchBar";
+import SearchOptions from "./SearchOptions";
 import { StyleSheet, css } from 'aphrodite';
+import { State } from "src/redux/state";
+import { Dispatch, bindActionCreators } from "redux";
+import { connect } from "react-redux";
 
 interface ISearchState {
     readonly isAdvancedVisisble: boolean; 
 }
 
-class Search extends React.Component<{},ISearchState> {
+interface ISearchProps {
+    selectedPTMs: string [] 
+}
+
+class Search extends React.Component<ISearchProps,ISearchState> {
     
-    constructor(props: {},state:ISearchState = {isAdvancedVisisble:false}) {
+    constructor(props: ISearchProps,state:ISearchState = {isAdvancedVisisble:false}) {
         super(props);
         this.state = state;
         this.onSearchBoxClicked = this.onSearchBoxClicked.bind(this);
@@ -22,7 +29,7 @@ class Search extends React.Component<{},ISearchState> {
                 {(()=>{
                     if(this.state.isAdvancedVisisble){
                         return (
-                            <SearchOptions />
+                            <SearchOptions selectedPTMs={this.props.selectedPTMs} />
                         );
                     }else{
                         return <div></div>;
@@ -49,8 +56,7 @@ class Search extends React.Component<{},ISearchState> {
                     </button>
                 </div>
 
-            </div>
-            
+            </div>           
             
         );        
     };
@@ -60,6 +66,15 @@ class Search extends React.Component<{},ISearchState> {
     }
 
 }
+
+
+const mapStateToProps = (state: State) => ({
+    selectedPTMs: state.homePage.selectedPTMs
+});
+  
+const mapDispatchToProps = (dispatch: Dispatch) => bindActionCreators({}, dispatch);
+  
+export const SearchConnected = connect(mapStateToProps, mapDispatchToProps)(Search);
 
 const styles = StyleSheet.create({
     

@@ -1,4 +1,4 @@
-import { InfoState } from "src/redux/states/InfoState";
+import { InfoState } from "./InfoState";
 
 export class EntryPageState {
     public readonly id: string

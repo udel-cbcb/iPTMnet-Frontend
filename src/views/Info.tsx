@@ -1,9 +1,9 @@
 import * as React from 'react';
 import { css,StyleSheet,minify } from 'aphrodite';
-import { InfoState } from 'src/redux/states/InfoState';
+import { InfoState } from '../redux/states/InfoState';
 import { RequestState } from '../redux/states/RequestState';
 import Error from './Error';
-import { State } from 'src/redux/state';
+import { State } from '../redux/state';
 import { Dispatch, bindActionCreators } from 'redux';
 import { connect } from 'react-redux';
 

@@ -1,6 +1,6 @@
 import {JsonObject, JsonProperty} from "json2typescript";
-import { Organism } from "src/models/Organism";
-import { Pro } from "src/models/Pro";
+import { Organism } from "./Organism";
+import { Pro } from "./Pro";
 
 @JsonObject
 export class Info {

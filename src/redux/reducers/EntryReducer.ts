@@ -1,7 +1,7 @@
 import { EntryAction, ActionTypes } from "../actions/EntryActions";
-import { EntryPageState, initialState} from "src/redux/states/EntryPage";
+import { EntryPageState, initialState} from "../states/EntryPage";
 import { RequestState } from "../states/RequestState";
-import { InfoState } from "src/redux/states/InfoState";
+import { InfoState } from "../states/InfoState";
 
 export function reducer (state: EntryPageState = initialState, action: EntryAction) : EntryPageState {
     if(state === undefined){

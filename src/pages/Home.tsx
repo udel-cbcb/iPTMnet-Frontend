@@ -1,7 +1,7 @@
 import * as React from 'react';
 import { css,StyleSheet,minify } from 'aphrodite';
 import Navbar from '../views/Navbar';
-import Search from 'src/views/Search';
+import { SearchConnected } from '../views/Search';
 import Footer from '../views/Footer';
 
 minify(false);
@@ -38,7 +38,7 @@ class Home extends React.Component {
 
             </div>
 
-            <Search />
+            <SearchConnected />
 
             <div id="info" className={css(styles.info)}  >
                 <p>

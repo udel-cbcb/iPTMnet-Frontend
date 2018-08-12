@@ -8,12 +8,12 @@ import Api from "./pages/Api"
 import License from "./pages/License"
 import About from "./pages/About"
 import Citation from "./pages/Citation"
-import store from 'src/redux/store';
-import * as EntryActions from "src/redux/actions/EntryActions";
+import store from './redux/store';
+import * as EntryActions from "./redux/actions/EntryActions";
 import { ThunkDispatch } from 'redux-thunk';
-import { Action } from 'src/redux/action';
+import { Action } from './redux/action';
 import { Store } from 'redux';
-import Entry from 'src/pages/Entry';
+import Entry from './pages/Entry';
 
 class App extends React.Component {
   

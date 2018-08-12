@@ -1,7 +1,7 @@
-import { Info } from "src/models/Info";
+import { Info } from "../../models/Info";
 import axios from "axios";
-import { State } from "src/redux/state";
-import { Action } from "src/redux/action";
+import { State } from "../state";
+import { Action } from "../action";
 import { ThunkAction, ThunkDispatch } from "redux-thunk";
 import { Store } from "redux";
 import { JsonConvert } from "json2typescript";

@@ -1,5 +1,5 @@
-import { RequestState } from "src/redux/states/RequestState";
-import { Info } from "src/models/Info";
+import { RequestState } from "./RequestState";
+import { Info } from "../../models/Info";
 
 export class InfoState {
     public readonly status: RequestState

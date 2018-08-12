@@ -1,7 +1,18 @@
 import * as React from "react";
 import { StyleSheet,css } from 'aphrodite';
+import store from "src/redux/store";
+import { selectAllPTMTypes, deselectAllPTMTypes, deSelectPTMType, selectPTMType } from '../redux/actions/HomePageActions';
 
-class SearchOptions extends React.Component{
+interface ISearchOptionProps {
+    selectedPTMs: string[]
+}
+
+class SearchOptions extends React.Component<ISearchOptionProps,{}> {
+
+    constructor(props: ISearchOptionProps){
+        super(props)
+    }
+    
     public render(){
         return (
              <div id="div_advanced_search" className={css(styles.advancedSearch)} >
@@ -10,10 +21,10 @@ class SearchOptions extends React.Component{
                         <div id="ptm_label" className={css(styles.headerLabel)} >
                             PTM type
                         </div>
-                        <button id="btn_all_ptm" className={css(styles.selectorButton)} >
+                        <button id="btn_all_ptm" className={css(styles.selectorButton)} onClick={this.onPTMAllClick}  >
                             All
                         </button>
-                        <button id="btn_none_ptm" className={css(styles.selectorButton, styles.noneButton)} >
+                        <button id="btn_none_ptm" className={css(styles.selectorButton, styles.noneButton)} onClick={this.onPTMNoneClick} >
                             None
                         </button>
                     </div>
@@ -22,53 +33,75 @@ class SearchOptions extends React.Component{
                         
                         <div id="column_1" className={css(styles.column)} >
                             <label id="lbl_acetylation"  >
-                                <input type="checkbox" className={css(styles.checkBox)} />
+                                <input type="checkbox" className={css(styles.checkBox)} checked={this.isPTMSelected("Acetylation")} 
+                                    onClick={this.onPTMClick("Acetylation")}
+                                />
                                 Acetylation
                             </label>
                             <label id="lbl_n_lycosylation"  >
-                                <input type="checkbox" className={css(styles.checkBox)} />
+                                <input type="checkbox" className={css(styles.checkBox)} checked={this.isPTMSelected("N-Glycosylation")}
+                                    onClick={this.onPTMClick("N-Glycosylation")}
+                                />
                                 N-Glycosylation
                             </label>
                             <label id="lbl_o_lycosylation"  >
-                                <input type="checkbox" className={css(styles.checkBox)} />
+                                <input type="checkbox" className={css(styles.checkBox)} checked={this.isPTMSelected("O-Glycosylation")}
+                                    onClick={this.onPTMClick("O-Glycosylation")}
+                                />
                                 O-Glycosylation
                             </label>
                             <label id="lbl_c_glycosylation"  >
-                                <input type="checkbox" className={css(styles.checkBox)} />
+                                <input type="checkbox" className={css(styles.checkBox)} checked={this.isPTMSelected("C-Glycosylation")}
+                                    onClick={this.onPTMClick("C-Glycosylation")}
+                                />
                                 C-Glycosylation
                             </label>
                         </div>
 
                         <div id="column_2" className={css(styles.column)} >
                             <label id="lbl_s_glycosylation"  >
-                                <input type="checkbox" className={css(styles.checkBox)} />
+                                <input type="checkbox" className={css(styles.checkBox)} checked={this.isPTMSelected("S-Glycosylation")} 
+                                    onClick={this.onPTMClick("S-Glycosylation")}
+                                />
                                 S-Glycosylation
                             </label>
                             <label id="lbl_methylation"  >
-                                <input type="checkbox" className={css(styles.checkBox)} />
+                                <input type="checkbox" className={css(styles.checkBox)} checked={this.isPTMSelected("Methylation")}
+                                    onClick={this.onPTMClick("Methylation")}
+                                />
                                 Methylation
                             </label>
                             <label id="lbl_c_myristoylation"  >
-                                <input type="checkbox" className={css(styles.checkBox)} />
+                                <input type="checkbox" className={css(styles.checkBox)} checked={this.isPTMSelected("Myristoylation")}
+                                    onClick={this.onPTMClick("Myristoylation")}
+                                />
                                 Myristoylation
                             </label>
                             <label id="lbl_c_phosphorylation"  >
-                                <input type="checkbox" className={css(styles.checkBox)} />
+                                <input type="checkbox" className={css(styles.checkBox)} checked={this.isPTMSelected("Phosphorylation")}
+                                    onClick={this.onPTMClick("Phosphorylation")}
+                                />
                                 Phosphorylation
                             </label>
                         </div>
 
                         <div id="column_3" className={css(styles.column)} >
                             <label id="lbl_s_sumoylation"  >
-                                <input type="checkbox" className={css(styles.checkBox)} />
+                                <input type="checkbox" className={css(styles.checkBox)} checked={this.isPTMSelected("Sumoylation")}
+                                    onClick={this.onPTMClick("Sumoylation")}
+                                />
                                 Sumoylation
                             </label>
                             <label id="lbl_ubiquitination"  >
-                                <input type="checkbox" className={css(styles.checkBox)} />
+                                <input type="checkbox" className={css(styles.checkBox)} checked={this.isPTMSelected("Ubiquitination")}
+                                    onClick={this.onPTMClick("Ubiquitination")}
+                                />
                                 Ubiquitination
                             </label>
                             <label id="lbl_s_nitrosylation"  >
-                                <input type="checkbox" className={css(styles.checkBox)} />
+                                <input type="checkbox" className={css(styles.checkBox)} checked={this.isPTMSelected("S-Nitrosylation")}
+                                    onClick={this.onPTMClick("S-Nitrosylation")}
+                                />
                                 S-Nitrosylation
                             </label>
                         </div>
@@ -213,8 +246,32 @@ class SearchOptions extends React.Component{
 
                 </div>
              </div>           
-        );        
+        );
     };
+
+    private isPTMSelected = (ptmName: string) => {
+        if(this.props.selectedPTMs.indexOf(ptmName) > -1){
+            return true;
+        }else{
+            return false;
+        }
+    }
+
+    private onPTMAllClick = () => {
+        (store.dispatch as any)(selectAllPTMTypes())
+    }
+
+    private onPTMClick = (ptmName: string) => () => {
+        if(this.props.selectedPTMs.indexOf(ptmName) > -1){
+            (store.dispatch as any)(deSelectPTMType(ptmName)) 
+        }else{
+            (store.dispatch as any)(selectPTMType(ptmName))
+        }
+    }
+
+    private onPTMNoneClick = () => {
+        (store.dispatch as any)(deselectAllPTMTypes())
+    }
 }
 
 const styles = StyleSheet.create({
