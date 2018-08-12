@@ -36,6 +36,32 @@ export function reducer (state: HomePageState = initialState, action: HomePageAc
                 }
                 return {...state,selectedPTMs: new_ptms};
             }
+            case ActionTypes.SELECT_ALL_ORGANISMS: {
+                const organisms = ["9606","9913","7215","4896","3880","10090",
+                                    "9031","124036","344310","35790","10114","7955",
+                                    "4932","4577"];
+                return {...state,selectedOrganisms: organisms};
+            }
+            case ActionTypes.DESELECT_ALL_ORGANISMS: {
+                return {...state,selectedOrganisms: []};
+            }
+            case ActionTypes.SELECT_ORGANISM: {
+                const new_organisms = state.selectedOrganisms.slice(0,state.selectedOrganisms.length)
+                new_organisms.push(action.payload);
+                console.log(new_organisms);
+                return {...state,selectedOrganisms: new_organisms};
+            }
+            case ActionTypes.DESELECT_ORGANISM: {
+                const new_organisms = state.selectedOrganisms.slice(0,state.selectedOrganisms.length)
+                const index = new_organisms.indexOf(action.payload, 0);
+                if (index > -1) {
+                    new_organisms.splice(index, 1);
+                }
+                return {...state,selectedOrganisms: new_organisms};
+            }
+            case ActionTypes.SELECT_ROLE: {
+                return {...state,selectedRole: action.payload}
+            }
             default:
                 return new HomePageState();  
         }

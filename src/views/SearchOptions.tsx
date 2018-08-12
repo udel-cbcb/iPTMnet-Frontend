@@ -1,10 +1,13 @@
 import * as React from "react";
 import { StyleSheet,css } from 'aphrodite';
 import store from "src/redux/store";
-import { selectAllPTMTypes, deselectAllPTMTypes, deSelectPTMType, selectPTMType } from '../redux/actions/HomePageActions';
+import * as HomePageActions from '../redux/actions/HomePageActions';
+import { Role } from "src/models/Role";
 
 interface ISearchOptionProps {
-    selectedPTMs: string[]
+    readonly selectedPTMs: string[],
+    readonly selectedOrganisms: string[],
+    readonly selectedRole: Role
 }
 
 class SearchOptions extends React.Component<ISearchOptionProps,{}> {
@@ -119,6 +122,8 @@ class SearchOptions extends React.Component<ISearchOptionProps,{}> {
                                     name="role" 
                                     value="enzyme_or_substrate"
                                     className={css(styles.roleRadioButton)}
+                                    checked={this.isRoleSelected(Role.ENZYME_OR_SUBSTRATE)}
+                                    onClick={this.selectRole(Role.ENZYME_OR_SUBSTRATE)}
                                     />
                                     Enzyme or Substrate
                             </label>
@@ -128,6 +133,8 @@ class SearchOptions extends React.Component<ISearchOptionProps,{}> {
                                     name="role" 
                                     value="enzyme"
                                     className={css(styles.roleRadioButton)}
+                                    checked={this.isRoleSelected(Role.ENYZME)}
+                                    onClick={this.selectRole(Role.ENYZME)}
                                     />
                                     Enzyme
                             </label>
@@ -137,6 +144,8 @@ class SearchOptions extends React.Component<ISearchOptionProps,{}> {
                                     name="role" 
                                     value="substrate"
                                     className={css(styles.roleRadioButton)}
+                                    checked={this.isRoleSelected(Role.SUBSTRATE)}
+                                    onClick={this.selectRole(Role.SUBSTRATE)}
                                     />
                                     Substrate
                             </label>
@@ -146,6 +155,8 @@ class SearchOptions extends React.Component<ISearchOptionProps,{}> {
                                     name="role" 
                                     value="enzyme_and_substrate"
                                     className={css(styles.roleRadioButton)}
+                                    checked={this.isRoleSelected(Role.ENZYME_AND_SUBSTRATE)}
+                                    onClick={this.selectRole(Role.ENZYME_AND_SUBSTRATE)}
                                     />
                                     Enzyme and Substrate
                             </label>
@@ -158,10 +169,10 @@ class SearchOptions extends React.Component<ISearchOptionProps,{}> {
                             <div id="label" className={css(styles.headerLabel)} >
                                 Organism
                             </div>
-                            <button id="btn_all" className={css(styles.selectorButton)} >
+                            <button id="btn_all" className={css(styles.selectorButton)} onClick={this.onOrganismsAllClick} >
                                 All
                             </button>
-                            <button id="btn_none" className={css(styles.selectorButton, styles.noneButton)} >
+                            <button id="btn_none" className={css(styles.selectorButton, styles.noneButton)} onClick={this.onOrganismsNoneClick}  >
                                 None
                             </button>
                         </div>
@@ -170,68 +181,96 @@ class SearchOptions extends React.Component<ISearchOptionProps,{}> {
                         
                             <div id="column_1" className={css(styles.column)} >
                                 <label id="lbl_humans"  >
-                                    <input type="checkbox" className={css(styles.checkBox)} />
+                                    <input type="checkbox" className={css(styles.checkBox)} checked={this.isOrganismSelected("9606")}
+                                        onClick={this.onOrganismClick("9606")}
+                                    />
                                     Human
                                 </label>
                                 <label id="lbl_Cow"  >
-                                    <input type="checkbox" className={css(styles.checkBox)} />
+                                    <input type="checkbox" className={css(styles.checkBox)}  checked={this.isOrganismSelected("9913")}
+                                        onClick={this.onOrganismClick("9913")}
+                                    />
                                     Cow
                                 </label>
                                 <label id="lbl_fruit_fly"  >
-                                    <input type="checkbox" className={css(styles.checkBox)} />
+                                    <input type="checkbox" className={css(styles.checkBox)} checked={this.isOrganismSelected("7215")}
+                                        onClick={this.onOrganismClick("7215")}
+                                    />
                                     Fruit fly
                                 </label>
                                 <label id="lbl_fission_yeast"  >
-                                    <input type="checkbox" className={css(styles.checkBox)} />
+                                    <input type="checkbox" className={css(styles.checkBox)} checked={this.isOrganismSelected("4896")} 
+                                        onClick={this.onOrganismClick("4896")}
+                                    />
                                     Fission yeast
                                 </label>
                             </div>
 
                             <div id="column_2" className={css(styles.column)} >
                                 <label id="lbl_m_truncatula"  >
-                                    <input type="checkbox" className={css(styles.checkBox)} />
+                                    <input type="checkbox" className={css(styles.checkBox)} checked={this.isOrganismSelected("3880")}
+                                        onClick={this.onOrganismClick("3880")}
+                                    />
                                     M. truncatula
                                 </label>
                                 <label id="lbl_mouse"  >
-                                    <input type="checkbox" className={css(styles.checkBox)} />
+                                    <input type="checkbox" className={css(styles.checkBox)} checked={this.isOrganismSelected("10090")}
+                                        onClick={this.onOrganismClick("10090")}
+                                    />
                                     Mouse
                                 </label>
                                 <label id="lbl_chicken"  >
-                                    <input type="checkbox" className={css(styles.checkBox)} />
+                                    <input type="checkbox" className={css(styles.checkBox)} checked={this.isOrganismSelected("9031")}
+                                        onClick={this.onOrganismClick("9031")}
+                                    />
                                     Chicken
                                 </label>
                                 <label id="lbl_c_elegans"  >
-                                    <input type="checkbox" className={css(styles.checkBox)} />
+                                    <input type="checkbox" className={css(styles.checkBox)} checked={this.isOrganismSelected("124036")}
+                                        onClick={this.onOrganismClick("124036")}
+                                    />
                                     C. elegans
                                 </label>
                             </div>
 
                             <div id="column_3" className={css(styles.column)} >
                                 <label id="lbl_a_thaliana"  >
-                                    <input type="checkbox" className={css(styles.checkBox)} />
+                                    <input type="checkbox" className={css(styles.checkBox)} checked={this.isOrganismSelected("344310")}
+                                        onClick={this.onOrganismClick("344310")}
+                                    />
                                     A. Thaliana
                                 </label>
                                 <label id="lbl_rice"  >
-                                    <input type="checkbox" className={css(styles.checkBox)} />
+                                    <input type="checkbox" className={css(styles.checkBox)} checked={this.isOrganismSelected("35790")}
+                                        onClick={this.onOrganismClick("35790")}
+                                    />
                                     Rice (japonica)
                                 </label>
                                 <label id="lbl_rat"  >
-                                    <input type="checkbox" className={css(styles.checkBox)} />
+                                    <input type="checkbox" className={css(styles.checkBox)} checked={this.isOrganismSelected("10114")}
+                                        onClick={this.onOrganismClick("10114")}
+                                    />
                                     Rat
                                 </label>
                                 <label id="lbl_zebrafish"  >
-                                    <input type="checkbox" className={css(styles.checkBox)} />
+                                    <input type="checkbox" className={css(styles.checkBox)} checked={this.isOrganismSelected("7955")}
+                                        onClick={this.onOrganismClick("7955")}
+                                    />
                                     Zebrafish
                                 </label>
                             </div>
 
                             <div id="column_4" className={css(styles.column)} >
                                 <label id="lbl_bakers_yeast"  >
-                                    <input type="checkbox" className={css(styles.checkBox)} />
+                                    <input type="checkbox" className={css(styles.checkBox)} checked={this.isOrganismSelected("4932")}
+                                        onClick={this.onOrganismClick("4932")}
+                                    />
                                     Bakers's Yeast
                                 </label>
                                 <label id="lbl_maize"  >
-                                    <input type="checkbox" className={css(styles.checkBox)} />
+                                    <input type="checkbox" className={css(styles.checkBox)} checked={this.isOrganismSelected("4577")}
+                                        onClick={this.onOrganismClick("4577")}
+                                    />
                                     Maize
                                 </label>
                             </div>
@@ -258,20 +297,57 @@ class SearchOptions extends React.Component<ISearchOptionProps,{}> {
     }
 
     private onPTMAllClick = () => {
-        (store.dispatch as any)(selectAllPTMTypes())
+        (store.dispatch as any)(HomePageActions.selectAllPTMTypes())
     }
 
     private onPTMClick = (ptmName: string) => () => {
         if(this.props.selectedPTMs.indexOf(ptmName) > -1){
-            (store.dispatch as any)(deSelectPTMType(ptmName)) 
+            (store.dispatch as any)(HomePageActions.deselectPTMType(ptmName)) 
         }else{
-            (store.dispatch as any)(selectPTMType(ptmName))
+            (store.dispatch as any)(HomePageActions.selectPTMType(ptmName))
         }
     }
 
     private onPTMNoneClick = () => {
-        (store.dispatch as any)(deselectAllPTMTypes())
+        (store.dispatch as any)(HomePageActions.deselectAllPTMTypes())
     }
+
+    private isRoleSelected = (role: Role) => {
+        if(this.props.selectedRole === role){
+            return true;
+        }else{
+            return false;
+        }
+    }
+
+    private onOrganismsAllClick = () => {
+        (store.dispatch as any)(HomePageActions.selectAllOrganisms())
+    }
+
+    private onOrganismsNoneClick = () => {
+        (store.dispatch as any)(HomePageActions.deselectAllOrganisms())
+    }
+
+    private isOrganismSelected(organism: string) {
+        if(this.props.selectedOrganisms.indexOf(organism) > -1){
+            return true;
+        }else{
+            return false;
+        }
+    }
+
+    private onOrganismClick = (organism: string) => () => {
+        if(this.props.selectedOrganisms.indexOf(organism) > -1){
+            (store.dispatch as any)(HomePageActions.deselectOrganism(organism)) 
+        }else{
+            (store.dispatch as any)(HomePageActions.selectOrganism(organism))
+        }
+    }
+
+    private selectRole = (role: Role) => () => {
+        (store.dispatch as any)(HomePageActions.selectRole(role))
+    }
+
 }
 
 const styles = StyleSheet.create({

@@ -5,13 +5,16 @@ import { StyleSheet, css } from 'aphrodite';
 import { State } from "src/redux/state";
 import { Dispatch, bindActionCreators } from "redux";
 import { connect } from "react-redux";
+import { Role } from "src/models/Role";
 
 interface ISearchState {
     readonly isAdvancedVisisble: boolean; 
 }
 
 interface ISearchProps {
-    selectedPTMs: string [] 
+    selectedPTMs: string []
+    selectedOrganisms: string []
+    selectedRole: Role 
 }
 
 class Search extends React.Component<ISearchProps,ISearchState> {
@@ -29,7 +32,11 @@ class Search extends React.Component<ISearchProps,ISearchState> {
                 {(()=>{
                     if(this.state.isAdvancedVisisble){
                         return (
-                            <SearchOptions selectedPTMs={this.props.selectedPTMs} />
+                            <SearchOptions
+                             selectedPTMs={this.props.selectedPTMs}
+                             selectedOrganisms={this.props.selectedOrganisms}
+                             selectedRole={this.props.selectedRole}
+                            />
                         );
                     }else{
                         return <div></div>;
@@ -69,7 +76,9 @@ class Search extends React.Component<ISearchProps,ISearchState> {
 
 
 const mapStateToProps = (state: State) => ({
-    selectedPTMs: state.homePage.selectedPTMs
+    selectedPTMs: state.homePage.selectedPTMs,
+    selectedOrganisms: state.homePage.selectedOrganisms,
+    selectedRole: state.homePage.selectedRole
 });
   
 const mapDispatchToProps = (dispatch: Dispatch) => bindActionCreators({}, dispatch);
