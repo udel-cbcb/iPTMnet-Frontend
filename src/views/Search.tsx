@@ -2,16 +2,20 @@ import * as React from "react";
 import SearchBox from "./SearchBar";
 import SearchOptions from "./SearchOptions";
 import { StyleSheet, css } from 'aphrodite';
-import { State } from "src/redux/state";
+import { State } from "../redux/state";
 import { Dispatch, bindActionCreators } from "redux";
 import { connect } from "react-redux";
-import { Role } from "src/models/Role";
+import { Role, toStringLiteral } from "../models/Role";
+import { withRouter } from 'react-router-dom';
+import { resetOptions } from "../redux/actions/HomePageActions";
+import store from "../redux/store";
 
 interface ISearchState {
     readonly isAdvancedVisisble: boolean; 
 }
 
 interface ISearchProps {
+    searchTerm: string
     selectedPTMs: string []
     selectedOrganisms: string []
     selectedRole: Role 
@@ -28,7 +32,7 @@ class Search extends React.Component<ISearchProps,ISearchState> {
     public render(){
         return (
             <div id="div_search_container" className={css(styles.searchContainer)}  >
-                <SearchBox onSearchIconClick={this.onSearchBoxClicked} />
+                <SearchBox searchTerm={this.props.searchTerm} onSearchIconClick={this.onSearchBoxClicked} />
                 {(()=>{
                     if(this.state.isAdvancedVisisble){
                         return (
@@ -55,10 +59,10 @@ class Search extends React.Component<ISearchProps,ISearchState> {
                 </div>
 
                 <div id="search_buttons" className={css(styles.searchButtonsContainer)} >
-                    <button id="btn_search" className={css(styles.searchButton)}  >
+                    <button id="btn_search" className={css(styles.searchButton)} onClick={this.onSearchButtonClicked}  >
                         Search
                     </button>
-                    <button id="btn_reset" className={css(styles.resetButton)}  >
+                    <button id="btn_reset" className={css(styles.resetButton)} onClick={this.onResetButtonClicked}  >
                         Reset
                     </button>
                 </div>
@@ -72,10 +76,45 @@ class Search extends React.Component<ISearchProps,ISearchState> {
         this.setState({...this.state,isAdvancedVisisble: !this.state.isAdvancedVisisble})
     }
 
+    private onSearchButtonClicked = () => {
+        if(this.props.searchTerm.trim() !== ""){            
+            const searchUrl = this.buildSearchUrl();  
+            (this.props as any).history.push(searchUrl);
+        }
+    }
+
+    private onResetButtonClicked = () => {
+        store.dispatch(resetOptions());
+    }
+
+    private buildSearchUrl = () => {
+        let ptm_types_string = "";
+        if(this.props.selectedPTMs.length > 0){
+            ptm_types_string = "&" + this.props.selectedPTMs.map(this.buildPTMType); 
+        }
+
+        let organisms_string = ""
+        if(this.props.selectedOrganisms.length > 0){
+            organisms_string = "&" + this.props.selectedOrganisms.map(this.buildOrganism);
+        }
+
+        return `search/search_term=${this.props.searchTerm}&term_type=${toStringLiteral(this.props.selectedRole)}${ptm_types_string}${organisms_string}`;
+      
+    }
+
+    private buildPTMType(ptmName: string): string {
+        return "ptm_type="+ptmName
+    }
+
+    private buildOrganism(organism: string) : string {
+        return "taxon=" + organism;
+    }
+
 }
 
 
 const mapStateToProps = (state: State) => ({
+    searchTerm: state.homePage.searchTerm,
     selectedPTMs: state.homePage.selectedPTMs,
     selectedOrganisms: state.homePage.selectedOrganisms,
     selectedRole: state.homePage.selectedRole
@@ -83,7 +122,7 @@ const mapStateToProps = (state: State) => ({
   
 const mapDispatchToProps = (dispatch: Dispatch) => bindActionCreators({}, dispatch);
   
-export const SearchConnected = connect(mapStateToProps, mapDispatchToProps)(Search);
+export const SearchConnected = connect(mapStateToProps, mapDispatchToProps)(withRouter(Search as any));
 
 const styles = StyleSheet.create({
     
@@ -152,7 +191,7 @@ const styles = StyleSheet.create({
             outline: "none"
         },
         ":hover": {
-            cursor: ":pointer",
+            cursor: "pointer",
             backgroundColor: "#258ecbff"
         }
     },

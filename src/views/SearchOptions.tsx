@@ -1,8 +1,8 @@
 import * as React from "react";
 import { StyleSheet,css } from 'aphrodite';
-import store from "src/redux/store";
+import store from "../redux/store";
 import * as HomePageActions from '../redux/actions/HomePageActions';
-import { Role } from "src/models/Role";
+import { Role } from "../models/Role";
 
 interface ISearchOptionProps {
     readonly selectedPTMs: string[],

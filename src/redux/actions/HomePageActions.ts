@@ -1,6 +1,8 @@
-import { Role } from "src/models/Role";
+import { Role } from "../../models/Role";
+import { ISetSearchTerm } from './HomePageActions';
 
 export enum ActionTypes {
+    SET_SEARCH_TERM = "SET_SEARCH_TERM",
     SELECT_ALL_PTM_TYPES = 'SELECT_ALL_PTM_TYPES',
     DESELECT_ALL_PTM_TYPES = 'DESELECT_ALL_PTM_TYPES',
     SELECT_PTM_TYPE = 'SELECT_PTM_TYPE',
@@ -9,18 +11,26 @@ export enum ActionTypes {
     DESELECT_ALL_ORGANISMS="DESELECT_ALL_ORGANISMS",
     SELECT_ORGANISM="SELECT_ORGANISM",
     DESELECT_ORGANISM="DESELECT_ORGANISM",
-    SELECT_ROLE="SELECT_ROLE"
+    SELECT_ROLE="SELECT_ROLE",
+    RESET_OPTIONS="RESET_OPTIONS"
 }
 
-export type HomePageAction = ISelectAllPTMTypes
+export type HomePageAction =   ISetSearchTerm  
+                                | ISelectAllPTMTypes
                                 | IDeSelectAllPTMTypes
                                 | ISelectPTMType
                                 | IDeSelectPTMType
                                 | ISelectAllOrganisms
                                 | IDeselectAllOrganisms
                                 | ISelectOrganism
-                                | IDeSelectOrganism
+                                | IDeselectOrganism
                                 | ISelectRole
+                                | IResetOptions
+
+export interface ISetSearchTerm {
+    type: ActionTypes.SET_SEARCH_TERM,
+    payload: string
+}
 
 export interface ISelectAllPTMTypes {
     type: ActionTypes.SELECT_ALL_PTM_TYPES
@@ -53,7 +63,7 @@ export interface ISelectOrganism {
     payload: string
 }
 
-export interface IDeSelectOrganism {
+export interface IDeselectOrganism {
     type: ActionTypes.DESELECT_ORGANISM,
     payload: string
 }
@@ -61,6 +71,18 @@ export interface IDeSelectOrganism {
 export interface ISelectRole {
     type: ActionTypes.SELECT_ROLE,
     payload: Role
+}
+
+export interface IResetOptions {
+    type: ActionTypes.RESET_OPTIONS
+}
+
+
+export function setSearchTerm(searchTerm: string): ISetSearchTerm {
+    return {
+        type: ActionTypes.SET_SEARCH_TERM,
+        payload: searchTerm
+    }
 }
 
 export function selectAllPTMTypes() : ISelectAllPTMTypes {
@@ -102,23 +124,29 @@ export function deselectAllOrganisms() : IDeselectAllOrganisms {
     }
 }
 
-export function selectOrganism(organism: string) {
+export function selectOrganism(organism: string): ISelectOrganism {
     return {
         type: ActionTypes.SELECT_ORGANISM,
         payload: organism
     }
 }
 
-export function deselectOrganism(organism: string) {
+export function deselectOrganism(organism: string) : IDeselectOrganism {
     return {
         type: ActionTypes.DESELECT_ORGANISM,
         payload: organism
     }
 }
 
-export function selectRole(role: Role) {
+export function selectRole(role: Role) : ISelectRole {
     return {
         type: ActionTypes.SELECT_ROLE,
         payload: role
+    }
+}
+
+export function resetOptions() : IResetOptions {
+    return {
+        type: ActionTypes.RESET_OPTIONS
     }
 }

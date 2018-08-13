@@ -1,10 +1,13 @@
 import * as React from "react";
 import { css,StyleSheet,minify } from 'aphrodite';
+import { setSearchTerm } from '../redux/actions/HomePageActions';
+import store from "../redux/store";
 
 minify(false);
 
 interface ISearchBoxProps{
-   onSearchIconClick: () => any 
+    readonly searchTerm: string
+    onSearchIconClick: () => any 
 }
 
 class SearchBox extends React.Component<ISearchBoxProps,{}> {
@@ -22,7 +25,12 @@ class SearchBox extends React.Component<ISearchBoxProps,{}> {
                   </div>
                 </div>
 
-                <input id="input_search_term" className={css(styles.searchInput)} placeholder="Search for protein in iPTMnet database" />
+                <input id="input_search_term"
+                       className={css(styles.searchInput)}
+                       placeholder="Search for protein in iPTMnet database"
+                       value={this.props.searchTerm}
+                       onChange={this.onSearchTermChange}
+                       />
                 <div id="div_search_term_type_container" className={css(styles.searchTermTypeContainer)} >
                     <select id="select_search_term_type" className={css(styles.selectSearchTermType)} >
                         <option value="all" className={css(styles.searchTermTypeOption)} >
@@ -43,6 +51,11 @@ class SearchBox extends React.Component<ISearchBoxProps,{}> {
             </div>
         );        
     };
+
+    private onSearchTermChange = (event: any) => {
+        store.dispatch(setSearchTerm(event.target.value));
+    }
+
 }
 
 

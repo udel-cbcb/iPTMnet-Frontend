@@ -1,11 +1,15 @@
 import { HomePageAction, ActionTypes } from "../actions/HomePageActions";
-import { HomePageState, initialState } from "src/redux/states/HomePageState";
+import { HomePageState, initialState } from "../states/HomePageState";
+
 
 export function reducer (state: HomePageState = initialState, action: HomePageAction) : HomePageState {
     if(state === undefined){
         return new HomePageState();
     }else{
         switch (action.type) {
+            case ActionTypes.SET_SEARCH_TERM: {
+                return {...state,searchTerm:action.payload}
+            }
             case ActionTypes.SELECT_ALL_PTM_TYPES:{
                 const ptms = ["Acetylation",
                               "N-Glycosylation",
@@ -62,8 +66,11 @@ export function reducer (state: HomePageState = initialState, action: HomePageAc
             case ActionTypes.SELECT_ROLE: {
                 return {...state,selectedRole: action.payload}
             }
+            case ActionTypes.RESET_OPTIONS: {
+                return initialState;
+            }
             default:
-                return new HomePageState();  
+                return state;  
         }
     }
  

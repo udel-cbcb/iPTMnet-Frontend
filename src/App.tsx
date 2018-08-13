@@ -11,7 +11,7 @@ import Citation from "./pages/Citation"
 import store from './redux/store';
 import * as EntryActions from "./redux/actions/EntryActions";
 import { ThunkDispatch } from 'redux-thunk';
-import { Action } from './redux/action';
+import { Action } from './redux/actions/action';
 import { Store } from 'redux';
 import Entry from './pages/Entry';
 
