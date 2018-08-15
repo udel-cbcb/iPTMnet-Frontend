@@ -10,10 +10,12 @@ import About from "./pages/About"
 import Citation from "./pages/Citation"
 import store from './redux/store';
 import * as EntryActions from "./redux/actions/EntryActions";
+import * as SearchResultsActions from "./redux/actions/SearchResultsActions";
 import { ThunkDispatch } from 'redux-thunk';
 import { Action } from './redux/actions/action';
 import { Store } from 'redux';
 import Entry from './pages/Entry';
+import SearchResults from './pages/SearchResults';
 
 class App extends React.Component {
   
@@ -21,6 +23,8 @@ class App extends React.Component {
     return (
       <div style={{margin: 0,height: "100%"}} >
         <Route path="/" exact={true} component={Home} />
+        <Route path="/search/:search_query" exact={true} render={this.buildSearchResults} />
+        <Route path="/home" exact={true} component={Home} />
         <Route path="/browse" exact={true} component={Browse} />
         <Route path="/statistics" exact={true} component={Statistics} /> 
         <Route path="/api" exact={true} component={Api} /> 
@@ -36,6 +40,12 @@ class App extends React.Component {
     const thunkDispatch : ThunkDispatch<Store,void,Action> = store.dispatch; 
     thunkDispatch(EntryActions.loadInfo(prop.match.params.id));
     return <Entry id={prop.match.params.id}/>;
+  }
+
+  private buildSearchResults(prop:RouteComponentProps<any>) {
+    const thunkDispatch : ThunkDispatch<Store,void,Action> = store.dispatch;
+    thunkDispatch(SearchResultsActions.loadSearchResults(prop.match.params.search_query,0,28));
+    return <SearchResults/>;
   }
 
 }

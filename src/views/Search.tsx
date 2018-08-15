@@ -98,7 +98,7 @@ class Search extends React.Component<ISearchProps,ISearchState> {
             organisms_string = "&" + this.props.selectedOrganisms.map(this.buildOrganism);
         }
 
-        return `search/search_term=${this.props.searchTerm}&term_type=${toStringLiteral(this.props.selectedRole)}${ptm_types_string}${organisms_string}`;
+        return `search/search_term=${this.props.searchTerm}&term_type=All&role=${toStringLiteral(this.props.selectedRole)}${ptm_types_string}${organisms_string}`;
       
     }
 
