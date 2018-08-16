@@ -4,7 +4,7 @@ import { State } from "../state";
 import axios from "axios";
 import { JsonConvert } from "json2typescript/src/json2typescript/json-convert";
 import SearchResult from '../../models/SearchResult';
-import { SearchResultData } from "src/models/SearchResultData";
+import { SearchResultData } from "../../models/SearchResultData";
 import { extractSearchTerm } from '../../misc/Utils';
 
 export enum ActionTypes {

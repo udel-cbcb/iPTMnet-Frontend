@@ -19,5 +19,4 @@ export function scrollToElement(elementName: string) {
     if(elem){
         elem.scrollIntoView();
     }
-
 }

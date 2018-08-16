@@ -4,6 +4,7 @@ import { InfoConnected } from '../views/Info';
 import { css, StyleSheet } from 'aphrodite';
 import { scrollToElement } from '../misc/Utils';
 import SequenceViewer from '../views/SequenceViewer';
+import { ProteoformTable } from '../views/ProteoformTable';
 
 interface IEntryProps {
   id: string;
@@ -63,7 +64,8 @@ class Entry extends React.Component<IEntryProps,{}> {
 
           <div id="content" className={css(styles.content)}  >
             <InfoConnected/>
-            <SequenceViewer/> 
+            <SequenceViewer/>
+            <ProteoformTable />
           </div>
           
         </div> 

@@ -1,5 +1,5 @@
 import { RequestState } from "./RequestState";
-import { SearchResultData } from "src/models/SearchResultData";
+import { SearchResultData } from "../../models/SearchResultData";
 
 export class SearchResultState {
     public readonly status: RequestState

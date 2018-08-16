@@ -39,6 +39,7 @@ class App extends React.Component {
   private buildEntry(prop:RouteComponentProps<any>) {
     const thunkDispatch : ThunkDispatch<Store,void,Action> = store.dispatch; 
     thunkDispatch(EntryActions.loadInfo(prop.match.params.id));
+    thunkDispatch(EntryActions.loadProteoforms(prop.match.params.id));
     return <Entry id={prop.match.params.id}/>;
   }
 

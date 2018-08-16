@@ -5,11 +5,11 @@ import {CommonStyles} from "../misc/CommonStyles"
 import Footer from "../views/Footer";
 import Pagination from "react-js-pagination";
 import { SearchResultState } from "../redux/states/SearchResultState";
-import { State } from "src/redux/state";
+import { State } from "../redux/state";
 import { bindActionCreators, Dispatch } from "redux";
 import { connect } from "react-redux";
 import { RequestState } from "../redux/states/RequestState";
-import SearchResult from "src/models/SearchResult";
+import SearchResult from "../models/SearchResult";
 import { highLight } from "../misc/Utils";
 
 minify(false);

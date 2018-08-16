@@ -1,4 +1,4 @@
-import SearchResult from "src/models/SearchResult";
+import SearchResult from "./SearchResult";
 
 export class SearchResultData {
     public readonly totalCount : number;
