@@ -3,6 +3,7 @@
   "version": "0.1.0",
   "private": true,
   "dependencies": {
+    "@types/mark.js": "^8.11.1",
     "@types/react-js-pagination": "^3.0.1",
     "@types/react-redux": "^6.0.6",
     "@types/react-router-dom": "^4.3.0",
@@ -10,6 +11,7 @@
     "axios": "^0.18.0",
     "history": "^4.7.2",
     "json2typescript": "^1.0.5",
+    "mark.js": "^8.11.1",
     "react": "^16.4.2",
     "react-dom": "^16.4.2",
     "react-js-pagination": "^3.0.2",

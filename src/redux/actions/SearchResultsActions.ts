@@ -4,6 +4,8 @@ import { State } from "../state";
 import axios from "axios";
 import { JsonConvert } from "json2typescript/src/json2typescript/json-convert";
 import SearchResult from '../../models/SearchResult';
+import { SearchResultData } from "src/models/SearchResultData";
+import { extractSearchTerm } from '../../misc/Utils';
 
 export enum ActionTypes {
     LOAD_SEARCH_RESULTS_STARTED = "LOAD_SEARCH_RESULTS_STARTED",
@@ -17,12 +19,13 @@ export type SearchResultsAction = ILoadSearchResultsStarted
 
 
 export interface ILoadSearchResultsStarted {
-    type: ActionTypes.LOAD_SEARCH_RESULTS_STARTED 
+    type: ActionTypes.LOAD_SEARCH_RESULTS_STARTED,
+    payload: string 
 }
 
 export interface ILoadSearchResultsSuccessful {
     type: ActionTypes.LOAD_SEARCH_RESULTS_SUCCESSFUL,
-    payload: SearchResult[]
+    payload: SearchResultData
 }
 
 export interface ILoadSearchResultsError {
@@ -30,16 +33,17 @@ export interface ILoadSearchResultsError {
     payload: string
 }
 
-export function loadSearchResultStarted() : ILoadSearchResultsStarted {
+export function loadSearchResultStarted(searchTerm: string) : ILoadSearchResultsStarted {
     return {
-        type: ActionTypes.LOAD_SEARCH_RESULTS_STARTED
+        type: ActionTypes.LOAD_SEARCH_RESULTS_STARTED,
+        payload: searchTerm
     }
 }
 
-export function loadSearchResultSuccessful(searchResults: SearchResult[]): ILoadSearchResultsSuccessful {
+export function loadSearchResultSuccessful(searchResultData: SearchResultData): ILoadSearchResultsSuccessful {
     return {
         type: ActionTypes.LOAD_SEARCH_RESULTS_SUCCESSFUL,
-        payload: searchResults
+        payload: searchResultData
     }
 }
 
@@ -52,13 +56,15 @@ export function loadSearchResultError(errorMsg: string) : ILoadSearchResultsErro
 
 export function loadSearchResults(searchQuery: string, startIndex: number, endIndex: number) : ThunkAction<void,Store,void,Action> {
     return async (dispatch: ThunkDispatch<State,void,Action>) => {
-        dispatch(loadSearchResultStarted());
+        const searchTerm = extractSearchTerm(searchQuery);
+        dispatch(loadSearchResultStarted(searchTerm));
         axios.get(`https://research.bioinformatics.udel.edu/iptmnet/api/search?${searchQuery}&paginate=true&start_index=${startIndex}&end_index=${endIndex}`).then((res)=> {
             if(res.status === 200){
                 const jsonConvert: JsonConvert = new JsonConvert();
                 const searchResults = jsonConvert.deserializeArray(res.data,SearchResult);
-                console.log(searchResults);
-                dispatch(loadSearchResultSuccessful(searchResults));
+                const totalCount = res.headers.count;
+                const searchResultData = new SearchResultData(totalCount,searchResults);
+                dispatch(loadSearchResultSuccessful(searchResultData));
             }else{
                 console.log(res.statusText + ":" + res.data);
                 dispatch(loadSearchResultError(res.statusText + ":" + res.data))

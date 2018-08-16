@@ -1,14 +1,14 @@
 import { RequestState } from "./RequestState";
-import SearchResult from '../../models/SearchResult';
+import { SearchResultData } from "src/models/SearchResultData";
 
 export class SearchResultState {
     public readonly status: RequestState
     public readonly error: string
-    public readonly data: SearchResult[]
+    public readonly data: SearchResultData
 
-    constructor(status: RequestState = RequestState.NOTASKED, error: string = "", searchResult: SearchResult[] = []){
+    constructor(status: RequestState = RequestState.NOTASKED, error: string = "", searchResultData: SearchResultData = new SearchResultData()){
         this.status = status;
         this.error = error;
-        this.data = searchResult;
+        this.data = searchResultData;
     }
 }
