@@ -13,3 +13,11 @@ export function highLight(word: string, div_name: string) {
         }        
     },0);
 }
+
+export function scrollToElement(elementName: string) {
+    const elem = document.getElementById(elementName);
+    if(elem){
+        elem.scrollIntoView();
+    }
+
+}

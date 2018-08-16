@@ -1,5 +1,5 @@
 import * as React from "react";
-import SearchBox from "./SearchBar";
+import SearchBox from "./SearchBox";
 import SearchOptions from "./SearchOptions";
 import { StyleSheet, css } from 'aphrodite';
 import { State } from "../redux/state";
@@ -32,7 +32,11 @@ class Search extends React.Component<ISearchProps,ISearchState> {
     public render(){
         return (
             <div id="div_search_container" className={css(styles.searchContainer)}  >
-                <SearchBox searchTerm={this.props.searchTerm} onSearchIconClick={this.onSearchBoxClicked} />
+                <SearchBox 
+                        searchTerm={this.props.searchTerm}
+                        onSearchIconClick={this.onSearchBoxClicked}
+                        onEnterPress={this.onSearchButtonClicked}
+                        />
                 {(()=>{
                     if(this.state.isAdvancedVisisble){
                         return (

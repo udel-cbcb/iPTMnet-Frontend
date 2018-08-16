@@ -7,7 +7,8 @@ minify(false);
 
 interface ISearchBoxProps{
     readonly searchTerm: string
-    onSearchIconClick: () => any 
+    onSearchIconClick: () => any
+    onEnterPress?: () => any 
 }
 
 class SearchBox extends React.Component<ISearchBoxProps,{}> {
@@ -30,6 +31,7 @@ class SearchBox extends React.Component<ISearchBoxProps,{}> {
                        placeholder="Search for protein in iPTMnet database"
                        value={this.props.searchTerm}
                        onChange={this.onSearchTermChange}
+                       onKeyPress={this.onKeyPress}
                        />
                 <div id="div_search_term_type_container" className={css(styles.searchTermTypeContainer)} >
                     <select id="select_search_term_type" className={css(styles.selectSearchTermType)} >
@@ -54,6 +56,14 @@ class SearchBox extends React.Component<ISearchBoxProps,{}> {
 
     private onSearchTermChange = (event: any) => {
         store.dispatch(setSearchTerm(event.target.value));
+    }
+
+    private onKeyPress = (event: any) => {
+        if(event.key === "Enter"){
+            if(this.props.onEnterPress){
+                this.props.onEnterPress();
+            }
+        }
     }
 
 }

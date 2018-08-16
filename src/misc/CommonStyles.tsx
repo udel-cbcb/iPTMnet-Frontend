@@ -71,9 +71,12 @@ export const CommonStyles = StyleSheet.create({
   
     filer: {
       alignSelf: "stretch"
-    }
-  
-    
+    },
+
+    sectionTitle: {
+      fontSize: "1.2em",
+      fontWeight: "normal"
+    }  
   
   
   });
