@@ -4,12 +4,28 @@ import Navbar from "../views/Navbar";
 import {CommonStyles} from "../misc/CommonStyles"
 import Footer from "../views/Footer";
 import Pagination from "react-js-pagination";
+import { SearchResultState } from "../redux/states/SearchResultState";
+import { State } from "src/redux/state";
+import { bindActionCreators, Dispatch } from "redux";
+import { connect } from "react-redux";
 
 minify(false);
 
-class SearchResults extends React.Component {
+interface ISearchResultsProp{
+  searchResults: SearchResultState,
+  selectedPage: number
+}
+
+class SearchResults extends React.Component<ISearchResultsProp,{}>  {
+
+    constructor(props: ISearchResultsProp){
+      super(props)
+    }
 
     public render() {
+
+        
+
         return (
             <div id="div_page" className={css(CommonStyles.page)} >
         
@@ -22,9 +38,9 @@ class SearchResults extends React.Component {
               <div id="div_search_results_stats" className={css(styles.searchResultStats)} >
                 <div id="pagination_container" style={{marginLeft:"auto",marginRight:20}} >
                   <Pagination
-                    activePage={1}
+                    activePage={this.props.selectedPage}
                     itemsCountPerPage={28}
-                    totalItemsCount={50}
+                    totalItemsCount={this.props.searchResults.data.length}
                     pageRangeDisplayed={10}
                     onChange={this.onSearchPageChange}
                     innerClass={css(styles.pagination_ul)}
@@ -106,5 +122,14 @@ const styles = StyleSheet.create(
     }
   }
 )
+
+const mapStateToProps = (state: State) => ({
+  searchResults: state.searchResultPage.searchResultData,
+  selectedPage: state.searchResultPage.selectedPage
+});
+
+const mapDispatchToProps = (dispatch: Dispatch) => bindActionCreators({}, dispatch);
+
+export const SearchResultsConnected = connect(mapStateToProps, mapDispatchToProps)(SearchResults);
 
 export default SearchResults;

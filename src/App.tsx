@@ -15,7 +15,7 @@ import { ThunkDispatch } from 'redux-thunk';
 import { Action } from './redux/actions/action';
 import { Store } from 'redux';
 import Entry from './pages/Entry';
-import SearchResults from './pages/SearchResults';
+import { SearchResultsConnected } from './pages/SearchResults';
 
 class App extends React.Component {
   
@@ -45,7 +45,7 @@ class App extends React.Component {
   private buildSearchResults(prop:RouteComponentProps<any>) {
     const thunkDispatch : ThunkDispatch<Store,void,Action> = store.dispatch;
     thunkDispatch(SearchResultsActions.loadSearchResults(prop.match.params.search_query,0,28));
-    return <SearchResults/>;
+    return <SearchResultsConnected/>;
   }
 
 }
