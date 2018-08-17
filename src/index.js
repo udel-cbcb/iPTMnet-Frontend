@@ -19,7 +19,7 @@ app.ports.highlight.subscribe(function (word) {
         var context = document.getElementById("search_table");
         var instance = new Mark(context);
         instance.mark(word);
-    },1000);
+    },0);
 });
 
 /**
