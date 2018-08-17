@@ -1,11 +1,50 @@
 import { css,StyleSheet } from "aphrodite";
 import * as React from "react";
+import axios from "axios";
+import { ProteoformTableState } from "src/redux/states/ProteoformTableState";
+import { JsonConvert } from "json2typescript/src/json2typescript/json-convert";
+import { Proteoform } from "../models/Proteoform";
+import { RequestState } from "../redux/states/RequestState";
 
-export class ProteoformTable extends React.Component {
+interface IProteoformTableProps {
+    id: string
+}
 
+export class ProteoformTable extends React.Component<IProteoformTableProps,ProteoformTableState> {
+
+    constructor(props: IProteoformTableProps){
+        super(props);
+        this.state = new ProteoformTableState();
+    }
+
+    public async componentDidMount() {
+        this.setState(new ProteoformTableState(RequestState.LOADING,[]))
+        axios.get(`https://research.bioinformatics.udel.edu/iptmnet/api/${this.props.id}/proteoforms`).then((res)=> {
+            if(res.status === 200){
+                const jsonConvert: JsonConvert = new JsonConvert();
+                const proteoforoms = jsonConvert.deserializeArray(res.data,Proteoform);
+                const state = new ProteoformTableState(RequestState.SUCCESS,proteoforoms,"");
+                this.setState(state);
+            }else{
+                const error = res.statusText + ":" + res.data;
+                this.setState(new ProteoformTableState(RequestState.ERROR,[],error));
+            }    
+        }).catch((err)=>{
+            this.setState(new ProteoformTableState(RequestState.ERROR,[],err))
+        });
+    }
+    
     public render() {
 
-        const table = this.renderTable([]);
+        let content;
+        
+        if(this.state.status === RequestState.LOADING){
+            content = this.renderLoading();
+        }else if(this.state.status === RequestState.SUCCESS){
+            content = this.renderTable(this.state.data);
+        }else if(this.state.status === RequestState.ERROR ){
+            content = this.renderError(this.state.error);
+        }
 
         return (
             <div id="proteoforms_container"  className={css(styles.proteoformsContainer)}  >
@@ -27,19 +66,19 @@ export class ProteoformTable extends React.Component {
                     </div>               
                 </div>
 
-                {table}
+                {content}
 
             </div>
         );
     }
 
-    private renderTable = (proteoforms: ProteoformTable[]) => {
+    private renderTable = (proteoforms: Proteoform[]) => {
         
         const rows = proteoforms.map(this.renderRow);
         
         return (
             <div id="proteoform_table" className={css(styles.proteoformTable)} >
-                <div id="table_header" className={css(styles.tableHeader)}  >
+                <div id="table_header" className={css(styles.header)}  >
                     <div id="ID" className={css(styles.ID)} >
                         ID
                     </div>
@@ -61,11 +100,11 @@ export class ProteoformTable extends React.Component {
         )
     }
 
-    private renderRow = (proteoform: ProteoformTable) => {
+    private renderRow = (proteoform: Proteoform, index: number) => {
         return (
-            <div id="table_header" className={css(styles.tableHeader)}  >
+            <div id="table_row" className={css(styles.row)} key={index} >
                 <div id="ID" className={css(styles.ID)} >
-                    ID
+                    {proteoform.pro_id}
                 </div>
                 <div id="Sites" className={css(styles.Sites)} >
                     Sites
@@ -83,6 +122,24 @@ export class ProteoformTable extends React.Component {
         );
     }
 
+    private renderLoading = () => {
+        return (
+            <div id="table_row" className={css(styles.row)}  >
+                Loading                                      
+            </div>
+        );
+    }
+
+    private renderError = (error: string) => {
+        return (
+            <div id="table_row" className={css(styles.row)}  >
+                {error}                                      
+            </div>
+        );
+    }
+
+
+    
 }
 
 
@@ -123,13 +180,21 @@ const styles = StyleSheet.create({
         alignSelf: "stretch"
     },
 
-    tableHeader: {
+    header: {
         display: "flex",
         flexDirection: "row",
         backgroundColor: "#eff1f2",
         paddingTop: 10,
         paddingBottom: 10,
         fontWeight: "bold"
+    },
+
+    row: {
+        display: "flex",
+        flexDirection: "row",
+        paddingTop: 10,
+        paddingBottom: 10,
+        fontSize: "0.90em"
     },
 
     ID: {
