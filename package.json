@@ -10,6 +10,7 @@
     "aphrodite": "^2.2.2",
     "axios": "^0.18.0",
     "history": "^4.7.2",
+    "intersperse": "^1.0.0",
     "json2typescript": "^1.0.5",
     "mark.js": "^8.11.1",
     "react": "^16.4.2",
