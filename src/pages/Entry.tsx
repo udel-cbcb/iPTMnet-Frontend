@@ -5,6 +5,9 @@ import { css, StyleSheet } from 'aphrodite';
 import { scrollToElement } from '../misc/Utils';
 import SequenceViewer from '../views/SequenceViewer';
 import { ProteoformTable } from '../views/ProteoformTable';
+import { PTMDependentPPITable } from 'src/views/PTMDependentPPITable';
+import Footer from '../views/Footer';
+import { ProteoformPPITable } from 'src/views/ProteoformPPITable';
 
 interface IEntryProps {
   id: string;
@@ -66,9 +69,17 @@ class Entry extends React.Component<IEntryProps,{}> {
             <InfoConnected/>
             <SequenceViewer/>
             <ProteoformTable id={this.props.id} />
-          </div>
+            <PTMDependentPPITable id={this.props.id} />
+            <ProteoformPPITable id={this.props.id} />
+          </div>        
           
-        </div> 
+        </div>
+
+        <div id="filer" style={{minHeight: "50px"}} >
+
+        </div>
+
+        <Footer /> 
       </div>
     );
   }

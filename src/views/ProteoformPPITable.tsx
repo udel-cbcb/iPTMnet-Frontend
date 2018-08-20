@@ -1,40 +1,42 @@
 import { css,StyleSheet } from "aphrodite";
 import * as React from "react";
 import axios from "axios";
-import { ProteoformTableState } from "src/redux/states/ProteoformTableState";
+import { ProteoformPPIState } from "src/redux/states/ProteoformPPIState";
 import { JsonConvert } from "json2typescript/src/json2typescript/json-convert";
-import { Proteoform } from "../models/Proteoform";
 import { RequestState } from "../redux/states/RequestState";
-import { PTMEnzyme } from "src/models/PTMEnzyme";
 import { ChangeEvent } from "react";
-import { buildSource, buildPMIDs } from "src/views/Utils";
-import { filterPMIDS, filterSource } from "src/misc/Utils";
+import { ProteoformPPI } from '../models/ProteoformPPI';
+import { Protein } from "src/models/Protein";
+import { buildSource, buildPMIDs } from './Utils';
+import { filterSource } from '../misc/Utils';
+import { filterPMIDS } from 'src/misc/Utils';
 
-interface IProteoformTableProps {
+interface IProteoformPPIProps {
     id: string
 }
 
-export class ProteoformTable extends React.Component<IProteoformTableProps,ProteoformTableState> {
+export class ProteoformPPITable extends React.Component<IProteoformPPIProps,ProteoformPPIState> {
 
-    constructor(props: IProteoformTableProps){
+    constructor(props: IProteoformPPIProps){
         super(props);
-        this.state = new ProteoformTableState();
+        this.state = new ProteoformPPIState();
     }
 
     public async componentDidMount() {
-        this.setState(new ProteoformTableState(RequestState.LOADING,[]))
-        axios.get(`https://research.bioinformatics.udel.edu/iptmnet/api/${this.props.id}/proteoforms`).then((res)=> {
+        this.setState(new ProteoformPPIState(RequestState.LOADING,[]))
+        axios.get(`https://research.bioinformatics.udel.edu/iptmnet/api/${this.props.id}/proteoformsppi`).then((res)=> {
             if(res.status === 200){
+                console.log(res.data);
                 const jsonConvert: JsonConvert = new JsonConvert();
-                const proteoforoms = jsonConvert.deserializeArray(res.data,Proteoform);
-                const state = new ProteoformTableState(RequestState.SUCCESS,proteoforoms,"");
+                const proteoformPPI = jsonConvert.deserializeArray(res.data,ProteoformPPI);
+                const state = new ProteoformPPIState(RequestState.SUCCESS,proteoformPPI,"");
                 this.setState(state);
             }else{
                 const error = res.statusText + ":" + res.data;
-                this.setState(new ProteoformTableState(RequestState.ERROR,[],error));
+                this.setState(new ProteoformPPIState(RequestState.ERROR,[],error));
             }    
         }).catch((err)=>{
-            this.setState(new ProteoformTableState(RequestState.ERROR,[],err))
+            this.setState(new ProteoformPPIState(RequestState.ERROR,[],err))
         });
     }
     
@@ -51,10 +53,10 @@ export class ProteoformTable extends React.Component<IProteoformTableProps,Prote
         }
 
         return (
-            <div id="proteoforms_container"  className={css(styles.proteoformsContainer)}  >
+            <div id="proteoformppis_container"  className={css(styles.proteoformppisContainer)}  >
                 <div id="label_container" className={css(styles.labelContainer)}  >
                     <span id="label" className={css(styles.label)}  >
-                        Proteoforms
+                        PTM-depenent PPI
                     </span>
 
                     <div id="search_container" className={css(styles.searchContainer)} >
@@ -76,35 +78,35 @@ export class ProteoformTable extends React.Component<IProteoformTableProps,Prote
         );
     }
 
-    private renderTable = (proteoforms: Proteoform[]) => {
+    private renderTable = (proteoformPPI: ProteoformPPI[]) => {
         
-        let filteredProteoforms = []
+        let filteredProteoformPPI = []
         if(this.state.searchTerm.trim().length > 0){
-            filteredProteoforms = proteoforms.filter(this.filterProteoforms(this.state.searchTerm))
+            filteredProteoformPPI = proteoformPPI.filter(this.filterProteoformPPI(this.state.searchTerm))
         }else{
-            filteredProteoforms = this.state.data;
+            filteredProteoformPPI = this.state.data;
         }   
         
-        const rows = filteredProteoforms.map(this.renderRow);
+        const rows = filteredProteoformPPI.map(this.renderRow);
         
         return (
-            <div id="proteoform_table" className={css(styles.proteoformTable)} >
+            <div id="proteoformppi_table" className={css(styles.proteoformppiTable)} >
                 <div id="table_header" className={css(styles.header)}  >
-                    <div id="ID" className={css(styles.ID)} >
+                    <div id="protein_1" className={css(styles.Protein1)} >
                         <div style={{marginLeft: 0}} >
-                            ID
+                            Protein 1
                         </div>
                     </div>
-                    <div id="Sites" className={css(styles.Sites)} >
-                        Sites
+                    <div id="relation" className={css(styles.Relation)}  >
+                        Relation
                     </div>
-                    <div id="PTM Enzymes" className={css(styles.PTMEnzymes)} >
-                        PTM Enzymes
+                    <div id="protein_2" className={css(styles.Protein2)}  >
+                        Protein 2
                     </div>
-                    <div id="Source" className={css(styles.Source)} >
+                    <div id="source" className={css(styles.Source)}  >
                         Source
                     </div>
-                    <div id="PMID" className={css(styles.PMID)} >
+                    <div id="PMID" className={css(styles.PMID)}  >
                         PMID
                     </div>                                        
                 </div>
@@ -113,26 +115,25 @@ export class ProteoformTable extends React.Component<IProteoformTableProps,Prote
         )
     }
 
-    private renderRow = (proteoform: Proteoform, index: number) => {
+    private renderRow = (proteoformPPI: ProteoformPPI, index: number) => {
         return (
             <div id="table_row" className={css(styles.row)} key={index} >
-                <div id="ID" className={css(styles.ID)} >
-                    <input type="checkbox" style={{marginRight: 10}} />
-                    {this.buildProteoformID(proteoform.pro_id)}
-                    {" (" + proteoform.label + ")" }
+                <div id="protein_1" className={css(styles.Protein1)} >
+                    <input type="checkbox" style={{marginRight: 10}}/>
+                    {this.buildProtein(proteoformPPI.protein_1)}
                 </div>
-                <div id="Sites" className={css(styles.Sites)} >
-                    {proteoform.sites.join(", ")}
+                <div id="relation" className={css(styles.Relation)}  >
+                    {proteoformPPI.relation}
                 </div>
-                <div id="PTM Enzymes" className={css(styles.PTMEnzymes)} >
-                    {this.buildPTMEnzyme(proteoform.ptm_enzyme)}
+                <div id="protein_2" className={css(styles.Protein2)}  >
+                    {this.buildProtein(proteoformPPI.protein_2)}
                 </div>
-                <div id="Source" className={css(styles.Source)} >
-                    {buildSource(proteoform.source)}
+                <div id="source" className={css(styles.Source)}  >
+                    {buildSource(proteoformPPI.source)}
                 </div>
-                <div id="PMID" className={css(styles.PMID)} >
-                    {buildPMIDs(proteoform.pmids)}
-                </div>                                        
+                <div id="PMID" className={css(styles.PMID)}  >
+                    {buildPMIDs(proteoformPPI.pmids)}
+                </div>                                     
             </div>
         );
     }
@@ -153,80 +154,68 @@ export class ProteoformTable extends React.Component<IProteoformTableProps,Prote
         );
     }
 
-    private buildProteoformID = (id: string) => {
-        return (
-            <div style={{marginRight:5}} >
-                <a
-                    href={"http://purl.obolibrary.org/obo/" + id}
-                >
-                    {id}
-                </a>
-            </div>
-        );
-    }
-
-    private buildPTMEnzyme = (enzyme: PTMEnzyme) => {
-        if(enzyme.pro_id !== ""){
+    private buildProtein = (protein: Protein) => {
+        if(protein.pro_id !== ""){
             return (
-                <div >
-                    <a href={"http://purl.obolibrary.org/obo/" + enzyme.pro_id} style={{marginRight:5}} >
-                        {enzyme.pro_id}
+                <div>
+                    <a href={"http://purl.obolibrary.org/obo/" + protein.pro_id} target="blank" >
+                        {protein.pro_id}  
                     </a>
-
-                    {"(" + enzyme.label + ")" }
+                    &nbsp;{"(" + protein.label + ")"}
                 </div>
-            );
+            )
         }else{
             return (
                 <div>
 
                 </div>
-            );
+            )
         }
     }
-    
+
+
     private onSearch = (event: ChangeEvent<HTMLInputElement>) => {
         const newState = {...this.state,searchTerm: event.target.value}
         this.setState(newState);
     }
 
-    private filterProteoforms = (searchTerm : string) => (proteoform: Proteoform, index: number, proteoforms: Proteoform[]) => {
+    private filterProteoformPPI = (searchTerm : string) => (proteoformppi: ProteoformPPI, index: number, proteoformppis: ProteoformPPI[]) => {
         const searchTermRegex = new RegExp(searchTerm, "i");
-        if(proteoform.pro_id.search(searchTermRegex) !== -1 ){
+        if(proteoformppi.relation.search(searchTermRegex) !== -1){
             return true;
-        }else if(proteoform.label.search(searchTermRegex) !== -1 ){
+        }else if([proteoformppi.source].filter(filterSource(searchTerm)).length > 0){
             return true;
-        }else if(proteoform.ptm_enzyme.pro_id.search(searchTermRegex) !== -1 ){
+        } else if(this.filterProtein(proteoformppi.protein_1,searchTerm)){
             return true;
-        }else if(proteoform.ptm_enzyme.label.search(searchTermRegex) !== -1 ){
+        } else if(this.filterProtein(proteoformppi.protein_2,searchTerm)){
             return true;
-        }else if(proteoform.sites.filter(this.filterSites(searchTerm)).length > 0){
-            return true;
-        }else if(proteoform.pmids.filter(filterPMIDS(searchTerm)).length> 0){
-            return true;
-        } else if([proteoform.source].filter(filterSource(searchTerm)).length > 0){
+        } else if(proteoformppi.pmids.filter(filterPMIDS(searchTerm)).length > 0){
             return true;
         }
         else{
-            return false;
+            return false
         }
     }
 
-    private filterSites = (searchTerm: string) => (site: string, index: number, sites: string[]) => {
+    private filterProtein = (protein: Protein, searchTerm: string) => {
         const searchTermRegex = new RegExp(searchTerm, "i");
-        if(site.search(searchTermRegex) !== -1 ){
+        if(protein.label.search(searchTermRegex) !== -1){
+            return true
+        }else if(protein.pro_id.search(searchTermRegex) !== -1){
             return true;
         }else{
             return false;
         }
     }
-       
+
+    
+    
 }
 
 
 const styles = StyleSheet.create({
     
-    proteoformsContainer: {
+    proteoformppisContainer: {
         display: "flex",
         flexDirection: "column",
         marginTop : 30,
@@ -251,7 +240,7 @@ const styles = StyleSheet.create({
         alignSelf: "center"
     },
     
-    proteoformTable: {
+    proteoformppiTable: {
         display: "flex",
         flexDirection: "column",
         fontSize: "0.88em",
@@ -278,39 +267,32 @@ const styles = StyleSheet.create({
         fontSize: "0.90em"
     },
 
-    ID: {
-        flex : 2,
-        marginLeft: 5,
-        marginRight: 20,
-        paddingLeft: 5,
+    Protein1: {
+        flex : 1,
+        marginLeft: 10,
+        marginRight: 10,
         display: "flex",
         flexDirection: "row" 
     },
 
-    Sites: {
-        flex: "1.5",
-        marginRight: 10  
+    Relation: {
+        flex: 1,
+        marginRight: 10
     },
 
-    PTMEnzymes: {
-        flex: "2",
-        marginRight: 20 
+
+    Protein2: {
+        flex: 1,
+        marginRight: 10
     },
 
     Source: {
-        flex: "0.5",
-        marginRight: 20 
+        flex: 1,
+        marginRight: 10
     },
 
     PMID: {
-        flex: "1",
-        marginRight: 20 
-    }
-
-
-
-
-    
-    
-
-})
+        flex: 1,
+        marginRight: 10
+    }  
+});
