@@ -3,15 +3,25 @@ import * as intersperse from "intersperse";
 import { Source } from "src/models/Source";
 import { PTMEnzyme } from "src/models/PTMEnzyme";
 
-export function buildSource(source: Source) {
+export function buildSource(source: Source, index: number = 0) {
         
     const sourceUrl = "#"
     
     return (
-         <a href={sourceUrl} target="_" >
+         <a href={sourceUrl} target="_" key={index} >
             {source.label}
          </a>
      )
+}
+
+export function buildSources(sources: Source[]) {
+    const builtSources = sources.map(buildSource);
+    const interspersed = intersperse(builtSources,comma())
+    return (
+        <div style={{display: "inline",wordBreak: "break-all"}} >
+            {interspersed}
+        </div>
+    );
 }
 
 export function buildPMID(pmid: string, index: number) {
@@ -26,7 +36,7 @@ export function buildPMIDs(pmids: string[]){
     const builtPMIDs = pmids.map(buildPMID);
     const interspersedPMIDs = intersperse(builtPMIDs,comma())
     return (
-        <div style={{display: "inline"}} >
+        <div style={{display: "inline",wordBreak: "break-all"}} >
             {interspersedPMIDs}
         </div>
     );
@@ -38,10 +48,10 @@ function comma() {
     </span>);
 }
 
-export function buildPTMEnzyme(enzyme: PTMEnzyme){
+export function buildPTMEnzyme(enzyme: PTMEnzyme,index: number = 0){
     if(enzyme.pro_id !== ""){
         return (
-            <div >
+            <div key={index}>
                 <a href={"http://purl.obolibrary.org/obo/" + enzyme.pro_id} style={{marginRight:5}} >
                     {enzyme.pro_id}
                 </a>
@@ -51,11 +61,12 @@ export function buildPTMEnzyme(enzyme: PTMEnzyme){
         );
     }else{
         return (
-            <div>
+            <div key={index}>
 
             </div>
         );
     }
 }
+
 
 

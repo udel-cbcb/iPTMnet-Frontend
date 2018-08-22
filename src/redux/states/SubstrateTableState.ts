@@ -16,13 +16,18 @@ export class SubstrateTableState {
         this.searchTerm = searchTerm;
     }
 
-    public getSelectedData = (): Substrate[] => {
-        const substrates = this.data[this.selectedForm];
+    public getData = (selectedForm: string): Substrate[] => {
+        const substrates = this.data[selectedForm];
         if(substrates){
             return substrates;
         }else{
             return [];
         }
+    }
+
+    public getForms = (): string[] => {
+        const keys = Array.from(Object.keys(this.data)).sort();
+        return keys;
     }
 
 }

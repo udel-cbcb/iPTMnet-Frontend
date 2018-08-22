@@ -5,6 +5,7 @@ import { SubstrateTableState } from "src/redux/states/SubstrateTableState";
 import { Substrate } from "../models/Substrate";
 import { RequestState } from "../redux/states/RequestState";
 import { ChangeEvent } from "react";
+import { buildPMIDs, buildSources } from 'src/views/Utils';
 
 interface ISubstrateTableProps {
     id: string
@@ -23,12 +24,11 @@ export class SubstrateTable extends React.Component<ISubstrateTableProps,Substra
             try{
                 if(res.status === 200){
                     const substrateMap : Map<string, Substrate[]> = res.data;
-                    const keys = Array.from(Object.keys(substrateMap));
+                    const keys = Array.from(Object.keys(substrateMap)).sort();
                     let selectedForm = "";
                     if(keys.length > 0){
                         selectedForm = keys[0];
                     }
-                    console.log(selectedForm);
                     const state = new SubstrateTableState(RequestState.SUCCESS,substrateMap,selectedForm,"");
                     this.setState(state);
                 }else{
@@ -36,7 +36,6 @@ export class SubstrateTable extends React.Component<ISubstrateTableProps,Substra
                     this.setState(new SubstrateTableState(RequestState.ERROR,new Map<string, Substrate[]>(),"","",error));
                 }
             }catch(err){
-                console.log(err);
                 this.setState(new SubstrateTableState(RequestState.ERROR,new Map<string, Substrate[]>(),"","",err))
             }
                 
@@ -47,25 +46,35 @@ export class SubstrateTable extends React.Component<ISubstrateTableProps,Substra
     
     public render() {
 
+        const tabs = this.state.getForms().map(this.renderTab)
+
         let content;
         
         if(this.state.status === RequestState.LOADING){
             content = this.renderLoading();
         }else if(this.state.status === RequestState.SUCCESS){
-            console.log(this.state);
-            content = this.renderTable(this.state.getSelectedData());
+            content = this.renderTable(this.state.getData(this.state.selectedForm));
         }else if(this.state.status === RequestState.ERROR ){
             content = this.renderError(this.state.error);
         }
+
+
 
         return (
             <div id="substrates_container"  className={css(styles.substratesContainer)}  >
                 <div id="label_container" className={css(styles.labelContainer)}  >
                     <span id="label" className={css(styles.label)}  >
                         Substrates
-                    </span>
+                    </span>                                                       
+                </div>
 
-                    <div id="search_container" className={css(styles.searchContainer)} >
+                <div id="tabs_container" className={css(styles.tabsContainer)} >
+                    <ul className={css(styles.tabs)} >
+                        {tabs}
+                    </ul>
+                </div>
+
+                <div id="search_container" className={css(styles.searchContainer)} >
                         <span style={{
                             marginRight: 10,
                             fontSize: "1em"
@@ -75,7 +84,6 @@ export class SubstrateTable extends React.Component<ISubstrateTableProps,Substra
                         
                         <input onChange={this.onSearch} />
 
-                    </div>               
                 </div>
 
                 {content}
@@ -110,7 +118,7 @@ export class SubstrateTable extends React.Component<ISubstrateTableProps,Substra
                         PTM Enzymes
                     </div>
                     <div id="Score" className={css(styles.Score)} >
-                        Source
+                        Score
                     </div>
                     <div id="Source" className={css(styles.Source)} >
                         Source
@@ -139,13 +147,13 @@ export class SubstrateTable extends React.Component<ISubstrateTableProps,Substra
                     PTM Enzymes
                 </div>
                 <div id="Score" className={css(styles.Score)} >
-                    Source
+                    Score
                 </div>
                 <div id="Source" className={css(styles.Source)} >
-                    Source
+                    {buildSources(substrate.sources)}
                 </div>
                 <div id="PMID" className={css(styles.PMID)} >
-                    PMID
+                    {buildPMIDs(substrate.pmids)}
                 </div>                                   
             </div>
         );
@@ -167,10 +175,34 @@ export class SubstrateTable extends React.Component<ISubstrateTableProps,Substra
         );
     }
 
-    
+    private renderTab = (form: string, index: number) => {
+        let visibility;
+        
+        if(form === this.state.selectedForm){
+            visibility = styles.visible
+        }else{
+            visibility = styles.hidden
+        }
+        
+        return (
+            <div className={css(styles.tab)} key={index} onClick={this.onTabClick(form)} >
+                <div id="tab_label" className={css(styles.tabLabel)}  >
+                    {form}
+                </div>
+                <div className={css(styles.tabSelectionBar,visibility)} >
+
+                </div>
+            </div>
+        )
+    }
     
     private onSearch = (event: ChangeEvent<HTMLInputElement>) => {
         const newState = {...this.state,searchTerm: event.target.value}
+        this.setState(newState);
+    }
+
+    private onTabClick = (form: string) => (event: any) => {
+        const newState = {...this.state, selectedForm: form}
         this.setState(newState);
     }
   
@@ -204,6 +236,53 @@ const styles = StyleSheet.create({
         marginLeft: "auto",
         alignSelf: "center"
     },
+
+    tabsContainer: {
+        display: "flex",
+        flexDirection: "row",
+        alignItems: "center",
+        alignSelf: "stretch"
+    },
+    
+    tabs: { 
+       display: "flex",
+       flexDirection: "row",
+       alignItems: "center",
+       paddingLeft: 0 
+    },
+
+    tab: {
+        display: "flex",
+        flexDirection: "column",
+        alignItems: "stretch",
+        borderWidth: 1,
+        borderStyle: "solid",
+        borderColor: "#d9dadb",
+        ":hover": {
+            cursor: "pointer"
+        }
+    },
+
+    visible: {
+        visibility: "visible"
+    },
+
+    hidden: {
+        visibility: "hidden"
+    },
+
+    tabLabel: {
+        paddingLeft: 10,
+        paddingTop: 5,
+        paddingBottom: 5,
+        paddingRight: 10,
+    },
+
+    tabSelectionBar: {
+        height: 2,
+        width: "100%",
+        backgroundColor: "#329CDA"
+    },
     
     substrateTable: {
         display: "flex",
@@ -229,47 +308,50 @@ const styles = StyleSheet.create({
         flexDirection: "row",
         paddingTop: 10,
         paddingBottom: 10,
-        fontSize: "0.90em"
+        fontSize: "0.90em",
+        ":hover":{
+            backgroundColor: "#f4f4f4"
+        }
     },
 
     Site: {
         flex : 2,
-        marginLeft: 5,
+        marginLeft: 20,
         marginRight: 20,
-        paddingLeft: 5,
         display: "flex",
+        wordBreak: "break-all",
         flexDirection: "row" 
     },
 
     PTMtype: {
-        flex: "1.5",
-        marginRight: 10  
+        flex: "1.6",
+        marginRight: 20,
+        wordBreak: "break-all",  
     },
 
     PTMEnzymes: {
-        flex: "2",
-        marginRight: 20 
+        flex: "3",
+        marginRight: 20,
+        wordBreak: "break-all", 
     },
 
     Score: {
-        flex: "0.5",
-        marginRight: 20 
+        flex: "1",
+        marginRight: 20,
+        wordBreak: "break-all", 
     },
 
     Source: {
-        flex: "0.5",
-        marginRight: 20 
+        flex: "3",
+        marginRight: 20,
+        wordBreak: "break-all", 
     },
 
     PMID: {
-        flex: "1",
-        marginRight: 20 
+        flex: "3",
+        marginRight: 20,
+        wordBreak: "break-all", 
     }
-
-
-
-
-    
     
 
 })

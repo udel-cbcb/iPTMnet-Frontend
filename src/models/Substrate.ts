@@ -22,8 +22,8 @@ export class Substrate {
     @JsonProperty("enzymes",[PTMEnzyme])
     public enzymes: PTMEnzyme [] = [];
 
-    @JsonProperty("pmid",[String])
-    public pmid: string [] = [];
+    @JsonProperty("pmids",[String])
+    public pmids: string [] = [];
 
 }
 
