@@ -267,42 +267,49 @@ const styles = StyleSheet.create({
     },
 
     PTMType: {
-        flex : 1,
+        width: "20%",
         marginLeft: 10,
         marginRight: 10,
         display: "flex",
-        flexDirection: "row" 
+        flexDirection: "row",
+        wordBreak: "break-all",  
     },
 
     Substrate: {
-        flex: 1,
-        marginRight: 10
+        width: "20%",
+        marginRight: 10,
+        wordBreak: "break-all",
     },
 
 
     Site: {
-        flex: 1,
-        marginRight: 10
+        width: "5%",
+        marginRight: 10,
+        wordBreak: "break-all",
     },
 
     Interactant: {
-        flex: 1,
-        marginRight: 10
+        width: "20%",
+        marginRight: 10,
+        wordBreak: "break-all",
     },
 
     AssociationType: {
-        flex: 1,
-        marginRight: 10
+        width: "15%",
+        marginRight: 10,
+        wordBreak: "break-all",
     },
 
     Source: {
-        flex: 1,
-        marginRight: 10
+        width: "10%",
+        marginRight: 10,
+        wordBreak: "break-all",
     },
 
     PMID: {
-        flex: 1,
-        marginRight: 10
+        width: "10%",
+        marginRight: 10,
+        wordBreak: "break-all",
     }
 
 

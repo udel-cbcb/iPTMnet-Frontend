@@ -55,7 +55,7 @@ export class ProteoformPPITable extends React.Component<IProteoformPPIProps,Prot
             <div id="proteoformppis_container"  className={css(styles.proteoformppisContainer)}  >
                 <div id="label_container" className={css(styles.labelContainer)}  >
                     <span id="label" className={css(styles.label)}  >
-                        PTM-depenent PPI
+                        Proteoform PPI
                     </span>
 
                     <div id="search_container" className={css(styles.searchContainer)} >
@@ -267,31 +267,36 @@ const styles = StyleSheet.create({
     },
 
     Protein1: {
-        flex : 1,
+        width: "30%",
         marginLeft: 10,
         marginRight: 10,
         display: "flex",
-        flexDirection: "row" 
+        flexDirection: "row",
+        wordBreak: "break-all",  
     },
 
     Relation: {
-        flex: 1,
-        marginRight: 10
+        width: "10%",
+        marginRight: 10,
+        wordBreak: "break-all", 
     },
 
 
     Protein2: {
-        flex: 1,
-        marginRight: 10
+        width: "30%",
+        marginRight: 10,
+        wordBreak: "break-all", 
     },
 
     Source: {
-        flex: 1,
-        marginRight: 10
+        width: "10%",
+        marginRight: 10,
+        wordBreak: "break-all", 
     },
 
     PMID: {
-        flex: 1,
-        marginRight: 10
+        width: "20%",
+        marginRight: 10,
+        wordBreak: "break-all", 
     }  
 });

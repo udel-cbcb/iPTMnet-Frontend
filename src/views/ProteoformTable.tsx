@@ -258,32 +258,37 @@ const styles = StyleSheet.create({
     },
 
     ID: {
-        flex : 2,
+        width: "25%",
         marginLeft: 5,
-        marginRight: 20,
+        marginRight: 10,
         paddingLeft: 5,
         display: "flex",
-        flexDirection: "row" 
+        flexDirection: "row",
+        wordBreak: "break-all", 
     },
 
     Sites: {
-        flex: "1.5",
-        marginRight: 10  
+        width: "15%",
+        marginRight: 10,
+        wordBreak: "break-all",   
     },
 
     PTMEnzymes: {
-        flex: "2",
-        marginRight: 20 
+        width: "35%",
+        marginRight: 20,
+        wordBreak: "break-all",  
     },
 
     Source: {
-        flex: "0.5",
-        marginRight: 20 
+        width: "10%",
+        marginRight: 20,
+        wordBreak: "break-all",  
     },
 
     PMID: {
-        flex: "1",
-        marginRight: 20 
+        width: "15%",
+        marginRight: 20,
+        wordBreak: "break-all", 
     }
 
 
