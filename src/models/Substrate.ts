@@ -1,6 +1,6 @@
 import {JsonObject, JsonProperty} from "json2typescript";
-import { PTMEnzyme } from "src/models/PTMEnzyme";
 import { Source } from "src/models/Source";
+import { Enzyme } from "src/models/Enzyme";
 
 @JsonObject
 export class Substrate {
@@ -19,8 +19,8 @@ export class Substrate {
     @JsonProperty("sources",[Source])
     public sources: Source [] = [];
 
-    @JsonProperty("enzymes",[PTMEnzyme])
-    public enzymes: PTMEnzyme [] = [];
+    @JsonProperty("enzymes",[Enzyme])
+    public enzymes: Enzyme [] = [];
 
     @JsonProperty("pmids",[String])
     public pmids: string [] = [];

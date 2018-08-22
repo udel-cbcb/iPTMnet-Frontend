@@ -5,7 +5,11 @@ import { SubstrateTableState } from "src/redux/states/SubstrateTableState";
 import { Substrate } from "../models/Substrate";
 import { RequestState } from "../redux/states/RequestState";
 import { ChangeEvent } from "react";
-import { buildPMIDs, buildSources } from 'src/views/Utils';
+import { buildPMIDs, buildSources, buildEnzymes, renderScore } from 'src/views/Utils';
+import { filterSource } from 'src/misc/Utils';
+import { filterPMIDS } from 'src/misc/Utils';
+import { filterEnzyme } from '../misc/Utils';
+
 
 interface ISubstrateTableProps {
     id: string
@@ -96,7 +100,7 @@ export class SubstrateTable extends React.Component<ISubstrateTableProps,Substra
         
         let filteredSubstrates = []
         if(this.state.searchTerm.trim().length > 0){
-            filteredSubstrates = substrates
+            filteredSubstrates = substrates.filter(this.filterSubstrate(this.state.searchTerm.trim()))
         }else{
             filteredSubstrates = substrates
         }   
@@ -144,10 +148,10 @@ export class SubstrateTable extends React.Component<ISubstrateTableProps,Substra
                     {substrate.ptm_type}
                 </div>
                 <div id="PTM Enzymes" className={css(styles.PTMEnzymes)} >
-                    PTM Enzymes
+                    {buildEnzymes(substrate.enzymes)}
                 </div>
                 <div id="Score" className={css(styles.Score)} >
-                    Score
+                    {renderScore(substrate.score)}
                 </div>
                 <div id="Source" className={css(styles.Source)} >
                     {buildSources(substrate.sources)}
@@ -195,7 +199,7 @@ export class SubstrateTable extends React.Component<ISubstrateTableProps,Substra
             </div>
         )
     }
-    
+       
     private onSearch = (event: ChangeEvent<HTMLInputElement>) => {
         const newState = {...this.state,searchTerm: event.target.value}
         this.setState(newState);
@@ -205,6 +209,30 @@ export class SubstrateTable extends React.Component<ISubstrateTableProps,Substra
         const newState = {...this.state, selectedForm: form}
         this.setState(newState);
     }
+
+    private filterSubstrate = (searchTerm: string) => (substrate: Substrate): boolean => {
+        const searchTermRegex = new RegExp(searchTerm, "i");
+        if(substrate.site && substrate.site.search(searchTermRegex) !==  -1){
+            return true;
+        }else if(substrate.ptm_type && substrate.ptm_type.search(searchTermRegex) !== -1 ){
+            return true;
+        }else if(substrate.sources.filter(filterSource(searchTerm)).length > 0){
+            return true;
+        }else if(substrate.pmids.filter(filterPMIDS(searchTerm)).length > 0){
+            return true;
+        }else if(substrate.enzymes.filter(filterEnzyme(searchTerm)).length > 0){
+            return true;
+        }
+        else {
+            return false;
+        }
+    }
+
+
+
+   
+
+
   
        
 }
@@ -234,6 +262,7 @@ const styles = StyleSheet.create({
 
     searchContainer: {
         marginLeft: "auto",
+        marginBottom: 10,
         alignSelf: "center"
     },
 
@@ -315,7 +344,8 @@ const styles = StyleSheet.create({
     },
 
     Site: {
-        flex : 2,
+        width: "20%",
+        minWidth: "5%",
         marginLeft: 20,
         marginRight: 20,
         display: "flex",
@@ -324,31 +354,32 @@ const styles = StyleSheet.create({
     },
 
     PTMtype: {
-        flex: "1.6",
+        width: "16%",
         marginRight: 20,
         wordBreak: "break-all",  
     },
 
     PTMEnzymes: {
-        flex: "3",
+        width: "30%",
+        minWidth: "10%",
         marginRight: 20,
         wordBreak: "break-all", 
     },
 
     Score: {
-        flex: "1",
+        width: "10%",
         marginRight: 20,
         wordBreak: "break-all", 
     },
 
     Source: {
-        flex: "3",
+        width: "30%",
         marginRight: 20,
         wordBreak: "break-all", 
     },
 
     PMID: {
-        flex: "3",
+        width: "30%",
         marginRight: 20,
         wordBreak: "break-all", 
     }
