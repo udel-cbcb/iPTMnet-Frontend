@@ -26,7 +26,6 @@ export class ProteoformPPITable extends React.Component<IProteoformPPIProps,Prot
         this.setState(new ProteoformPPIState(RequestState.LOADING,[]))
         axios.get(`https://research.bioinformatics.udel.edu/iptmnet/api/${this.props.id}/proteoformsppi`).then((res)=> {
             if(res.status === 200){
-                console.log(res.data);
                 const jsonConvert: JsonConvert = new JsonConvert();
                 const proteoformPPI = jsonConvert.deserializeArray(res.data,ProteoformPPI);
                 const state = new ProteoformPPIState(RequestState.SUCCESS,proteoformPPI,"");

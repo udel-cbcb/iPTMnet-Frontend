@@ -24,7 +24,6 @@ export class PTMDependentPPITable extends React.Component<IPTMDependentPPIProps,
         this.setState(new PTMDependentPPIState(RequestState.LOADING,[]))
         axios.get(`https://research.bioinformatics.udel.edu/iptmnet/api/${this.props.id}/ptmppi`).then((res)=> {
             if(res.status === 200){
-                console.log(res.data);
                 const jsonConvert: JsonConvert = new JsonConvert();
                 const ptmDependentPPI = jsonConvert.deserializeArray(res.data,PTMDependentPPI);
                 const state = new PTMDependentPPIState(RequestState.SUCCESS,ptmDependentPPI,"");

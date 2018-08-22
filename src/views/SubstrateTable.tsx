@@ -1,39 +1,47 @@
 import { css,StyleSheet } from "aphrodite";
 import * as React from "react";
 import axios from "axios";
-import { ProteoformTableState } from "src/redux/states/ProteoformTableState";
-import { JsonConvert } from "json2typescript/src/json2typescript/json-convert";
-import { Proteoform } from "../models/Proteoform";
+import { SubstrateTableState } from "src/redux/states/SubstrateTableState";
+import { Substrate } from "../models/Substrate";
 import { RequestState } from "../redux/states/RequestState";
 import { ChangeEvent } from "react";
-import { buildSource, buildPMIDs, buildPTMEnzyme } from "src/views/Utils";
-import { filterPMIDS, filterSource } from "src/misc/Utils";
 
-interface IProteoformTableProps {
+interface ISubstrateTableProps {
     id: string
 }
 
-export class ProteoformTable extends React.Component<IProteoformTableProps,ProteoformTableState> {
+export class SubstrateTable extends React.Component<ISubstrateTableProps,SubstrateTableState> {
 
-    constructor(props: IProteoformTableProps){
+    constructor(props: ISubstrateTableProps){
         super(props);
-        this.state = new ProteoformTableState();
+        this.state = new SubstrateTableState();
     }
 
     public async componentDidMount() {
-        this.setState(new ProteoformTableState(RequestState.LOADING,[]))
-        axios.get(`https://research.bioinformatics.udel.edu/iptmnet/api/${this.props.id}/proteoforms`).then((res)=> {
-            if(res.status === 200){
-                const jsonConvert: JsonConvert = new JsonConvert();
-                const proteoforoms = jsonConvert.deserializeArray(res.data,Proteoform);
-                const state = new ProteoformTableState(RequestState.SUCCESS,proteoforoms,"");
-                this.setState(state);
-            }else{
-                const error = res.statusText + ":" + res.data;
-                this.setState(new ProteoformTableState(RequestState.ERROR,[],error));
-            }    
+        this.setState(new SubstrateTableState(RequestState.LOADING))
+        axios.get(`https://research.bioinformatics.udel.edu/iptmnet/api/${this.props.id}/substrate`).then((res)=> {
+            try{
+                if(res.status === 200){
+                    const substrateMap : Map<string, Substrate[]> = res.data;
+                    const keys = Array.from(Object.keys(substrateMap));
+                    let selectedForm = "";
+                    if(keys.length > 0){
+                        selectedForm = keys[0];
+                    }
+                    console.log(selectedForm);
+                    const state = new SubstrateTableState(RequestState.SUCCESS,substrateMap,selectedForm,"");
+                    this.setState(state);
+                }else{
+                    const error = res.statusText + ":" + res.data;
+                    this.setState(new SubstrateTableState(RequestState.ERROR,new Map<string, Substrate[]>(),"","",error));
+                }
+            }catch(err){
+                console.log(err);
+                this.setState(new SubstrateTableState(RequestState.ERROR,new Map<string, Substrate[]>(),"","",err))
+            }
+                
         }).catch((err)=>{
-            this.setState(new ProteoformTableState(RequestState.ERROR,[],err))
+            this.setState(new SubstrateTableState(RequestState.ERROR,new Map<string, Substrate[]>(),"","",err))
         });
     }
     
@@ -44,16 +52,17 @@ export class ProteoformTable extends React.Component<IProteoformTableProps,Prote
         if(this.state.status === RequestState.LOADING){
             content = this.renderLoading();
         }else if(this.state.status === RequestState.SUCCESS){
-            content = this.renderTable(this.state.data);
+            console.log(this.state);
+            content = this.renderTable(this.state.getSelectedData());
         }else if(this.state.status === RequestState.ERROR ){
             content = this.renderError(this.state.error);
         }
 
         return (
-            <div id="proteoforms_container"  className={css(styles.proteoformsContainer)}  >
+            <div id="substrates_container"  className={css(styles.substratesContainer)}  >
                 <div id="label_container" className={css(styles.labelContainer)}  >
                     <span id="label" className={css(styles.label)}  >
-                        Proteoforms
+                        Substrates
                     </span>
 
                     <div id="search_container" className={css(styles.searchContainer)} >
@@ -75,30 +84,33 @@ export class ProteoformTable extends React.Component<IProteoformTableProps,Prote
         );
     }
 
-    private renderTable = (proteoforms: Proteoform[]) => {
+    private renderTable = (substrates: Substrate[]) => {
         
-        let filteredProteoforms = []
+        let filteredSubstrates = []
         if(this.state.searchTerm.trim().length > 0){
-            filteredProteoforms = proteoforms.filter(this.filterProteoforms(this.state.searchTerm))
+            filteredSubstrates = substrates
         }else{
-            filteredProteoforms = this.state.data;
+            filteredSubstrates = substrates
         }   
         
-        const rows = filteredProteoforms.map(this.renderRow);
+        const rows = filteredSubstrates.map(this.renderRow);
         
         return (
-            <div id="proteoform_table" className={css(styles.proteoformTable)} >
+            <div id="substrate_table" className={css(styles.substrateTable)} >
                 <div id="table_header" className={css(styles.header)}  >
-                    <div id="ID" className={css(styles.ID)} >
+                    <div id="Site" className={css(styles.Site)} >
                         <div style={{marginLeft: 0}} >
-                            ID
+                            Site
                         </div>
                     </div>
-                    <div id="Sites" className={css(styles.Sites)} >
-                        Sites
+                    <div id="PTMtype" className={css(styles.PTMtype)} >
+                        PTM Type
                     </div>
                     <div id="PTM Enzymes" className={css(styles.PTMEnzymes)} >
                         PTM Enzymes
+                    </div>
+                    <div id="Score" className={css(styles.Score)} >
+                        Source
                     </div>
                     <div id="Source" className={css(styles.Source)} >
                         Source
@@ -112,26 +124,29 @@ export class ProteoformTable extends React.Component<IProteoformTableProps,Prote
         )
     }
 
-    private renderRow = (proteoform: Proteoform, index: number) => {
+    private renderRow = (substrate: Substrate, index: number) => {
         return (
             <div id="table_row" className={css(styles.row)} key={index} >
-                <div id="ID" className={css(styles.ID)} >
-                    <input type="checkbox" style={{marginRight: 10}} />
-                    {this.buildProteoformID(proteoform.pro_id)}
-                    {" (" + proteoform.label + ")" }
+                 <div id="Site" className={css(styles.Site)} >
+                    <div style={{marginLeft: 0}} >
+                        {substrate.site}
+                    </div>
                 </div>
-                <div id="Sites" className={css(styles.Sites)} >
-                    {proteoform.sites.join(", ")}
+                <div id="PTMtype" className={css(styles.PTMtype)} >
+                    {substrate.ptm_type}
                 </div>
                 <div id="PTM Enzymes" className={css(styles.PTMEnzymes)} >
-                    {buildPTMEnzyme(proteoform.ptm_enzyme)}
+                    PTM Enzymes
+                </div>
+                <div id="Score" className={css(styles.Score)} >
+                    Source
                 </div>
                 <div id="Source" className={css(styles.Source)} >
-                    {buildSource(proteoform.source)}
+                    Source
                 </div>
                 <div id="PMID" className={css(styles.PMID)} >
-                    {buildPMIDs(proteoform.pmids)}
-                </div>                                        
+                    PMID
+                </div>                                   
             </div>
         );
     }
@@ -152,60 +167,20 @@ export class ProteoformTable extends React.Component<IProteoformTableProps,Prote
         );
     }
 
-    private buildProteoformID = (id: string) => {
-        return (
-            <div style={{marginRight:5}} >
-                <a
-                    href={"http://purl.obolibrary.org/obo/" + id}
-                >
-                    {id}
-                </a>
-            </div>
-        );
-    }
+    
     
     private onSearch = (event: ChangeEvent<HTMLInputElement>) => {
         const newState = {...this.state,searchTerm: event.target.value}
         this.setState(newState);
     }
-
-    private filterProteoforms = (searchTerm : string) => (proteoform: Proteoform) => {
-        const searchTermRegex = new RegExp(searchTerm, "i");
-        if(proteoform.pro_id.search(searchTermRegex) !== -1 ){
-            return true;
-        }else if(proteoform.label.search(searchTermRegex) !== -1 ){
-            return true;
-        }else if(proteoform.ptm_enzyme.pro_id.search(searchTermRegex) !== -1 ){
-            return true;
-        }else if(proteoform.ptm_enzyme.label.search(searchTermRegex) !== -1 ){
-            return true;
-        }else if(proteoform.sites.filter(this.filterSites(searchTerm)).length > 0){
-            return true;
-        }else if(proteoform.pmids.filter(filterPMIDS(searchTerm)).length> 0){
-            return true;
-        } else if([proteoform.source].filter(filterSource(searchTerm)).length > 0){
-            return true;
-        }
-        else{
-            return false;
-        }
-    }
-
-    private filterSites = (searchTerm: string) => (site: string) => {
-        const searchTermRegex = new RegExp(searchTerm, "i");
-        if(site.search(searchTermRegex) !== -1 ){
-            return true;
-        }else{
-            return false;
-        }
-    }
+  
        
 }
 
 
 const styles = StyleSheet.create({
     
-    proteoformsContainer: {
+    substratesContainer: {
         display: "flex",
         flexDirection: "column",
         marginTop : 30,
@@ -230,7 +205,7 @@ const styles = StyleSheet.create({
         alignSelf: "center"
     },
     
-    proteoformTable: {
+    substrateTable: {
         display: "flex",
         flexDirection: "column",
         fontSize: "0.88em",
@@ -257,7 +232,7 @@ const styles = StyleSheet.create({
         fontSize: "0.90em"
     },
 
-    ID: {
+    Site: {
         flex : 2,
         marginLeft: 5,
         marginRight: 20,
@@ -266,13 +241,18 @@ const styles = StyleSheet.create({
         flexDirection: "row" 
     },
 
-    Sites: {
+    PTMtype: {
         flex: "1.5",
         marginRight: 10  
     },
 
     PTMEnzymes: {
         flex: "2",
+        marginRight: 20 
+    },
+
+    Score: {
+        flex: "0.5",
         marginRight: 20 
     },
 

@@ -109,7 +109,6 @@ export function loadProteoforms(id: string) : ThunkAction<void,Store,void,Action
         // dispatch(loadInfoStarted());
         axios.get(`https://research.bioinformatics.udel.edu/iptmnet/api/${id}/proteoforms`).then((res)=> {
             if(res.status === 200){
-                console.log(res.data);
                 // const jsonConvert: JsonConvert = new JsonConvert();
                 // const info = jsonConvert.deserializeObject(res.data,Info);
                 // dispatch(loadInfoSuccess(info));

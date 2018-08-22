@@ -8,6 +8,7 @@ import { ProteoformTable } from '../views/ProteoformTable';
 import { PTMDependentPPITable } from 'src/views/PTMDependentPPITable';
 import Footer from '../views/Footer';
 import { ProteoformPPITable } from 'src/views/ProteoformPPITable';
+import { SubstrateTable } from '../views/SubstrateTable';
 
 interface IEntryProps {
   id: string;
@@ -68,6 +69,7 @@ class Entry extends React.Component<IEntryProps,{}> {
           <div id="content" className={css(styles.content)}  >
             <InfoConnected/>
             <SequenceViewer/>
+            <SubstrateTable id={this.props.id} />
             <ProteoformTable id={this.props.id} />
             <PTMDependentPPITable id={this.props.id} />
             <ProteoformPPITable id={this.props.id} />

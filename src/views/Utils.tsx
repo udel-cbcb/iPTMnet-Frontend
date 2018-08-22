@@ -1,6 +1,7 @@
 import * as React from "react";
 import * as intersperse from "intersperse";
 import { Source } from "src/models/Source";
+import { PTMEnzyme } from "src/models/PTMEnzyme";
 
 export function buildSource(source: Source) {
         
@@ -36,4 +37,25 @@ function comma() {
         ,&nbsp;
     </span>);
 }
+
+export function buildPTMEnzyme(enzyme: PTMEnzyme){
+    if(enzyme.pro_id !== ""){
+        return (
+            <div >
+                <a href={"http://purl.obolibrary.org/obo/" + enzyme.pro_id} style={{marginRight:5}} >
+                    {enzyme.pro_id}
+                </a>
+
+                {"(" + enzyme.label + ")" }
+            </div>
+        );
+    }else{
+        return (
+            <div>
+
+            </div>
+        );
+    }
+}
+
 
