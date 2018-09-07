@@ -35,7 +35,7 @@ export class ProteoformPPITable extends React.Component<IProteoformPPIProps,Prot
                 this.setState(new ProteoformPPIState(RequestState.ERROR,[],error));
             }    
         }).catch((err)=>{
-            this.setState(new ProteoformPPIState(RequestState.ERROR,[],err))
+            this.setState(new ProteoformPPIState(RequestState.ERROR,[],err.toString()))
         });
     }
     

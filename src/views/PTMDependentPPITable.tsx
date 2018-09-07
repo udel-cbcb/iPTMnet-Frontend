@@ -33,7 +33,7 @@ export class PTMDependentPPITable extends React.Component<IPTMDependentPPIProps,
                 this.setState(new PTMDependentPPIState(RequestState.ERROR,[],error));
             }    
         }).catch((err)=>{
-            this.setState(new PTMDependentPPIState(RequestState.ERROR,[],err))
+            this.setState(new PTMDependentPPIState(RequestState.ERROR,[],err.toString()))
         });
     }
     

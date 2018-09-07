@@ -33,7 +33,7 @@ export class ProteoformTable extends React.Component<IProteoformTableProps,Prote
                 this.setState(new ProteoformTableState(RequestState.ERROR,[],error));
             }    
         }).catch((err)=>{
-            this.setState(new ProteoformTableState(RequestState.ERROR,[],err))
+            this.setState(new ProteoformTableState(RequestState.ERROR,[],err.toString()))
         });
     }
     

@@ -40,11 +40,11 @@ export class SubstrateTable extends React.Component<ISubstrateTableProps,Substra
                     this.setState(new SubstrateTableState(RequestState.ERROR,new Map<string, Substrate[]>(),"","",error));
                 }
             }catch(err){
-                this.setState(new SubstrateTableState(RequestState.ERROR,new Map<string, Substrate[]>(),"","",err))
+                this.setState(new SubstrateTableState(RequestState.ERROR,new Map<string, Substrate[]>(),"","",err.toString()))
             }
                 
         }).catch((err)=>{
-            this.setState(new SubstrateTableState(RequestState.ERROR,new Map<string, Substrate[]>(),"","",err))
+            this.setState(new SubstrateTableState(RequestState.ERROR,new Map<string, Substrate[]>(),"","",err.toString()))
         });
     }
     

@@ -68,7 +68,7 @@ class Entry extends React.Component<IEntryProps,{}> {
 
           <div id="content" className={css(styles.content)}  >
             <InfoConnected/>
-            <SequenceViewer/>
+            <SequenceViewer id={this.props.id} />
             <SubstrateTable id={this.props.id} />
             <ProteoformTable id={this.props.id} />
             <PTMDependentPPITable id={this.props.id} />
