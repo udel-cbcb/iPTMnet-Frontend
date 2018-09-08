@@ -91,6 +91,16 @@ class Entry extends React.Component<IEntryProps,{}> {
         scrollToElement("div_info")
       }else if(event.target.id === "option_sequence_viewer") {
         scrollToElement("sequence_viewer")
+      }else if(event.target.id === "option_substrate") {
+        scrollToElement("substrates_container")
+      }else if(event.target.id === "option_proteoforms") {
+        scrollToElement("proteoforms_container")
+      }else if(event.target.id === "option_ptm_dependent_ppi") {
+        scrollToElement("ptmdependentppis_container")
+      }else if(event.target.id === "option_proteoform_ppi") {
+        scrollToElement("proteoformppis_container")
+      }else if(event.target.id === "option_back_to_top") {
+        scrollToElement("div_info")
       }
   }
 
@@ -129,9 +139,9 @@ const styles = StyleSheet.create({
   },
  
   sidebar: {
-    display: "flex",
-    flexDirection: "column",
+    position: "fixed",
     margin: 20,
+    "min-width": "15%",
     backgroundColor: "#ecececff",
     marginRight: "10%"
   },
