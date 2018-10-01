@@ -4,6 +4,12 @@ import Navbar from '../views/Navbar';
 import Footer from 'src/views/Footer';
 import { BrowsePageState } from 'src/redux/states/BrowsePageState';
 import { Role } from 'src/models/Role';
+import axios from "axios";
+import Spinner from "react-spinkit"
+import { RequestState } from "../redux/states/RequestState";
+import { JsonConvert } from 'json2typescript/src/json2typescript/json-convert';
+import SearchResult from '../models/SearchResult';
+import { SearchResultData } from '../models/SearchResultData';
 
 class Browse extends React.Component<{},BrowsePageState> {
 
@@ -12,6 +18,7 @@ class Browse extends React.Component<{},BrowsePageState> {
       this.state = new BrowsePageState();
   }
 
+
   public render() {
     return (
       <div id="page" className={css(styles.page)} >
@@ -19,6 +26,9 @@ class Browse extends React.Component<{},BrowsePageState> {
         <div id="body" className={css(styles.body)} >
           <div id="sidebar_container" className={css(styles.sidebarContainer)} >
             <div id="sidebar" className={css(styles.sidebar)} >
+                <div className={css(styles.browseButton)} onClick={this.onBrowseClick} >
+                    Browse
+                </div>
                 {this.renderPTMSelection()}
                 {this.renderRoleSelection()}
                 {this.renderMiscSelection()}
@@ -27,7 +37,7 @@ class Browse extends React.Component<{},BrowsePageState> {
           </div>
 
           <div id="content" className={css(styles.content)}  >
-            
+                {this.renderLoading()}
           </div>        
           
         </div>
@@ -41,7 +51,15 @@ class Browse extends React.Component<{},BrowsePageState> {
     );
   }
 
-  public renderPTMSelection = () => {
+  private renderLoading = () => {
+      return (
+          <div className={css(styles.loading)} >
+                <Spinner name="line-scale" color="#329CDA"/>
+          </div>
+      )
+  }
+
+  private renderPTMSelection = () => {
       return (
           <div id="div_ptm" className={css(styles.ptm)} >
               <div id="div_ptm_header" className={css(styles.sectionHeaderContainer)} >
@@ -57,7 +75,7 @@ class Browse extends React.Component<{},BrowsePageState> {
 
               <div id="ptm_buttons" className={css(this.state.isPTMExpanded? styles.ptmButtons: styles.hidden)} >
                 <button id="btn_all_ptm" className={css(styles.selectorButton)} onClick={this.onPTMAllClick}  >
-                        All
+                    All
                 </button>
                 <button id="btn_none_ptm" className={css(styles.selectorButton, styles.noneButton)} onClick={this.onPTMNoneClick} >
                     None
@@ -141,7 +159,7 @@ class Browse extends React.Component<{},BrowsePageState> {
       );
   }
 
-  public renderRoleSelection = () => {
+  private renderRoleSelection = () => {
     return (
         <div id="div_role" className={css(styles.role)} >
             <div id="div_role_header" className={css(styles.roleSectionHeaderContainer)} >
@@ -207,7 +225,7 @@ class Browse extends React.Component<{},BrowsePageState> {
     );
   }
 
-  public renderMiscSelection = () => {
+  private renderMiscSelection = () => {
     return (
         <div id="div_misc" className={css(styles.misc)} >
                       
@@ -252,7 +270,7 @@ class Browse extends React.Component<{},BrowsePageState> {
     );
   }
   
-  public renderOrganismSelection = () => {
+  private renderOrganismSelection = () => {
     return (
         <div id="div_misc" className={css(styles.misc)} >
             <div id="organism_type_selection" className={css(styles.miscTypeSelection)}>
@@ -429,7 +447,29 @@ class Browse extends React.Component<{},BrowsePageState> {
     this.setState(newState)
   }
 
+  private onBrowseClick = () => {
+    this.refreshPage(this.state)
+  }
 
+  private refreshPage = (prevState: BrowsePageState) => {
+    this.setState({...prevState,status: RequestState.LOADING})
+    axios.get(`https://research.bioinformatics.udel.edu/iptmnet/api/browse?term_type=All&role=Enzyme%20or%20Substrate&start_index=0&end_index=100`).then((res)=> {
+        if(res.status === 200){
+            const jsonConvert: JsonConvert = new JsonConvert();
+            const searchResults = jsonConvert.deserializeArray(res.data,SearchResult);
+            const totalCount = res.headers.count;
+            const searchResultData = new SearchResultData(totalCount,searchResults);
+            const state = {...this.state,status:RequestState.SUCCESS,data:searchResultData}
+            this.setState(state);
+        }else{
+            const err = res.statusText + ":" + res.data;
+            const state = {...this.state,status:RequestState.ERROR,error: err}
+            this.setState(state);
+        }    
+    }).catch((err)=>{
+        this.setState({...this.state,status: RequestState.ERROR,error:err.toString()})
+    });  
+  }
 }
 
 
@@ -462,11 +502,18 @@ const styles = StyleSheet.create({
     "max-width": "80%",
     paddingRight: 20
   },
+  
  
   sidebar: {
     margin: 20,
     "min-width": "15%",
     marginRight: "10%"
+  },
+
+  loading: {
+    alignSelf: "center",
+    marginTop: "auto",
+    marginBottom: "auto"
   },
 
   display: {
@@ -565,8 +612,8 @@ const styles = StyleSheet.create({
     width: "1.2em",
     height: "1.2em",
     borderWidth: 1,
-    borderColor: "#329CDA",
-    color: "#329CDA",
+    borderColor: "#b0b0b0ff",
+    color: "#000000",
     ":hover": {
       cursor: "pointer",
       backgroundColor: "#329CDA",
@@ -679,6 +726,30 @@ const styles = StyleSheet.create({
     alignSelf: "stretch",
     marginLeft: 40
   },
+ 
+  browseButton: {
+      marginTop: 5,
+      marginBottom: 10,
+      paddingTop: 10,
+      paddingBottom: 10,
+      marginLeft: "auto",
+      textAlign: "center",
+      fontWeight: "bold",
+      backgroundColor: "#fcfcfc",
+      color: "#606060ff",
+      borderStyle: "solid",
+      borderRadius: 50,
+      borderWidth: 1,
+      borderColor: "#efefef",
+      ":hover": {
+          cursor: "pointer",
+          backgroundColor: "#329CDA",
+          color: "#fbfbfb"
+      },
+      ":focus": {
+          outline: "none"
+      } 
+  }
   
 });
 
