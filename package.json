@@ -10,6 +10,7 @@
     "@types/uuid": "^3.4.3",
     "aphrodite": "^2.2.2",
     "axios": "^0.18.0",
+    "better-react-spinkit": "^2.0.4",
     "history": "^4.7.2",
     "intersperse": "^1.0.0",
     "json2typescript": "^1.0.5",

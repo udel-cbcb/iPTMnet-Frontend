@@ -9,5 +9,6 @@ export class BrowsePageState {
     public readonly selectedRole: Role
     public readonly data: SearchResultData
     public readonly error: string
+    public readonly url: string
 }
 

@@ -5,11 +5,12 @@ import Footer from 'src/views/Footer';
 import { BrowsePageState } from 'src/redux/states/BrowsePageState';
 import { Role } from 'src/models/Role';
 import axios from "axios";
-import Spinner from "react-spinkit"
 import { RequestState } from "../redux/states/RequestState";
 import { JsonConvert } from 'json2typescript/src/json2typescript/json-convert';
-import SearchResult from '../models/SearchResult';
 import { SearchResultData } from '../models/SearchResultData';
+import { SearchResultView } from 'src/views/SearchResult';
+import SearchResult from 'src/models/SearchResult';
+import Pagination from "react-js-pagination";
 
 class Browse extends React.Component<{},BrowsePageState> {
 
@@ -37,7 +38,28 @@ class Browse extends React.Component<{},BrowsePageState> {
           </div>
 
           <div id="content" className={css(styles.content)}  >
-                {this.renderLoading()}
+                <div id="summary" className={css(styles.summary)} >
+                    <div style={{marginRight:"auto"}} >
+                        1 - 20 of 62400 results for in iPTMnet 
+                    </div>
+                    <div id="pagination_container" style={{marginLeft:"auto",marginRight:20}} >
+                    <Pagination
+                    activePage={0}
+                    itemsCountPerPage={28}
+                    totalItemsCount={65000}
+                    pageRangeDisplayed={5}
+                    onChange={this.onSearchPageChange}
+                    innerClass={css(styles.pagination_ul)}
+                    itemClass={css(styles.pagination_li)}
+                    linkClass={css(styles.pagination_a)}
+                    prevPageText='prev'
+                    nextPageText='next'
+                    firstPageText='first'
+                    lastPageText='last'   
+                    />
+                    </div>
+                </div>
+                <SearchResultView url={this.state.url}/>
           </div>        
           
         </div>
@@ -51,14 +73,10 @@ class Browse extends React.Component<{},BrowsePageState> {
     );
   }
 
-  private renderLoading = () => {
-      return (
-          <div className={css(styles.loading)} >
-                <Spinner name="line-scale" color="#329CDA"/>
-          </div>
-      )
+  private onSearchPageChange = (pageNumber: number) => {
+    console.log("pageNumber: " + pageNumber)
   }
-
+  
   private renderPTMSelection = () => {
       return (
           <div id="div_ptm" className={css(styles.ptm)} >
@@ -749,7 +767,51 @@ const styles = StyleSheet.create({
       ":focus": {
           outline: "none"
       } 
+  },
+
+  summary: {
+    display: "flex",
+    flexDirection: "row",
+    marginTop: 40,
+    marginBottom: 20,
+    alignItems: "center"
+  },
+
+  pagination_ul : {
+    display: "flex",
+    flexDirection: "row",
+    paddingLeft: 0,
+    margin: "20px 0px",
+    borderStyle: "solid",
+    borderColor: "#c4c4c4",
+    borderRadius: "5px",
+    borderWidth: "1px",
+    fontSize: "0.8em"
+  },
+
+  pagination_a : {
+    ":link": {
+      textDecoration: "none",
+      color: "#000000"
+    },
+  },
+
+  pagination_li: {
+    display: "inline",
+    paddingTop: "5px",
+    paddingLeft: "10px",
+    paddingRight: "10px",
+    paddingBottom: "5px",
+    borderRightStyle: "solid",
+    borderRightWidth: "1px",
+    borderColor: "#c4c4c4",
+    ":hover": {
+        cursor: "pointer",
+        backgroundColor: "#e6e6e6ff",
+        color: "#ffffff"
+    },
   }
+
   
 });
 

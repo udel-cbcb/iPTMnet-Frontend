@@ -1,1 +1,1 @@
-declare module 'react-spinkit'
+declare module 'better-react-spinkit'
