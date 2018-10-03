@@ -7,7 +7,7 @@ import axios from "axios";
 import { JsonConvert } from "json2typescript";
 import { Alignment } from "../models/Alignment";
 import { AlignmentItem } from "src/models/AlignmentItem";
-import {CubeGrid} from 'better-react-spinkit'
+import {WanderingCubes} from 'better-react-spinkit'
 
 interface ISequenceViewerProps {
     id: string
@@ -83,10 +83,10 @@ class SequenceViewer extends React.Component<ISequenceViewerProps,SequenceViewer
         return (
             <div className={css(styles.loadingContainer)} >
                 <div className={css(styles.loading)} >
-                    <CubeGrid color="#329CDA"
-                        size={40}
+                    <WanderingCubes color="#b3b3b3ff" size={40} cubeSize={16} duration="2s"
                     />
                 </div>
+                Loading results...
             </div>        
         )
     }
@@ -379,8 +379,11 @@ export const styles = StyleSheet.create({
 
     loadingContainer: {
         display: "flex",
-        flexDirection:"row",
-        height: 140
+        flexDirection:"column",
+        height: 140,
+        alignItems: "center",
+        color: "#b3b3b3ff",
+        fontWeight: "bold"
     },
 
     loading: {
