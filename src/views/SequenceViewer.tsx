@@ -7,6 +7,7 @@ import axios from "axios";
 import { JsonConvert } from "json2typescript";
 import { Alignment } from "../models/Alignment";
 import { AlignmentItem } from "src/models/AlignmentItem";
+import {CubeGrid} from 'better-react-spinkit'
 
 interface ISequenceViewerProps {
     id: string
@@ -38,12 +39,28 @@ class SequenceViewer extends React.Component<ISequenceViewerProps,SequenceViewer
     }
 
     public render(){
+
+        let body;
+        
+        if(this.state.status === RequestState.LOADING){
+            body = this.renderLoading()
+        }else{
+            body = this.renderMSA()
+        }
+
         return (
             <div id="sequence_viewer" style={{marginTop:25}} >
                 <div id="title" className={css(CommonStyles.sectionTitle)} >
                     Interactive Sequence View
                 </div>
-                <div id="msa_container" className={css(styles.msa_container)}  >
+                {body}
+            </div>
+        )
+    }
+
+    private renderMSA = () => {
+        return (
+            <div id="msa_container" className={css(styles.msa_container)}  >
                     <div id="labels" className={css(styles.labels)} >
                         <div id="ruler_space" className={css(styles.rulerSpace)} >
 
@@ -58,8 +75,19 @@ class SequenceViewer extends React.Component<ISequenceViewerProps,SequenceViewer
                         {this.state.data.map(this.buildSequence)}
                         
                     </div>
-                </div>
             </div>
+        )
+    }
+
+    private renderLoading = () => {
+        return (
+            <div className={css(styles.loadingContainer)} >
+                <div className={css(styles.loading)} >
+                    <CubeGrid color="#329CDA"
+                        size={40}
+                    />
+                </div>
+            </div>        
         )
     }
 
@@ -347,7 +375,21 @@ export const styles = StyleSheet.create({
             filter: "brightness(80%)",
             color: "#ffffff"
         },
-    }
+    },
+
+    loadingContainer: {
+        display: "flex",
+        flexDirection:"row",
+        height: 140
+    },
+
+    loading: {
+        alignSelf: "center",
+        marginTop: "auto",
+        marginBottom: "auto",
+        marginLeft: "auto",
+        marginRight: "auto"
+    },
 
 
 })

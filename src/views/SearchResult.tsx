@@ -70,7 +70,7 @@ export class SearchResultView extends React.Component<ISearchResultsProps,Search
             <div className={css(styles.loading)} >
                  <CubeGrid color="#329CDA"
                        size={60}
-                       />
+                 />
             </div>
         )
     }
