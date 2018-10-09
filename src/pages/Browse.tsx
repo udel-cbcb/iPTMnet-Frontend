@@ -753,15 +753,15 @@ const styles = StyleSheet.create({
       marginLeft: "auto",
       textAlign: "center",
       fontWeight: "bold",
-      backgroundColor: "#fcfcfc",
-      color: "#606060ff",
+      backgroundColor: "#329CDA",
+      color: "#fbfbfb",
       borderStyle: "solid",
       borderRadius: 50,
       borderWidth: 1,
       borderColor: "#efefef",
       ":hover": {
           cursor: "pointer",
-          backgroundColor: "#329CDA",
+          backgroundColor: "#2594d7ff",
           color: "#fbfbfb"
       },
       ":focus": {
