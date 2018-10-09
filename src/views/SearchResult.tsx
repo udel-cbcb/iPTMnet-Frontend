@@ -91,9 +91,9 @@ export class SearchResultView extends React.Component<ISearchResultsProps,Search
 
     private renderHeader() {
         return (
-          <div className={css(styles.searchResultRow,styles.bold)} >
+          <div className={css(styles.searchResultRow,styles.searchResultHeader)} >
                      <div className={css(styles.iptm_id)} >
-                        <input type="checkbox" style={{marginLeft: 10,marginRight: 10}}  />
+                        <input type="checkbox" style={{marginLeft: 10,marginRight: 10}} onClick={this.onSelectAllIDClicked}  />
                         iPTM ID
                      </div>
 
@@ -128,12 +128,11 @@ export class SearchResultView extends React.Component<ISearchResultsProps,Search
                      <div className={css(styles.isoforms)} >
                         Isoforms
                      </div>
-
           </div>
         )
     }
     
-    private renderRow(searchResult: SearchResult) {
+    private renderRow = (searchResult: SearchResult) => {
 
         const id_link = `https://research.bioinformatics.udel.edu/iptmnet/entry/${searchResult.iptm_id}/`
         const ipro_link = `http://pir.georgetown.edu/cgi-bin/ipcEntry?id=${searchResult.iptm_id}`
@@ -168,10 +167,25 @@ export class SearchResultView extends React.Component<ISearchResultsProps,Search
             )
         }
 
+        let ptmppi_role;
+        if(searchResult.ptm_dependent_ppi_role){
+            ptmppi_role = (
+                <a href={enz_link} className={css(styles.sites_link)}> {searchResult.ptm_dependent_ppi_num} interactants </a>
+            )
+        }else{
+            ptmppi_role = (
+                <div>
+
+                </div>
+            )
+        }
+
+        const is_checked = this.state.selectedIDs.indexOf(searchResult.iptm_id) > -1
+
         return (
           <div className={css(styles.searchResultRow)} >
                      <div className={css(styles.iptm_id)} >
-                        <input type="checkbox" style={{marginLeft: 10,marginRight: 10}}  />
+                        <input type="checkbox" style={{marginLeft: 10,marginRight: 10}} checked={is_checked} onClick={this.onIDClicked(searchResult.iptm_id)} />
                         <div>
                             <a href={id_link} target="_blank" className={css(styles.iptm_id_link)} >iPTM:{searchResult.iptm_id}/ uniprot_ac</a>
                             <div className={css(styles.iptm_id_decorations)}>
@@ -210,7 +224,7 @@ export class SearchResultView extends React.Component<ISearchResultsProps,Search
                      </div>
                      
                      <div className={css(styles.ptm_dependent_ppi)} >
-                          PTM-dependent PPI
+                        {ptmppi_role}
                      </div>
                      
                      <div className={css(styles.sites)} >
@@ -245,6 +259,31 @@ export class SearchResultView extends React.Component<ISearchResultsProps,Search
         });
     }
 
+    private onSelectAllIDClicked = (event: any) => {
+        const ids: string[] = []
+        if(event.target.checked){
+            this.state.data.searchResults.forEach((result) => {
+                ids.push(result.iptm_id)
+            })
+        }                
+        const newState = {...this.state,selectedIDs: ids}
+        this.setState(newState)
+    }
+
+    private onIDClicked = (id: string) => (event: any) => {
+        const ids = this.state.selectedIDs
+        if(event.target.checked){
+            ids.push(id)
+        }else{
+            const index = ids.indexOf(id, 0);
+            if (index > -1) {
+                ids.splice(index, 1);
+            }
+        }                
+        const newState = {...this.state,selectedIDs: ids}
+        this.setState(newState)
+    }
+
 }
 
 const styles = StyleSheet.create({
@@ -252,6 +291,11 @@ const styles = StyleSheet.create({
         alignSelf: "center",
         marginTop: "auto",
         marginBottom: "auto"
+    },
+
+    searchResultHeader: {
+        backgroundColor: "#f6f6f6",
+        fontWeight: "bold"
     },
 
     searchResultRow: {
@@ -262,7 +306,7 @@ const styles = StyleSheet.create({
         paddingBottom: 10,
         fontSize: "0.9em",
         ":hover": {
-          backgroundColor: "#ededed"
+          backgroundColor: "#f6f6f6"
         }
     },
 
