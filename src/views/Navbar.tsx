@@ -23,7 +23,7 @@ class Navbar extends React.Component {
                 <div id="seperator" className={css(styles.seperator)} />         
                 
                 <Link id="nav_stats" to="/statistics" className={css(styles.navbarItem)} >
-                    Stats
+                    Statistics
                 </Link>
                 
                 <div id="seperator" className={css(styles.seperator)} />
