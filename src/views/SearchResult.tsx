@@ -8,6 +8,7 @@ import SearchResult from "src/models/SearchResult";
 import { SearchResultData } from "src/models/SearchResultData";
 import {CubeGrid} from 'better-react-spinkit'
 
+
 interface ISearchResultsProps {
     url: string
 }
@@ -133,11 +134,52 @@ export class SearchResultView extends React.Component<ISearchResultsProps,Search
     }
     
     private renderRow(searchResult: SearchResult) {
+
+        const id_link = `https://research.bioinformatics.udel.edu/iptmnet/entry/${searchResult.iptm_id}/`
+        const ipro_link = `http://pir.georgetown.edu/cgi-bin/ipcEntry?id=${searchResult.iptm_id}`
+        const uniprot_link = `http://www.uniprot.org/uniprot/${searchResult.iptm_id}`
+        const pro_link = `http://proteininformationresource.org/cgi-bin/pro/entry_pro?id=PR:${searchResult.iptm_id}`
+        const sub_link =  `https://research.bioinformatics.udel.edu/iptmnet/entry/${searchResult.iptm_id}/#asSub`
+        const enz_link = `https://research.bioinformatics.udel.edu/iptmnet/entry/${searchResult.iptm_id}/#asSub`
+
+        let enzyme_role;
+        if(searchResult.enzyme_role){
+            enzyme_role = (
+                <a href={enz_link} className={css(styles.sites_link)}> {searchResult.enzyme_num} substrates </a>
+            )
+        }else{
+            enzyme_role = (
+                <div>
+
+                </div>
+            )
+        }
+
+        let substrate_role;
+        if(searchResult.substrate_role){
+            substrate_role = (
+                <a href={enz_link} className={css(styles.sites_link)}> {searchResult.substrate_num} enzymes </a>
+            )
+        }else{
+            substrate_role = (
+                <div>
+
+                </div>
+            )
+        }
+
         return (
           <div className={css(styles.searchResultRow)} >
                      <div className={css(styles.iptm_id)} >
                         <input type="checkbox" style={{marginLeft: 10,marginRight: 10}}  />
-                        {searchResult.iptm_id}
+                        <div>
+                            <a href={id_link} target="_blank" className={css(styles.iptm_id_link)} >iPTM:{searchResult.iptm_id}/ uniprot_ac</a>
+                            <div className={css(styles.iptm_id_decorations)}>
+                                <a href={ipro_link} target="_blank" className={css(styles.PRO_link)} ><img src="images/ipc_icon.png"></img></a>
+                                <a href={uniprot_link} target="_blank" className={css(styles.PRO_link)} ><img src="images/sp_icon.png"></img></a>
+                                <a href={pro_link} target="_blank" className={css(styles.PRO_link)} >PRO</a>
+                            </div>
+                        </div>
                      </div>
 
                      <div className={css(styles.protein_name)} >
@@ -145,19 +187,26 @@ export class SearchResultView extends React.Component<ISearchResultsProps,Search
                      </div>
                      
                      <div className={css(styles.gene_name)} >
-                        {searchResult.gene_name}
+                        <div>
+                            Name: {searchResult.gene_name}  
+                        </div>
+                        <div>
+                            Synonyms: {searchResult.synonyms.join(",")}
+                        </div>
+
                      </div>
                      
                      <div className={css(styles.organism)} >
-                        {searchResult.organism.common_name}
+                        <div>{searchResult.organism.species}</div>
+                        <div>({searchResult.organism.common_name})</div>                        
                      </div>
                      
                      <div className={css(styles.substrate_role)} >
-                        {searchResult.substrate_role}
+                        {substrate_role}
                      </div>
                      
                      <div className={css(styles.enzyme_role)} >
-                        {searchResult.enzyme_role}
+                        {enzyme_role}
                      </div>
                      
                      <div className={css(styles.ptm_dependent_ppi)} >
@@ -165,11 +214,11 @@ export class SearchResultView extends React.Component<ISearchResultsProps,Search
                      </div>
                      
                      <div className={css(styles.sites)} >
-                        {searchResult.sites}
+                        <a href={sub_link} className={css(styles.sites_link)}> {searchResult.sites}</a>
                      </div>
                      
                      <div className={css(styles.isoforms)} >
-                        {searchResult.isoforms}
+                        <a href={sub_link} className={css(styles.isoform_link)}>{searchResult.isoforms}</a>
                      </div>
 
           </div>
@@ -222,9 +271,40 @@ const styles = StyleSheet.create({
     },
   
     iptm_id: {
-    display: "flex",
-    flexDirection: "row",
-    flex: 2 
+        display: "flex",
+        flexDirection: "row",
+        flex: 2.5 
+    },
+
+    iptm_id_link: {
+        fontWeight: "bold",
+        color: "#428bca",
+        ":link": {
+            textDecoration: "none"    
+        },
+        ":hover": {
+            textDecoration: "underline"
+        }
+    },
+
+    iptm_id_decorations: {
+        display: "flex",
+        flexDirection: "row",
+        alignItems: "center",
+        marginTop: 5
+    },
+
+    PRO_link: {
+        color: "green",
+        textAlign: "center",
+        fontSize: "0.8em",
+        marginLeft: 5,
+        ":link": {
+            textDecoration: "none"
+        },
+        ":hover": {
+            backgroundColor: "lightgray",
+        }
     },
 
     protein_name: {
@@ -240,9 +320,15 @@ const styles = StyleSheet.create({
     },
 
     organism: {
-    flex: 1.5,
-    marginRight: "20",
-    paddingLeft: "5"
+        flex: 1.5,
+        marginRight: "20",
+        paddingLeft: "5"
+    },
+
+    organism_names: {
+        display: "flex",
+        flexDirection: "column",
+        alignItems: "center"
     },
 
     substrate_role: {
@@ -262,13 +348,37 @@ const styles = StyleSheet.create({
     },
 
     sites: {
-    flex: 0.5,
-    marginRight: 20,
+        flex: 0.5,
+        marginRight: 20,
+    },
+
+    sites_link: {
+        color: "#428bca",
+        ":link" : {
+            color: "#428bca",
+            textDecoration: "none"
+        },
+        ":visited" : {
+            color: "#428bca",
+            textDecoration: "none"
+        }
     },
 
     isoforms: {
-    flex: 0.5,
-    marginRight: 20,
+        flex: 0.5,
+        marginRight: 20,
+    },
+
+    isoform_link: {
+        color: "#428bca",
+        ":link" : {
+            color: "#428bca",
+            textDecoration: "none"
+        },
+        ":visited" : {
+            color: "#428bca",
+            textDecoration: "none"
+        }
     },
 
 })
