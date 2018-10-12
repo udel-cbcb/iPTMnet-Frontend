@@ -6,11 +6,14 @@ import axios from "axios";
 import { JsonConvert } from "json2typescript/src/json2typescript/json-convert";
 import SearchResult from "src/models/SearchResult";
 import { SearchResultData } from "src/models/SearchResultData";
-import {CubeGrid} from 'better-react-spinkit'
+import {WanderingCubes} from 'better-react-spinkit'
+import { host_url } from "src/misc/Utils";
 
 
 interface ISearchResultsProps {
-    url: string
+    query: string
+    isBrowse?: boolean,
+    onDataLoaded?: ((count: number) => any);
 }
 
 export class SearchResultView extends React.Component<ISearchResultsProps,SearchResultState> {
@@ -29,7 +32,7 @@ export class SearchResultView extends React.Component<ISearchResultsProps,Search
     }
 
     public async componentWillReceiveProps(nextProps: ISearchResultsProps) {
-        if(nextProps.url !== this.props.url){
+        if(nextProps.query !== this.props.query){
             this.refresh();
         }
     }
@@ -68,11 +71,13 @@ export class SearchResultView extends React.Component<ISearchResultsProps,Search
 
     private renderLoading = () => {
         return (
-            <div className={css(styles.loading)} >
-                 <CubeGrid color="#329CDA"
-                       size={60}
-                 />
-            </div>
+            <div className={css(styles.loadingContainer)} >
+                <div className={css(styles.loading)} >
+                    <WanderingCubes color="#b3b3b3ff" size={40} cubeSize={16} duration="2s"
+                    />
+                </div>
+                Loading results...
+            </div>        
         )
     }
 
@@ -183,14 +188,14 @@ export class SearchResultView extends React.Component<ISearchResultsProps,Search
         const is_checked = this.state.selectedIDs.indexOf(searchResult.iptm_id) > -1
 
         return (
-          <div className={css(styles.searchResultRow)} >
+          <div className={css(styles.searchResultRow)} key={searchResult.iptm_id} >
                      <div className={css(styles.iptm_id)} >
                         <input type="checkbox" style={{marginLeft: 10,marginRight: 10}} checked={is_checked} onClick={this.onIDClicked(searchResult.iptm_id)} />
                         <div>
                             <a href={id_link} target="_blank" className={css(styles.iptm_id_link)} >iPTM:{searchResult.iptm_id}/ uniprot_ac</a>
                             <div className={css(styles.iptm_id_decorations)}>
-                                <a href={ipro_link} target="_blank" className={css(styles.PRO_link)} ><img src="images/ipc_icon.png"></img></a>
-                                <a href={uniprot_link} target="_blank" className={css(styles.PRO_link)} ><img src="images/sp_icon.png"></img></a>
+                                <a href={ipro_link} target="_blank" className={css(styles.PRO_link)} ><img src="/images/ipc_icon.png"></img></a>
+                                <a href={uniprot_link} target="_blank" className={css(styles.PRO_link)} ><img src="/images/sp_icon.png"></img></a>
                                 <a href={pro_link} target="_blank" className={css(styles.PRO_link)} >PRO</a>
                             </div>
                         </div>
@@ -205,7 +210,7 @@ export class SearchResultView extends React.Component<ISearchResultsProps,Search
                             Name: {searchResult.gene_name}  
                         </div>
                         <div>
-                            Synonyms: {searchResult.synonyms.join(",")}
+                            Synonyms: {searchResult.synonyms.join(", ")}
                         </div>
 
                      </div>
@@ -241,13 +246,23 @@ export class SearchResultView extends React.Component<ISearchResultsProps,Search
 
     private refresh = () => {
         this.setState({...this.state,status: RequestState.LOADING})
-        axios.get(`https://research.bioinformatics.udel.edu/iptmnet/api/browse?term_type=All&role=Enzyme%20or%20Substrate&start_index=0&end_index=28`).then((res)=> {
+        let url;
+        if(this.props.isBrowse !== undefined && this.props.isBrowse){
+            url = `${host_url()}/browse?${this.props.query}`
+        }else{
+            url = `${host_url()}/search?${this.props.query}`
+        }
+        
+        axios.get(url).then((res)=> {
             if(res.status === 200){
                 const jsonConvert: JsonConvert = new JsonConvert();
                 const searchResults = jsonConvert.deserializeArray(res.data,SearchResult);
                 const totalCount = res.headers.count;
                 const searchResultData = new SearchResultData(totalCount,searchResults);
                 const state = {...this.state,status:RequestState.SUCCESS,data:searchResultData}
+                if(this.props.onDataLoaded !== undefined){
+                    this.props.onDataLoaded(totalCount);
+                }
                 this.setState(state);
             }else{
                 const err = res.statusText + ":" + res.data;
@@ -255,6 +270,7 @@ export class SearchResultView extends React.Component<ISearchResultsProps,Search
                 this.setState(state);
             }    
         }).catch((err)=>{
+            console.log(err)
             this.setState({...this.state,status: RequestState.ERROR,error:err.toString()})
         });
     }
@@ -287,6 +303,18 @@ export class SearchResultView extends React.Component<ISearchResultsProps,Search
 }
 
 const styles = StyleSheet.create({
+    loadingContainer: {
+        alignSelf: "center",
+        marginTop: "auto",
+        marginBottom: "auto",
+        display: "flex",
+        flexDirection:"column",
+        height: 140,
+        alignItems: "center",
+        color: "#b3b3b3ff",
+        fontWeight: "bold"
+    },
+
     loading: {
         alignSelf: "center",
         marginTop: "auto",

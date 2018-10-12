@@ -3,24 +3,39 @@ import { css, StyleSheet } from 'aphrodite';
 import Navbar from '../views/Navbar';
 import Footer from 'src/views/Footer';
 import { BrowsePageState } from 'src/redux/states/BrowsePageState';
-import { Role } from 'src/models/Role';
-import axios from "axios";
-import { RequestState } from "../redux/states/RequestState";
-import { JsonConvert } from 'json2typescript/src/json2typescript/json-convert';
-import { SearchResultData } from '../models/SearchResultData';
+import { Role, roleFromString, roleToString } from 'src/models/Role';
 import { SearchResultView } from 'src/views/SearchResult';
-import SearchResult from 'src/models/SearchResult';
 import Pagination from "react-js-pagination";
+import {parse} from "query-string";
 
-class Browse extends React.Component<{},BrowsePageState> {
+interface IBrowseProps {
+    query: string;
+    history: any;
+}
 
-  constructor(props: {}){
-      super(props);
+class Browse extends React.Component<IBrowseProps,BrowsePageState> {
+
+  constructor(props: IBrowseProps){
+      super(props);  
       this.state = new BrowsePageState();
+      this.state = this.updateStateFromProps(this.state,this.props);
   }
 
+  public async componentWillReceiveProps(nextProps: IBrowseProps) {
+     this.setState(this.updateStateFromProps(this.state,nextProps));
+  }
+
+  public updateStateFromProps = (prevState:BrowsePageState, props: IBrowseProps) => {
+    const state = {...prevState,
+        selectedRole: this.extract_role(props.query),
+        start_index: this.extract_start_index(props.query),
+        end_index: this.extract_end_index(props.query)    
+    }
+    return state;
+  }
 
   public render() {
+    const page_indicator_info =  `${this.state.start_index + 1} - ${this.state.end_index} of ${this.state.count} results for in iPTMnet` 
     return (
       <div id="page" className={css(styles.page)} >
         <Navbar/>
@@ -40,18 +55,20 @@ class Browse extends React.Component<{},BrowsePageState> {
           <div id="content" className={css(styles.content)}  >
                 <div id="summary" className={css(styles.summary)} >
                     <div style={{marginRight:"auto"}} >
-                        1 - 20 of 62400 results for in iPTMnet 
+                        {page_indicator_info} 
                     </div>
                     <div id="pagination_container" style={{marginLeft:"auto",marginRight:20}} >
                     <Pagination
-                    activePage={0}
+                    activePage={this.getActivePageNumber()}
                     itemsCountPerPage={28}
-                    totalItemsCount={65000}
+                    totalItemsCount={this.state.count}
                     pageRangeDisplayed={5}
-                    onChange={this.onSearchPageChange}
+                    onChange={this.onPageChange}
                     innerClass={css(styles.pagination_ul)}
                     itemClass={css(styles.pagination_li)}
                     linkClass={css(styles.pagination_a)}
+                    activeClass={css(styles.pagination_active_li)}
+                    activeLinkClass={css(styles.pagination_active_a)}
                     prevPageText='prev'
                     nextPageText='next'
                     firstPageText='first'
@@ -59,7 +76,7 @@ class Browse extends React.Component<{},BrowsePageState> {
                     />
                     </div>
                 </div>
-                <SearchResultView url={this.state.url}/>
+                <SearchResultView query={this.props.query} isBrowse={true} onDataLoaded={this.onDataLoaded} />
           </div>        
           
         </div>
@@ -73,10 +90,17 @@ class Browse extends React.Component<{},BrowsePageState> {
     );
   }
 
-  private onSearchPageChange = (pageNumber: number) => {
-    console.log("pageNumber: " + pageNumber)
+  private onDataLoaded = (data_count: number) => {
+        this.setState({...this.state,count: data_count})
   }
-  
+
+  private getActivePageNumber = () => {
+    console.log(this.state.end_index);  
+    const active_page = this.state.end_index/28  
+    console.log(active_page);
+    return active_page;
+  }
+      
   private renderPTMSelection = () => {
       return (
           <div id="div_ptm" className={css(styles.ptm)} >
@@ -255,7 +279,7 @@ class Browse extends React.Component<{},BrowsePageState> {
                                     name="role" 
                                     value="enzyme_or_substrate"
                                     className={css(styles.roleRadioButton)}
-                                    checked={this.isRoleSelected(Role.ENZYME_OR_SUBSTRATE)}
+                                    checked={false}
                                     onClick={this.selectRole(Role.ENZYME_OR_SUBSTRATE)}
                                     />
                                     All entries
@@ -266,7 +290,7 @@ class Browse extends React.Component<{},BrowsePageState> {
                                     name="role" 
                                     value="enzyme"
                                     className={css(styles.roleRadioButton)}
-                                    checked={this.isRoleSelected(Role.ENYZME)}
+                                    checked={false}
                                     onClick={this.selectRole(Role.ENYZME)}
                                     />
                                     Overlapping PTMs
@@ -277,7 +301,7 @@ class Browse extends React.Component<{},BrowsePageState> {
                                     name="role" 
                                     value="substrate"
                                     className={css(styles.roleRadioButton)}
-                                    checked={this.isRoleSelected(Role.SUBSTRATE)}
+                                    checked={false}
                                     onClick={this.selectRole(Role.SUBSTRATE)}
                                     />
                                     PTM Dependent Interactions
@@ -465,29 +489,50 @@ class Browse extends React.Component<{},BrowsePageState> {
     this.setState(newState)
   }
 
+  private onPageChange = (pageNumber: number) => {
+    const start_index = (pageNumber - 1) * 28 ;
+    const end_index = start_index + 28;
+    const query = this.build_query(this.state.selectedRole,start_index,end_index);
+    const url = query;
+    this.props.history.push(url);
+}
+
   private onBrowseClick = () => {
-    this.refreshPage(this.state)
+    const query = this.build_query(this.state.selectedRole,this.state.start_index,this.state.end_index);
+    this.props.history.push(query);
   }
 
-  private refreshPage = (prevState: BrowsePageState) => {
-    this.setState({...prevState,status: RequestState.LOADING})
-    axios.get(`https://research.bioinformatics.udel.edu/iptmnet/api/browse?term_type=All&role=Enzyme%20or%20Substrate&start_index=0&end_index=100`).then((res)=> {
-        if(res.status === 200){
-            const jsonConvert: JsonConvert = new JsonConvert();
-            const searchResults = jsonConvert.deserializeArray(res.data,SearchResult);
-            const totalCount = res.headers.count;
-            const searchResultData = new SearchResultData(totalCount,searchResults);
-            const state = {...this.state,status:RequestState.SUCCESS,data:searchResultData}
-            this.setState(state);
-        }else{
-            const err = res.statusText + ":" + res.data;
-            const state = {...this.state,status:RequestState.ERROR,error: err}
-            this.setState(state);
-        }    
-    }).catch((err)=>{
-        this.setState({...this.state,status: RequestState.ERROR,error:err.toString()})
-    });  
+  private build_query(role: Role,start_index: number, end_index: number) {
+      const role_str = roleToString(role);
+      return `term_type=All&role=${role_str}&start_index=${start_index}&end_index=${end_index}`;
   }
+
+  private extract_start_index(query: string): number {
+    const parsed = parse(query);
+    const value = Number(parsed.start_index);
+    if(isNaN(value)) {
+        return 0
+    }else{
+        return value;
+    }   
+  }
+
+  private extract_end_index(query: string): number {
+    const parsed = parse(query);
+    const value = Number(parsed.end_index);
+    if(isNaN(value)) {
+        return 0
+    }else{
+        return value;
+    }    
+  }
+
+  private extract_role(query: string): Role {
+    const parsed = parse(query);
+    const role = roleFromString(String(parsed.role));  
+    return role;
+  }
+  
 }
 
 
@@ -796,6 +841,17 @@ const styles = StyleSheet.create({
     },
   },
 
+  pagination_active_a : {
+    ":link": {
+      textDecoration: "none",
+      color: "white"
+    },
+    ":hover": {
+        textDecoration: "none",
+        color: "black"
+    },
+  },
+
   pagination_li: {
     display: "inline",
     paddingTop: "5px",
@@ -810,7 +866,26 @@ const styles = StyleSheet.create({
         backgroundColor: "#e6e6e6ff",
         color: "#ffffff"
     },
+  },
+
+  pagination_active_li: {
+    display: "inline",
+    backgroundColor: "#329CDA",
+    color: "white",
+    paddingTop: "5px",
+    paddingLeft: "10px",
+    paddingRight: "10px",
+    paddingBottom: "5px",
+    borderRightStyle: "solid",
+    borderRightWidth: "1px",
+    borderColor: "#c4c4c4",
+    ":hover": {
+        cursor: "pointer",
+        backgroundColor: "#e6e6e6ff",
+        color: "#ffffff"
+    },
   }
+
 
   
 });

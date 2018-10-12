@@ -4,6 +4,7 @@
   "private": true,
   "dependencies": {
     "@types/mark.js": "^8.11.1",
+    "@types/query-string": "^6.1.1",
     "@types/react-js-pagination": "^3.0.1",
     "@types/react-redux": "^6.0.6",
     "@types/react-router-dom": "^4.3.0",
@@ -15,6 +16,7 @@
     "intersperse": "^1.0.0",
     "json2typescript": "^1.0.5",
     "mark.js": "^8.11.1",
+    "query-string": "^6.2.0",
     "react": "^16.4.2",
     "react-dom": "^16.4.2",
     "react-js-pagination": "^3.0.2",

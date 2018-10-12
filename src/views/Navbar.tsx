@@ -16,7 +16,7 @@ class Navbar extends React.Component {
 
                 <div id="seperator" className={css(styles.seperator)} />
 
-                <Link id="nav_browse" to="/browse" className={css(styles.navbarItem)} >
+                <Link id="nav_browse" to="/browse/term_type=All&role=Enzyme%20or%20Substrate&start_index=0&end_index=28" className={css(styles.navbarItem)} >
                     Browse
                 </Link>
 

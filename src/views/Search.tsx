@@ -5,7 +5,7 @@ import { StyleSheet, css } from 'aphrodite';
 import { State } from "../redux/state";
 import { Dispatch, bindActionCreators } from "redux";
 import { connect } from "react-redux";
-import { Role, toStringLiteral } from "../models/Role";
+import { Role, roleToString } from "../models/Role";
 import { withRouter } from 'react-router-dom';
 import { resetOptions } from "../redux/actions/HomePageActions";
 import store from "../redux/store";
@@ -102,7 +102,7 @@ class Search extends React.Component<ISearchProps,ISearchState> {
             organisms_string = "&" + this.props.selectedOrganisms.map(this.buildOrganism);
         }
 
-        return `search/search_term=${this.props.searchTerm}&term_type=All&role=${toStringLiteral(this.props.selectedRole)}${ptm_types_string}${organisms_string}`;
+        return `search/search_term=${this.props.searchTerm}&term_type=All&role=${roleToString(this.props.selectedRole)}${ptm_types_string}${organisms_string}`;
       
     }
 

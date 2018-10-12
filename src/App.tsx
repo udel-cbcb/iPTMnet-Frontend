@@ -17,6 +17,7 @@ import { Store } from 'redux';
 import Entry from './pages/Entry';
 import { SearchResultsConnected } from './pages/SearchResults';
 
+
 class App extends React.Component {
   
   public render() {
@@ -25,7 +26,7 @@ class App extends React.Component {
         <Route path="/" exact={true} component={Home} />
         <Route path="/search/:search_query" exact={true} render={this.buildSearchResults} />
         <Route path="/home" exact={true} component={Home} />
-        <Route path="/browse" exact={true} component={Browse} />
+        <Route path="/browse/:query" exact={true} render={this.buildBrowsePage} />
         <Route path="/statistics" exact={true} component={Statistics} /> 
         <Route path="/api" exact={true} component={Api} /> 
         <Route path="/license" exact={true} component={License} />
@@ -47,6 +48,11 @@ class App extends React.Component {
     const thunkDispatch : ThunkDispatch<Store,void,Action> = store.dispatch;
     thunkDispatch(SearchResultsActions.loadSearchResults(prop.match.params.search_query,0,28));
     return <SearchResultsConnected/>;
+  }
+
+  private buildBrowsePage(prop:RouteComponentProps<any>) {
+    const query = prop.match.params.query;
+    return <Browse query={query} history={prop.history}/>
   }
 
 }
