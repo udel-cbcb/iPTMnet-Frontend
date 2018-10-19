@@ -95,9 +95,7 @@ class Browse extends React.Component<IBrowseProps,BrowsePageState> {
   }
 
   private getActivePageNumber = () => {
-    console.log(this.state.end_index);  
     const active_page = this.state.end_index/28  
-    console.log(active_page);
     return active_page;
   }
       
@@ -318,61 +316,61 @@ class Browse extends React.Component<IBrowseProps,BrowsePageState> {
             <div id="organism_type_selection" className={css(styles.miscTypeSelection)}>
                 <div id="organisms" className={css(styles.column)}>
                   <label id="lbl_metazoa"  >
-                      <input type="checkbox" className={css(styles.checkBox)} checked={this.isPTMSelected("Metazoa")}
-                          onClick={this.onPTMClick("Metazoa")}
+                      <input type="checkbox" className={css(styles.checkBox)} checked={this.isMetazoaSelected()}
+                          onClick={this.onMetazoaClicked()}
                       />
                       Metazoa
                   </label>
 
                   <div id="metazoa_selections" className={css(styles.organismColumn)}  >
                     <label id="lbl_human"  >
-                        <input type="checkbox" className={css(styles.organismCheckBox)} checked={this.isPTMSelected("Metazoa")}
-                            onClick={this.onPTMClick("Metazoa")}
+                        <input type="checkbox" className={css(styles.organismCheckBox)} checked={this.isOrganismSelected(9606)}
+                            onClick={this.onOrganismClicked(9606)}
                         />
                         Human
                     </label>
                     <label id="lbl_cow"  >
-                        <input type="checkbox" className={css(styles.organismCheckBox)} checked={this.isPTMSelected("Metazoa")}
-                            onClick={this.onPTMClick("Metazoa")}
+                        <input type="checkbox" className={css(styles.organismCheckBox)} checked={this.isOrganismSelected(9913)}
+                            onClick={this.onOrganismClicked(9913)}
                         />
                         Cow
                     </label>
                     <label id="lbl_mouse"  >
-                        <input type="checkbox" className={css(styles.organismCheckBox)} checked={this.isPTMSelected("Metazoa")}
-                            onClick={this.onPTMClick("Metazoa")}
+                        <input type="checkbox" className={css(styles.organismCheckBox)} checked={this.isOrganismSelected(10090)}
+                            onClick={this.onOrganismClicked(10090)}
                         />
                         Mouse
                     </label>
                     <label id="lbl_Rat"  >
-                        <input type="checkbox" className={css(styles.organismCheckBox)} checked={this.isPTMSelected("Metazoa")}
-                            onClick={this.onPTMClick("Metazoa")}
+                        <input type="checkbox" className={css(styles.organismCheckBox)} checked={this.isOrganismSelected(10116)}
+                            onClick={this.onOrganismClicked(10116)}
                         />
                         Rat
                     </label>
                     <label id="lbl_chicken"  >
-                        <input type="checkbox" className={css(styles.organismCheckBox)} checked={this.isPTMSelected("Metazoa")}
-                            onClick={this.onPTMClick("Metazoa")}
+                        <input type="checkbox" className={css(styles.organismCheckBox)} checked={this.isOrganismSelected(9031)}
+                            onClick={this.onOrganismClicked(9031)}
                         />
                         Chicken
                     </label>
 
                     <label id="lbl_Zebrafish"  >
-                      <input type="checkbox" className={css(styles.checkBox)} checked={this.isPTMSelected("Fungi")}
-                          onClick={this.onPTMClick("Fungi")}
+                      <input type="checkbox" className={css(styles.checkBox)} checked={this.isOrganismSelected(7955)}
+                          onClick={this.onOrganismClicked(7955)}
                       />
                       Zebrafish
                     </label>
 
                     <label id="lbl_fruitfly"  >
-                        <input type="checkbox" className={css(styles.checkBox)} checked={this.isPTMSelected("Plant")}
-                            onClick={this.onPTMClick("Plant")}
+                        <input type="checkbox" className={css(styles.checkBox)} checked={this.isOrganismSelected(7227)}
+                            onClick={this.onOrganismClicked(7227)}
                         />
                         Fruitfly
                     </label>
 
                     <label id="lbl_c_elegans"  >
-                        <input type="checkbox" className={css(styles.checkBox)} checked={this.isPTMSelected("Plant")}
-                            onClick={this.onPTMClick("Plant")}
+                        <input type="checkbox" className={css(styles.checkBox)} checked={this.isOrganismSelected(6239)}
+                            onClick={this.onOrganismClicked(6239)}
                         />
                         C. elegans
                     </label>  
@@ -380,22 +378,22 @@ class Browse extends React.Component<IBrowseProps,BrowsePageState> {
                   </div>  
 
                   <label id="lbl_fungi"  >
-                      <input type="checkbox" className={css(styles.checkBox)} checked={this.isPTMSelected("Metazoa")}
-                          onClick={this.onPTMClick("Metazoa")}
+                      <input type="checkbox" className={css(styles.checkBox)} checked={this.isFungiSelected()}
+                          onClick={this.onFungiClicked()}
                       />
                       Fungi
                   </label>
 
                   <div id="fungi_selections" className={css(styles.organismColumn)}  >
                     <label id="lbl_bakers_yeast"  >
-                        <input type="checkbox" className={css(styles.organismCheckBox)} checked={this.isPTMSelected("Metazoa")}
-                            onClick={this.onPTMClick("Metazoa")}
+                        <input type="checkbox" className={css(styles.organismCheckBox)} checked={this.isOrganismSelected(4932)}
+                            onClick={this.onOrganismClicked(4932)}
                         />
                         Baker's yeast
                     </label>
                     <label id="lbl_fission_yeast"  >
-                        <input type="checkbox" className={css(styles.organismCheckBox)} checked={this.isPTMSelected("Metazoa")}
-                            onClick={this.onPTMClick("Metazoa")}
+                        <input type="checkbox" className={css(styles.organismCheckBox)} checked={this.isOrganismSelected(4896)}
+                            onClick={this.onOrganismClicked(4896)}
                         />
                         Fission yeast
                     </label>
@@ -403,40 +401,40 @@ class Browse extends React.Component<IBrowseProps,BrowsePageState> {
 
 
                   <label id="lbl_plant"  >
-                      <input type="checkbox" className={css(styles.checkBox)} checked={this.isPTMSelected("Metazoa")}
-                          onClick={this.onPTMClick("Metazoa")}
+                      <input type="checkbox" className={css(styles.checkBox)} checked={this.isPlantSelected()}
+                          onClick={this.onPlantClicked()}
                       />
                       Plant
                   </label>
 
                   <div id="plant_selections" className={css(styles.organismColumn)}  >
                     <label id="lbl_a_thaliana"  >
-                        <input type="checkbox" className={css(styles.organismCheckBox)} checked={this.isPTMSelected("Metazoa")}
-                            onClick={this.onPTMClick("Metazoa")}
+                        <input type="checkbox" className={css(styles.organismCheckBox)} checked={this.isOrganismSelected(3702)}
+                            onClick={this.onOrganismClicked(3702)}
                         />
                         A. thaliana
                     </label>
                     <label id="lbl_maize"  >
-                        <input type="checkbox" className={css(styles.organismCheckBox)} checked={this.isPTMSelected("Metazoa")}
-                            onClick={this.onPTMClick("Metazoa")}
+                        <input type="checkbox" className={css(styles.organismCheckBox)} checked={this.isOrganismSelected(4577)}
+                            onClick={this.onOrganismClicked(4577)}
                         />
                         Maize
                     </label>
                     <label id="lbl_m_truncatula"  >
-                        <input type="checkbox" className={css(styles.organismCheckBox)} checked={this.isPTMSelected("Metazoa")}
-                            onClick={this.onPTMClick("Metazoa")}
+                        <input type="checkbox" className={css(styles.organismCheckBox)} checked={this.isOrganismSelected(3880)}
+                            onClick={this.onOrganismClicked(3880)}
                         />
                         M. truncatula
                     </label>
                     <label id="lbl_rice_japonica"  >
-                        <input type="checkbox" className={css(styles.organismCheckBox)} checked={this.isPTMSelected("Metazoa")}
-                            onClick={this.onPTMClick("Metazoa")}
+                        <input type="checkbox" className={css(styles.organismCheckBox)} checked={this.isOrganismSelected(39947)}
+                            onClick={this.onOrganismClicked(39947)}
                         />
                         Rice (japonica)
                     </label>
                     <label id="lbl_rice_indica"  >
-                        <input type="checkbox" className={css(styles.organismCheckBox)} checked={this.isPTMSelected("Metazoa")}
-                            onClick={this.onPTMClick("Metazoa")}
+                        <input type="checkbox" className={css(styles.organismCheckBox)} checked={this.isOrganismSelected(39946)}
+                            onClick={this.onOrganismClicked(39946)}
                         />
                         Rice (indica)
                     </label>                    
@@ -451,19 +449,41 @@ class Browse extends React.Component<IBrowseProps,BrowsePageState> {
   }
 
   private isPTMSelected = (ptmName: string) => {
-    return false;
+      return this.state.selectedPTMs.indexOf(ptmName) !== -1;
   }
 
   private onPTMAllClick = () => {
-      return false;
+    const newState = {...this.state, selectedPTMs: ["Acetylation",
+                                                    "N-Glycosylation",
+                                                    "O-Glycosylation",
+                                                    "C-Glycosylation",
+                                                    "S-Glycosylation",
+                                                    "Methylation",
+                                                    "Myristoylation",
+                                                    "Phosphorylation",
+                                                    "Sumoylation",
+                                                    "Ubiquitination",
+                                                    "S-Nitrosylation"
+                                                ]}
+    this.setState(newState)  
+    return false;
   }
 
   private onPTMClick = (ptmName: string) => () => {
-      console.log(ptmName);
+      const ptmsCopy = this.state.selectedPTMs.slice();
+      const index = ptmsCopy.indexOf(ptmName);
+      if(index !== -1){
+        ptmsCopy.splice(index,1)
+      }else{
+        ptmsCopy.push(ptmName)
+      }
+      const newState = {...this.state, selectedPTMs: ptmsCopy}
+      this.setState(newState)
   }
 
   private onPTMNoneClick = () => {
-      console.log("clicked");   
+    const newState = {...this.state, selectedPTMs: []}
+    this.setState(newState)   
   }
   
   private onPTMDropdownClick = () => {
@@ -488,24 +508,154 @@ class Browse extends React.Component<IBrowseProps,BrowsePageState> {
     const newState = {...this.state, selectedRole: role}
     this.setState(newState)
   }
+  
+  private onMetazoaClicked = () => () => {
+      if(this.isMetazoaSelected()){
+        const organismsCopy = this.state.selectedOrganisms.slice() 
+        this.removeIfExist(organismsCopy,[9606,9913,10090,10116,9031,7955,7227,6239])
+        const newState = {...this.state, selectedOrganisms: organismsCopy}
+        this.setState(newState)
+      }else {
+        const organismsCopy = this.state.selectedOrganisms.slice() 
+        this.insertIfNotExist(organismsCopy,[9606,9913,10090,10116,9031,7955,7227,6239])
+        const newState = {...this.state, selectedOrganisms: organismsCopy}
+        this.setState(newState)
+      }
+    
+  }
+
+  private isMetazoaSelected = () => {
+    const codes: number[] = [9606,9913,10090,10116,9031,7955,7227,6239]
+    for(const code of codes) {
+        const index = this.state.selectedOrganisms.indexOf(+code);
+        if( index === -1 ){
+             return false;
+        }
+    }
+    return true;
+
+  }
+
+  private isFungiSelected = () => {
+    const codes: number[] = [4932,4896]
+    for(const code of codes) {
+        const index = this.state.selectedOrganisms.indexOf(+code);
+        if( index === -1 ){
+             return false;
+        }
+    }
+    return true;
+  }
+
+  private onFungiClicked = () => () => {
+      if(this.isFungiSelected()){
+        const organismsCopy = this.state.selectedOrganisms.slice() 
+        this.removeIfExist(organismsCopy,[4932,4896])
+        const newState = {...this.state, selectedOrganisms: organismsCopy}
+        this.setState(newState)
+      }else{
+        const organismsCopy = this.state.selectedOrganisms.slice() 
+        this.insertIfNotExist(organismsCopy,[4932,4896])
+        const newState = {...this.state, selectedOrganisms: organismsCopy}
+        this.setState(newState)
+      } 
+  }
+
+  private isPlantSelected = () => {
+    const codes: number[] = [3702,4577,3880,39947,39946]
+    for(const code of codes) {
+        const index = this.state.selectedOrganisms.indexOf(+code);
+        if( index === -1 ){
+             return false;
+        }
+    }
+    return true;
+  }
+
+  private onPlantClicked = () => () => {
+    if(this.isPlantSelected()){
+      const organismsCopy = this.state.selectedOrganisms.slice() 
+      this.removeIfExist(organismsCopy,[3702,4577,3880,39947,39946])
+      const newState = {...this.state, selectedOrganisms: organismsCopy}
+      this.setState(newState)
+    }else{
+      const organismsCopy = this.state.selectedOrganisms.slice() 
+      this.insertIfNotExist(organismsCopy,[3702,4577,3880,39947,39946])
+      const newState = {...this.state, selectedOrganisms: organismsCopy}
+      this.setState(newState)
+    } 
+  }
+
+
+  private isOrganismSelected = (taxon_code: number) => {
+    return this.state.selectedOrganisms.indexOf(taxon_code) !== -1;
+  }
+
+  private onOrganismClicked = (taxon_code: number) => () => {
+        const organismsCopy = this.state.selectedOrganisms.slice();
+        const index = organismsCopy.indexOf(taxon_code);
+        if(index !== -1){
+            organismsCopy.splice(index,1)
+        }else{
+            organismsCopy.push(taxon_code)
+        }
+        const newState = {...this.state, selectedOrganisms: organismsCopy}
+        this.setState(newState)  
+  }
+
+  private insertIfNotExist = (selectedOrganisms: number[], organisms: number[]) => {
+      for(const organism of organisms) {
+         const index = selectedOrganisms.indexOf(organism);
+         if(index === -1){
+            selectedOrganisms.push(organism)
+         }
+      }
+  }
+
+  private removeIfExist = (selectedOrganisms: number[], organisms: number[]) => {
+    for(const organism of organisms) {
+       const index = selectedOrganisms.indexOf(organism);
+       if(index !== -1){
+          selectedOrganisms.splice(index,1)
+       }
+    }
+}
 
   private onPageChange = (pageNumber: number) => {
     const start_index = (pageNumber - 1) * 28 ;
     const end_index = start_index + 28;
-    const query = this.build_query(this.state.selectedRole,start_index,end_index);
+    const query = this.build_query(this.state.selectedRole,start_index,end_index,this.state.selectedPTMs,this.state.selectedOrganisms);
     const url = query;
     this.props.history.push(url);
 }
 
   private onBrowseClick = () => {
-    const query = this.build_query(this.state.selectedRole,this.state.start_index,this.state.end_index);
+    const query = this.build_query(this.state.selectedRole,this.state.start_index,this.state.end_index,this.state.selectedPTMs,this.state.selectedOrganisms);
     this.props.history.push(query);
   }
 
-  private build_query(role: Role,start_index: number, end_index: number) {
+  private build_query(role: Role,start_index: number, end_index: number, ptms: string[], organisms: number[]) {
       const role_str = roleToString(role);
-      return `term_type=All&role=${role_str}&start_index=${start_index}&end_index=${end_index}`;
+      const organism_str = this.organismsToString(organisms);
+      const ptm_str = this.ptmsToString(ptms);
+      return `term_type=All&role=${role_str}${ptm_str}${organism_str}&start_index=${start_index}&end_index=${end_index}`;
   }
+
+  private organismsToString(organisms: number[]) {
+      let query_str = "";
+      for (const organism of organisms) {
+         query_str = query_str + `&organism=${organism}`
+      }
+      return query_str;
+  }
+
+  private ptmsToString(ptms: string[]) {
+    let query_str = "";
+    for (const ptm of ptms) {
+       query_str = query_str + `&ptm_type=${ptm}`
+    }
+    return query_str;
+}
 
   private extract_start_index(query: string): number {
     const parsed = parse(query);

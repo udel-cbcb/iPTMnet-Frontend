@@ -28,12 +28,13 @@ export class SearchResultView extends React.Component<ISearchResultsProps,Search
     }
 
     public async componentDidMount() {
-        this.refresh();
+        this.refresh(this.props.query);
     }
 
     public async componentWillReceiveProps(nextProps: ISearchResultsProps) {
+        console.log(nextProps.query)
         if(nextProps.query !== this.props.query){
-            this.refresh();
+            this.refresh(nextProps.query)
         }
     }
 
@@ -244,13 +245,13 @@ export class SearchResultView extends React.Component<ISearchResultsProps,Search
         )
     }
 
-    private refresh = () => {
+    private refresh = (query: string) => {
         this.setState({...this.state,status: RequestState.LOADING})
         let url;
         if(this.props.isBrowse !== undefined && this.props.isBrowse){
-            url = `${host_url()}/browse?${this.props.query}`
+            url = `${host_url()}/browse?${query}`
         }else{
-            url = `${host_url()}/search?${this.props.query}`
+            url = `${host_url()}/search?${query}`
         }
         
         axios.get(url).then((res)=> {
