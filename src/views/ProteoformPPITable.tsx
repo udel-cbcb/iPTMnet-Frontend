@@ -115,8 +115,15 @@ export class ProteoformPPITable extends React.Component<IProteoformPPIProps,Prot
     }
 
     private renderRow = (proteoformPPI: ProteoformPPI, index: number) => {
+        let backgroundColor;
+        if((index + 1)%2 === 0){
+            backgroundColor = styles.evenRowBackground
+        }else{
+            backgroundColor = styles.oddRowBackground
+        }
+
         return (
-            <div id="table_row" className={css(styles.row)} key={index} >
+            <div id="table_row" className={css(styles.row,backgroundColor)} key={index} >
                 <div id="protein_1" className={css(styles.Protein1)} >
                     <input type="checkbox" style={{marginRight: 10}}/>
                     {this.buildProtein(proteoformPPI.protein_1)}
@@ -263,7 +270,18 @@ const styles = StyleSheet.create({
         flexDirection: "row",
         paddingTop: 10,
         paddingBottom: 10,
-        fontSize: "0.90em"
+        fontSize: "0.90em",
+        ":hover":{
+            backgroundColor: "#f4f4f4"
+        }
+    },
+
+    evenRowBackground: {
+        backgroundColor: "#ffffff"
+    },
+
+    oddRowBackground: {
+        backgroundColor: "#f9f9f9ff"
     },
 
     Protein1: {

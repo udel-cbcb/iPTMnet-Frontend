@@ -76,7 +76,7 @@ export class ProteoformTable extends React.Component<IProteoformTableProps,Prote
     }
 
     private renderTable = (proteoforms: Proteoform[]) => {
-        
+                
         let filteredProteoforms = []
         if(this.state.searchTerm.trim().length > 0){
             filteredProteoforms = proteoforms.filter(this.filterProteoforms(this.state.searchTerm))
@@ -113,8 +113,14 @@ export class ProteoformTable extends React.Component<IProteoformTableProps,Prote
     }
 
     private renderRow = (proteoform: Proteoform, index: number) => {
+        let backgroundColor;
+        if((index + 1)%2 === 0){
+            backgroundColor = styles.evenRowBackground
+        }else{
+            backgroundColor = styles.oddRowBackground
+        }
         return (
-            <div id="table_row" className={css(styles.row)} key={index} >
+            <div id="table_row" className={css(styles.row,backgroundColor)} key={index} >
                 <div id="ID" className={css(styles.ID)} >
                     <input type="checkbox" style={{marginRight: 10}} />
                     {this.buildProteoformID(proteoform.pro_id)}
@@ -254,7 +260,18 @@ const styles = StyleSheet.create({
         flexDirection: "row",
         paddingTop: 10,
         paddingBottom: 10,
-        fontSize: "0.90em"
+        fontSize: "0.90em",
+        ":hover":{
+            backgroundColor: "#f4f4f4"
+        }
+    },
+
+    evenRowBackground: {
+        backgroundColor: "#ffffff"
+    },
+
+    oddRowBackground: {
+        backgroundColor: "#f9f9f9ff"
     },
 
     ID: {

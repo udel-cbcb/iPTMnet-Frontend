@@ -137,8 +137,14 @@ export class SubstrateTable extends React.Component<ISubstrateTableProps,Substra
     }
 
     private renderRow = (substrate: Substrate, index: number) => {
+        let backgroundColor;
+        if((index + 1)%2 === 0){
+            backgroundColor = styles.evenRowBackground
+        }else{
+            backgroundColor = styles.oddRowBackground
+        }
         return (
-            <div id="table_row" className={css(styles.row)} key={index} >
+            <div id="table_row" className={css(styles.row,backgroundColor)} key={index} >
                  <div id="Site" className={css(styles.Site)} >
                     <div style={{marginLeft: 0}} >
                         {substrate.site}
@@ -341,6 +347,14 @@ const styles = StyleSheet.create({
         ":hover":{
             backgroundColor: "#f4f4f4"
         }
+    },
+
+    evenRowBackground: {
+        backgroundColor: "#ffffff"
+    },
+
+    oddRowBackground: {
+        backgroundColor: "#f9f9f9ff"
     },
 
     Site: {

@@ -200,7 +200,7 @@ export class SearchResultView extends React.Component<ISearchResultsProps,Search
                      <div className={css(styles.iptm_id)} >
                         <input type="checkbox" style={{marginLeft: 10,marginRight: 10}} checked={is_checked} onClick={this.onIDClicked(searchResult.iptm_id)} />
                         <div>
-                            <a href={id_link} target="_blank" className={css(styles.iptm_id_link)} >iPTM:{searchResult.iptm_id}/ uniprot_ac</a>
+                            <a href={id_link} target="_blank" className={css(styles.iptm_id_link)} >iPTM:{searchResult.iptm_id}/ {searchResult.uniprot_ac}</a>
                             <div className={css(styles.iptm_id_decorations)}>
                                 <a href={ipro_link} target="_blank" className={css(styles.PRO_link)} ><img src="/images/ipc_icon.png"></img></a>
                                 <a href={uniprot_link} target="_blank" className={css(styles.PRO_link)} ><img src="/images/sp_icon.png"></img></a>
@@ -340,7 +340,7 @@ const styles = StyleSheet.create({
         alignItems: "center",
         paddingTop: 10,
         paddingBottom: 10,
-        fontSize: "0.9em",
+        fontSize: "0.8em",
         ":hover": {
           backgroundColor: "#f6f6f6"
         }
