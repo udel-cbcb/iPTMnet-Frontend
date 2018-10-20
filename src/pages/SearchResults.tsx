@@ -1,229 +1,228 @@
 import * as React from "react";
 import { css, minify, StyleSheet } from 'aphrodite';
 import Navbar from "../views/Navbar";
-import {CommonStyles} from "../misc/CommonStyles"
 import Footer from "../views/Footer";
 import Pagination from "react-js-pagination";
-import { SearchResultState } from "../redux/states/SearchResultState";
 import { State } from "../redux/state";
 import { bindActionCreators, Dispatch } from "redux";
 import { connect } from "react-redux";
-import { RequestState } from "../redux/states/RequestState";
-import SearchResult from "../models/SearchResult";
+import { SearchPageState } from 'src/redux/states/SearchPageState';
+import { SearchResultView } from "src/views/SearchResult";
+import { parse,stringify } from "query-string";
 import { highLight } from "../misc/Utils";
 
 minify(false);
 
 interface ISearchResultsProp{
-  searchTerm: string,
-  searchResults: SearchResultState,
-  selectedPage: number
+  query: string;
+  history: any;
 }
 
-class SearchResults extends React.Component<ISearchResultsProp,{}>  {
+class SearchResults extends React.Component<ISearchResultsProp,SearchPageState>  {
 
     constructor(props: ISearchResultsProp){
       super(props)
+      this.state = new SearchPageState();
+      this.state = this.updateStateFromProps(this.state,this.props);
     }
 
+    public async componentWillReceiveProps(nextProps: ISearchResultsProp) {
+      this.setState(this.updateStateFromProps(this.state,nextProps));
+    }
+ 
+    public updateStateFromProps = (prevState:SearchPageState, props: ISearchResultsProp) => {
+      const state = {...prevState,
+         search_term : this.extract_search_term(props.query),
+         start_index: this.extract_start_index(props.query),
+         end_index: this.extract_end_index(props.query)    
+      }
+     return state;
+    }
+   
+
     public render() {
-        
-        let body;
-        if(this.props.searchResults.status === RequestState.ERROR){
-          body = this.renderError(this.props.searchResults.error)
-        }else if(this.props.searchResults.status === RequestState.LOADING){
-          body = this.renderLoading();
-        }else if(this.props.searchResults.status === RequestState.SUCCESS){
-          body = this.renderSearchResults(this.props.searchResults.data.searchResults,
-                                          this.props.searchResults.data.totalCount,
-                                          this.props.selectedPage,
-                                          this.props.searchTerm);
-        }else{
-          body = (<div>
-            Not asked
-          </div>)
-        }
-
+        const page_indicator_info =  `${this.state.start_index + 1} - ${this.state.end_index} of ${this.state.count} results for ${this.state.search_term} in iPTMnet` 
+        highLight(this.state.search_term,"div_search_table")
         return (
-            <div id="div_page" className={css(CommonStyles.page)} >
-        
-            <div id="div_header" className={css(CommonStyles.header)} >
-              <Navbar/>
+            <div id="page" className={css(styles.page)} >
+            <Navbar/>
+            <div id="body" className={css(styles.body)} >
+                  
+              <div id="content" className={css(styles.content)}  >
+                    <div id="summary" className={css(styles.summary)} >
+                        <div style={{marginRight:"auto"}} >
+                            {page_indicator_info} 
+                        </div>
+                        <div id="pagination_container" style={{marginLeft:"auto",marginRight:20}} >
+                        <Pagination
+                        activePage={this.getActivePageNumber()}
+                        itemsCountPerPage={28}
+                        totalItemsCount={this.state.count}
+                        pageRangeDisplayed={5}
+                        onChange={this.onPageChange}
+                        innerClass={css(styles.pagination_ul)}
+                        itemClass={css(styles.pagination_li)}
+                        linkClass={css(styles.pagination_a)}
+                        activeClass={css(styles.pagination_active_li)}
+                        activeLinkClass={css(styles.pagination_active_a)}
+                        prevPageText='prev'
+                        nextPageText='next'
+                        firstPageText='first'
+                        lastPageText='last'   
+                        />
+                        </div>
+                    </div>
+                    <SearchResultView query={this.props.query} isBrowse={false} onDataLoaded={this.onDataLoaded} />
+              </div>        
+              
             </div>
-
-            {body}
-
-            <Footer />
-                     
+    
+            <div id="filer" style={{minHeight: "50px"}} >
+    
+            </div>
+    
+            <Footer /> 
           </div>
         );
     }
 
-    private renderError(errorMsg: string){
-      return (
-        <div>
-          {errorMsg}
-        </div>
-      )
+    private onDataLoaded = (data_count: number) => {
+      this.setState({...this.state,count: data_count})
     }
 
-    private renderLoading(){
-      return (
-        <div>
-          Loading
-        </div>
-      )
+    private getActivePageNumber = () => {
+      const active_page = this.state.end_index/20  
+      return active_page;
     }
 
-    private renderSearchResults = (searchResults: SearchResult[], totalCount: number, selectedPage: number, searchTerm: string) => {
-      highLight(searchTerm,"div_search_table")
-      const tableRows = searchResults.map(this.renderRow)
-      
-      return (     
-        <div id="div_body" className={css(styles.body)} >
-              <div id="div_search_results_stats" className={css(styles.searchResultStats)} >
-
-                <div style={{alignSelf: "center", maxHeight: "fit-content",marginLeft: 10}} >
-                  Showing results for :  
-                </div>
-
-                <div style={{alignSelf: "center",
-                             maxHeight: "fit-content",
-                             marginLeft:10,
-                             fontWeight: "bold"
-                             }} >
-                  {searchTerm}
-                </div>
-
-                <div id="pagination_container" style={{marginLeft:"auto",marginRight:20}} >
-                  <Pagination
-                    activePage={selectedPage}
-                    itemsCountPerPage={28}
-                    totalItemsCount={totalCount}
-                    pageRangeDisplayed={5}
-                    onChange={this.onSearchPageChange}
-                    innerClass={css(styles.pagination_ul)}
-                    itemClass={css(styles.pagination_li)}
-                    linkClass={css(styles.pagination_a)}
-                    prevPageText='prev'
-                    nextPageText='next'
-                    firstPageText='first'
-                    lastPageText='last'   
-                    />
-                </div>
-              </div>       
-                                  
-              <div id="div_search_table" className={css(styles.searchTable)} >
-                   <div className={css(styles.searchResultHeader)} >
-                     <div className={css(styles.iptm_id)} >
-                        <input type="checkbox" style={{marginLeft: 10,marginRight: 10}}  />
-                        iPTM ID
-                     </div>
-
-                     <div className={css(styles.protein_name)} >
-                      Protein Name
-                     </div>
-                     
-                     <div className={css(styles.gene_name)} >
-                      Gene Name
-                     </div>
-                     
-                     <div className={css(styles.organism)} >
-                      Organism
-                     </div>
-                     
-                     <div className={css(styles.substrate_role)} >
-                      Substrate Role
-                     </div>
-                     
-                     <div className={css(styles.enzyme_role)} >
-                      Enzyme Role
-                     </div>
-                     
-                     <div className={css(styles.ptm_dependent_ppi)} >
-                      PTM-dependent PPI
-                     </div>
-                     
-                     <div className={css(styles.sites)} >
-                      Sites
-                     </div>
-                     
-                     <div className={css(styles.isoforms)} >
-                      Isoforms
-                     </div>
-
-                   </div>
-                   {tableRows} 
-              </div>
-    
-              <div id="filer" className={css(CommonStyles.filer)} />
-        </div>
-    
-      )
+    private onPageChange = (pageNumber: number) => {
+      const start_index = (pageNumber - 1) * 20 ;
+      const end_index = start_index + 20;
+      const query = this.build_query(this.props.query,start_index,end_index);
+      const url = query;
+      this.props.history.push(url);
     }
 
-    private renderRow(searchResult: SearchResult) {
-        return (
-          <div className={css(styles.searchResultRow)} >
-                     <div className={css(styles.iptm_id)} >
-                        <input type="checkbox" style={{marginLeft: 10,marginRight: 10}}  />
-                        {searchResult.iptm_id}
-                     </div>
-
-                     <div className={css(styles.protein_name)} >
-                        {searchResult.protein_name}
-                     </div>
-                     
-                     <div className={css(styles.gene_name)} >
-                        {searchResult.gene_name}
-                     </div>
-                     
-                     <div className={css(styles.organism)} >
-                        {searchResult.organism.common_name}
-                     </div>
-                     
-                     <div className={css(styles.substrate_role)} >
-                        {searchResult.substrate_role}
-                     </div>
-                     
-                     <div className={css(styles.enzyme_role)} >
-                        {searchResult.enzyme_role}
-                     </div>
-                     
-                     <div className={css(styles.ptm_dependent_ppi)} >
-                          PTM-dependent PPI
-                     </div>
-                     
-                     <div className={css(styles.sites)} >
-                        {searchResult.sites}
-                     </div>
-                     
-                     <div className={css(styles.isoforms)} >
-                        {searchResult.isoforms}
-                     </div>
-
-          </div>
-        )
+    private build_query = (prev_query: string, start_index: number, end_index: number) => {
+      const parsed = parse(prev_query);
+      parsed.start_index = String(start_index);
+      parsed.end_index = String(end_index)
+      console.log(start_index)
+      console.log(end_index)
+      return stringify(parsed);
     }
 
-    private onSearchPageChange = (pageNumber: number) => {
-        console.log("pageNumber: " + pageNumber)
+    private extract_start_index(query: string): number {
+      const parsed = parse(query);
+      const value = Number(parsed.start_index);
+      if(isNaN(value)) {
+          return 0
+      }else{
+          return value;
+      }   
     }
 
+    private extract_end_index(query: string): number {
+      const parsed = parse(query);
+      const value = Number(parsed.end_index);
+      if(isNaN(value)) {
+          return 0
+      }else{
+          return value;
+      }    
+    }
+
+    private extract_search_term(query: string): string {
+      const parsed = parse(query);
+      const value = parsed.search_term;
+      if(value === undefined) {
+          return ""
+      }else if(value instanceof Array){
+          return value[0];
+      }else{
+        return value;
+      }    
+    }
 
 }
 
 const styles = StyleSheet.create(
   {
 
-    body: {
+    page:{
       display: "flex",
       flexDirection: "column",
-      minWidth: "100%",
-      maxWidth: "100%",
-      "flex-grow": "1",
-      paddingTop: "20",
-      overflow: "auto"
+      "min-height": "100%"
+    }, 
+
+    body: {
+      display: "flex",
+      flexDirection: "row",
+      flex: 1,
+      "min-width": "100%",
+      "max-width": "100%"
+    },
+
+    content: {
+      display: "flex",
+      flexDirection: "column",
+      "width": "100%",
+      "max-width": "100%",
+      paddingLeft: 10,
+      paddingRight: 10
+    },
+
+    summary: {
+      display: "flex",
+      flexDirection: "row",
+      marginTop: 5,
+      marginBottom: 5,
+      alignItems: "center"
+    },
+
+    pagination_li: {
+      display: "inline",
+      paddingTop: "5px",
+      paddingLeft: "10px",
+      paddingRight: "10px",
+      paddingBottom: "5px",
+      borderRightStyle: "solid",
+      borderRightWidth: "1px",
+      borderColor: "#c4c4c4",
+      ":hover": {
+          cursor: "pointer",
+          backgroundColor: "#e6e6e6ff",
+          color: "#ffffff"
+      },
+    },
+
+    pagination_active_li: {
+      display: "inline",
+      backgroundColor: "#329CDA",
+      color: "white",
+      paddingTop: "5px",
+      paddingLeft: "10px",
+      paddingRight: "10px",
+      paddingBottom: "5px",
+      borderRightStyle: "solid",
+      borderRightWidth: "1px",
+      borderColor: "#c4c4c4",
+      ":hover": {
+          cursor: "pointer",
+          backgroundColor: "#e6e6e6ff",
+          color: "#ffffff"
+      },
+    },
+
+    pagination_active_a : {
+      ":link": {
+        textDecoration: "none",
+        color: "white"
+      },
+      ":hover": {
+          textDecoration: "none",
+          color: "black"
+      },
     },
 
     searchResultStats: {
@@ -325,17 +324,6 @@ const styles = StyleSheet.create(
         textDecoration: "none"
       }
     },
-
-    pagination_li: {
-      display: "inline",
-      paddingTop: "10px",
-      paddingLeft: "20px",
-      paddingRight: "20px",
-      paddingBottom: "10px",
-      borderRightStyle: "solid",
-      borderRightWidth: "1px",
-      borderColor: "#c4c4c4"
-    }
   }
 )
 

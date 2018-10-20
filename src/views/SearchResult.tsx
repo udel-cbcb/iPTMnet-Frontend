@@ -86,9 +86,8 @@ export class SearchResultView extends React.Component<ISearchResultsProps,Search
         
         const header = this.renderHeader()
         const renderedRows = results.map(this.renderRow)
-
         return (
-            <div>
+            <div id="div_search_table">
                 {header}
                 {renderedRows}
             </div>
@@ -138,7 +137,7 @@ export class SearchResultView extends React.Component<ISearchResultsProps,Search
         )
     }
     
-    private renderRow = (searchResult: SearchResult) => {
+    private renderRow = (searchResult: SearchResult, index: number) => {
 
         const id_link = `https://research.bioinformatics.udel.edu/iptmnet/entry/${searchResult.iptm_id}/`
         const ipro_link = `http://pir.georgetown.edu/cgi-bin/ipcEntry?id=${searchResult.iptm_id}`
@@ -188,8 +187,16 @@ export class SearchResultView extends React.Component<ISearchResultsProps,Search
 
         const is_checked = this.state.selectedIDs.indexOf(searchResult.iptm_id) > -1
 
+        let backGroundStyle;
+        
+        if((index + 1)%2){
+            backGroundStyle = styles.evenRowBackground
+        }else{
+            backGroundStyle = styles.oddRowBackground
+        }
+
         return (
-          <div className={css(styles.searchResultRow)} key={searchResult.iptm_id} >
+          <div className={css(styles.searchResultRow,backGroundStyle)} key={searchResult.iptm_id} >
                      <div className={css(styles.iptm_id)} >
                         <input type="checkbox" style={{marginLeft: 10,marginRight: 10}} checked={is_checked} onClick={this.onIDClicked(searchResult.iptm_id)} />
                         <div>
@@ -337,6 +344,14 @@ const styles = StyleSheet.create({
         ":hover": {
           backgroundColor: "#f6f6f6"
         }
+    },
+
+    evenRowBackground: {
+        backgroundColor: "#ffffff"
+    },
+
+    oddRowBackground: {
+        backgroundColor: "#f9f9f9ff"
     },
 
     bold: {

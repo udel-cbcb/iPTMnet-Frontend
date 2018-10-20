@@ -95,7 +95,7 @@ class Browse extends React.Component<IBrowseProps,BrowsePageState> {
   }
 
   private getActivePageNumber = () => {
-    const active_page = this.state.end_index/28  
+    const active_page = this.state.end_index/20  
     return active_page;
   }
       
@@ -622,8 +622,8 @@ class Browse extends React.Component<IBrowseProps,BrowsePageState> {
 }
 
   private onPageChange = (pageNumber: number) => {
-    const start_index = (pageNumber - 1) * 28 ;
-    const end_index = start_index + 28;
+    const start_index = (pageNumber - 1) * 20 ;
+    const end_index = start_index + 20;
     const query = this.build_query(this.state.selectedRole,start_index,end_index,this.state.selectedPTMs,this.state.selectedOrganisms);
     const url = query;
     this.props.history.push(url);
