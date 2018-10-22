@@ -9,6 +9,8 @@ import { Role, roleToString } from "../models/Role";
 import { withRouter } from 'react-router-dom';
 import { resetOptions } from "../redux/actions/HomePageActions";
 import store from "../redux/store";
+import { TermType } from 'src/models/TermType';
+import { termTypeToString } from 'src/models/TermType';
 
 interface ISearchState {
     readonly isAdvancedVisisble: boolean; 
@@ -16,6 +18,7 @@ interface ISearchState {
 
 interface ISearchProps {
     searchTerm: string
+    searchTermType: TermType
     selectedPTMs: string []
     selectedOrganisms: string []
     selectedRole: Role 
@@ -34,6 +37,7 @@ class Search extends React.Component<ISearchProps,ISearchState> {
             <div id="div_search_container" className={css(styles.searchContainer)}  >
                 <SearchBox 
                         searchTerm={this.props.searchTerm}
+                        searchTermType={this.props.searchTermType}
                         onSearchIconClick={this.onSearchBoxClicked}
                         onEnterPress={this.onSearchButtonClicked}
                         />
@@ -92,6 +96,10 @@ class Search extends React.Component<ISearchProps,ISearchState> {
     }
 
     private buildSearchUrl = () => {
+        
+        const termTyepStr = termTypeToString(this.props.searchTermType);
+        console.log(termTyepStr)
+        
         let ptm_types_string = "";
         if(this.props.selectedPTMs.length > 0){
             ptm_types_string = "&" + this.props.selectedPTMs.map(this.buildPTMType); 
@@ -119,6 +127,7 @@ class Search extends React.Component<ISearchProps,ISearchState> {
 
 const mapStateToProps = (state: State) => ({
     searchTerm: state.homePage.searchTerm,
+    searchTermType: state.homePage.searchTermType,
     selectedPTMs: state.homePage.selectedPTMs,
     selectedOrganisms: state.homePage.selectedOrganisms,
     selectedRole: state.homePage.selectedRole

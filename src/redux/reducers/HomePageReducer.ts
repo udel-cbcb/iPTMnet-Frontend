@@ -10,6 +10,9 @@ export function reducer (state: HomePageState = initialState, action: HomePageAc
             case ActionTypes.SET_SEARCH_TERM: {
                 return {...state,searchTerm:action.payload}
             }
+            case ActionTypes.SET_SEARCH_TERM_TYPE: {
+                return {...state,searchTermType:action.payload}
+            }
             case ActionTypes.SELECT_ALL_PTM_TYPES:{
                 const ptms = ["Acetylation",
                               "N-Glycosylation",

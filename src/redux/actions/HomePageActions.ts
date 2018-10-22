@@ -1,8 +1,10 @@
 import { Role } from "../../models/Role";
 import { ISetSearchTerm } from './HomePageActions';
+import { TermType } from 'src/models/TermType';
 
 export enum ActionTypes {
     SET_SEARCH_TERM = "SET_SEARCH_TERM",
+    SET_SEARCH_TERM_TYPE = "SET_SEARCH_TERM_TYPE",
     SELECT_ALL_PTM_TYPES = 'SELECT_ALL_PTM_TYPES',
     DESELECT_ALL_PTM_TYPES = 'DESELECT_ALL_PTM_TYPES',
     SELECT_PTM_TYPE = 'SELECT_PTM_TYPE',
@@ -15,7 +17,8 @@ export enum ActionTypes {
     RESET_OPTIONS="RESET_OPTIONS"
 }
 
-export type HomePageAction =   ISetSearchTerm  
+export type HomePageAction =   ISetSearchTerm
+                                | ISetSearchTermType
                                 | ISelectAllPTMTypes
                                 | IDeSelectAllPTMTypes
                                 | ISelectPTMType
@@ -30,6 +33,11 @@ export type HomePageAction =   ISetSearchTerm
 export interface ISetSearchTerm {
     type: ActionTypes.SET_SEARCH_TERM,
     payload: string
+}
+
+export interface ISetSearchTermType {
+    type: ActionTypes.SET_SEARCH_TERM_TYPE,
+    payload: TermType
 }
 
 export interface ISelectAllPTMTypes {
@@ -82,6 +90,13 @@ export function setSearchTerm(searchTerm: string): ISetSearchTerm {
     return {
         type: ActionTypes.SET_SEARCH_TERM,
         payload: searchTerm
+    }
+}
+
+export function setSearchTermType(searchTermType: TermType): ISetSearchTermType {
+    return {
+        type: ActionTypes.SET_SEARCH_TERM_TYPE,
+        payload: searchTermType
     }
 }
 

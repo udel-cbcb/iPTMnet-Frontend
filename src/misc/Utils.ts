@@ -72,5 +72,6 @@ export const filterEnzyme = (searchTerm: string) => (enzyme: Enzyme, index: numb
 
 export function host_url() {
     return "https://research.bioinformatics.udel.edu/iptmnet/api"
+    // return "http://localhost:8088"
 } 
 
