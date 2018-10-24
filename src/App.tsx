@@ -15,6 +15,7 @@ import { Action } from './redux/actions/action';
 import { Store } from 'redux';
 import Entry from './pages/Entry';
 import SearchResults from './pages/SearchResults';
+import Batch from './pages/Batch';
 
 
 class App extends React.Component {
@@ -26,6 +27,7 @@ class App extends React.Component {
         <Route path="/search/:query" exact={true} render={this.buildSearchResults} />
         <Route path="/home" exact={true} component={Home} />
         <Route path="/browse/:query" exact={true} render={this.buildBrowsePage} />
+        <Route path="/batch" exact={true} component={Batch} />
         <Route path="/statistics" exact={true} component={Statistics} /> 
         <Route path="/api" exact={true} component={Api} /> 
         <Route path="/license" exact={true} component={License} />
