@@ -2,10 +2,18 @@ import * as React from 'react';
 import { css,StyleSheet,minify } from 'aphrodite';
 import Navbar from '../views/Navbar';
 import Footer from '../views/Footer';
+import { BatchPageState } from 'src/redux/states/BatchPageState';
+import { Kinase } from 'src/models/Kinase';
 
 minify(false);
 
-class Batch extends React.Component<{},{}> {
+class Batch extends React.Component<{},BatchPageState> {
+
+  constructor(props:{}) {
+    super(props);
+    this.state = new BatchPageState();
+  }
+
   public render() {
     return (
       <div id="div_page" className={css(styles.page)} >
@@ -31,14 +39,14 @@ class Batch extends React.Component<{},{}> {
                   1. Input
                 </div>
                 
-                <textarea id="events_textarea" className={css(styles.events_textarea)}>
-                </textarea>
+                <textarea id="events_textarea" className={css(styles.events_textarea)} value={this.kinasesToText(this.state.kinases)} >
+                 </textarea>
 
                 <div id="div_buttons" className={css(styles.div_buttons)} >
-                  <div className={css(styles.clearButton,styles.noselect)} >
+                  <div className={css(styles.clearButton,styles.noselect)} onClick={this.onClearClicked()}>
                       Clear
                   </div>
-                  <div className={css(styles.inputExamplesButton,styles.noselect)} >
+                  <div className={css(styles.inputExamplesButton,styles.noselect)} onClick={this.onInputExamplesClicked()}>
                       Input Examples
                   </div>
                 </div>
@@ -94,9 +102,6 @@ class Batch extends React.Component<{},{}> {
                 </div>
 
               </div>
-
-              
-
               
           </div>
           <div id="filer" className={css(styles.filer)} />
@@ -106,7 +111,29 @@ class Batch extends React.Component<{},{}> {
         <Footer />
                  
       </div>
-    );
+    ); 
+  }
+
+  private onInputExamplesClicked = () => (event: any) => {
+    const newState = {...this.state,kinases: BatchPageState.defaultKinases()}
+    this.setState(newState);
+  }
+
+  private onClearClicked = () => (event: any) => {
+    const newState = {...this.state,kinases: []}
+    this.setState(newState);
+  }
+
+  private kinasesToText(kinases: Kinase[]): string {
+    let kinaseText = "";
+    for (const kinase of kinases) {
+      if (kinaseText === "") {
+        kinaseText = kinase.substrate_ac + "," + kinase.residue + "," + kinase.position
+      }else{
+        kinaseText = kinaseText + "\n" + kinase.substrate_ac + "," + kinase.residue + "," + kinase.position
+      }
+    }
+    return kinaseText;
   }
 }
 
