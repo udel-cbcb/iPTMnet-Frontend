@@ -2253,6 +2253,15 @@ csstype@^2.2.0:
   resolved "https://registry.yarnpkg.com/csstype/-/csstype-2.5.6.tgz#2ae1db2319642d8b80a668d2d025c6196071e788"
   integrity sha512-tKPyhy0FmfYD2KQYXD5GzkvAYLYj96cMLXr648CKGd3wBe0QqoPipImjGiLze9c8leJK8J3n7ap90tpk3E6HGQ==
 
+csvtojson@^2.0.8:
+  version "2.0.8"
+  resolved "https://registry.yarnpkg.com/csvtojson/-/csvtojson-2.0.8.tgz#d889f19576b2b33ead235490d2e5c9791481e8d3"
+  integrity sha512-DC6YFtsJiA7t/Yz+KjzT6GXuKtU/5gRbbl7HJqvDVVir+dxdw2/1EgwfgJdnsvUT7lOnON5DvGftKuYWX1nMOQ==
+  dependencies:
+    bluebird "^3.5.1"
+    lodash "^4.17.3"
+    strip-bom "^2.0.0"
+
 currently-unhandled@^0.4.1:
   version "0.4.1"
   resolved "https://registry.yarnpkg.com/currently-unhandled/-/currently-unhandled-0.4.1.tgz#988df33feab191ef799a61369dd76c17adf957ea"
@@ -6700,6 +6709,11 @@ react-error-overlay@^4.0.0:
   version "4.0.0"
   resolved "https://registry.yarnpkg.com/react-error-overlay/-/react-error-overlay-4.0.0.tgz#d198408a85b4070937a98667f500c832f86bd5d4"
   integrity sha512-FlsPxavEyMuR6TjVbSSywovXSEyOg6ZDj5+Z8nbsRl9EkOzAhEIcS+GLoQDC5fz/t9suhUXWmUrOBrgeUvrMxw==
+
+react-file-input@^0.2.5:
+  version "0.2.5"
+  resolved "https://registry.yarnpkg.com/react-file-input/-/react-file-input-0.2.5.tgz#a355367d9323d5c6352ddd3cd7ec3582e5c9b245"
+  integrity sha1-o1U2fZMj1cY1Ld081+w1guXJskU=
 
 react-js-pagination@^3.0.2:
   version "3.0.2"

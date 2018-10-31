@@ -3,7 +3,6 @@ import { css,StyleSheet,minify } from 'aphrodite';
 import Navbar from '../views/Navbar';
 import Footer from '../views/Footer';
 import { BatchPageState } from 'src/redux/states/BatchPageState';
-import { Kinase } from 'src/models/Kinase';
 
 minify(false);
 
@@ -39,7 +38,7 @@ class Batch extends React.Component<{},BatchPageState> {
                   1. Input
                 </div>
                 
-                <textarea id="events_textarea" className={css(styles.events_textarea)} value={this.kinasesToText(this.state.kinases)} >
+                <textarea id="events_textarea" readOnly={false} className={css(styles.events_textarea)} value={this.state.kinasesStr} onChange={(e) => this.ontextAreaChanged(e)} >
                  </textarea>
 
                 <div id="div_buttons" className={css(styles.div_buttons)} >
@@ -61,12 +60,7 @@ class Batch extends React.Component<{},BatchPageState> {
                 </div>
 
                 <div id="div_file_chooser" className={css(styles.divFileChooser)} >
-                  <div className={css(styles.btnChooseFile,styles.noselect)} >
-                      Choose file
-                  </div>
-                  <div className={css(styles.fileName)} >
-                      No file choosen
-                  </div>
+                  <input id="upload" type="file"  onChange={(e) => this.onFilePicked(e)} />
                 </div>
 
                 <div style={{
@@ -115,27 +109,41 @@ class Batch extends React.Component<{},BatchPageState> {
   }
 
   private onInputExamplesClicked = () => (event: any) => {
-    const newState = {...this.state,kinases: BatchPageState.defaultKinases()}
+    const newState = {...this.state,kinasesStr: BatchPageState.defaultKinasesStr()}
     this.setState(newState);
   }
 
   private onClearClicked = () => (event: any) => {
-    const newState = {...this.state,kinases: []}
+    const newState = {...this.state,kinasesStr: ""}
     this.setState(newState);
   }
 
-  private kinasesToText(kinases: Kinase[]): string {
-    let kinaseText = "";
-    for (const kinase of kinases) {
-      if (kinaseText === "") {
-        kinaseText = kinase.substrate_ac + "," + kinase.residue + "," + kinase.position
-      }else{
-        kinaseText = kinaseText + "\n" + kinase.substrate_ac + "," + kinase.residue + "," + kinase.position
-      }
-    }
-    return kinaseText;
+  private textToKinase = (kinaseStr: string) => () => {
+    console.log(kinaseStr);
   }
+
+  
+  private onFilePicked = (event: any) => {
+    const fileReader = new FileReader();
+    fileReader.onload = (loaded_event: any) => {
+      if (fileReader.result !== null) {
+        const newState = {...this.state,kinasesStr: fileReader.result.toString()}
+        this.setState(newState);
+        this.textToKinase(fileReader.result.toString());
+      }
+    };
+    fileReader.readAsText(event.target.files[0]);
+    this.ontextAreaChanged(event);
+  }
+
+  private ontextAreaChanged = (event: any) => {
+    const newState = {...this.state,kinasesStr: event.target.value}
+    this.setState(newState); 
+  }
+
 }
+
+
 
 const styles = StyleSheet.create({
   page : {
@@ -251,33 +259,9 @@ const styles = StyleSheet.create({
   divFileChooser: {
     display: "flex",
     flexDirection: "row",
-    marginTop: 10
+    marginTop: 5
   },
-
-  btnChooseFile: {
-    paddingLeft: 10,
-    paddingRight: 10,
-    paddingTop: 5,
-    paddingBottom: 5,
-    marginLeft: "5",
-    textAlign: "center",
-    fontSize: 14,
-    backgroundColor: "#329CDA",
-    color: "#fbfbfb",
-    borderStyle: "solid",
-    borderRadius: 20,
-    borderWidth: 1,
-    borderColor: "#efefef",
-    ":hover": {
-        cursor: "pointer",
-        backgroundColor: "#2594d7ff",
-        color: "#fbfbfb"
-    },
-    ":focus": {
-        outline: "none"
-    }
-  },
-
+  
   fileName: {
     marginTop: "auto",
     marginBottom: "auto",

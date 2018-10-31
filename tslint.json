@@ -6,6 +6,7 @@
     "jsx-self-close": false,
     "object-literal-sort-keys": false,
     "no-console": false,
+    "jsx-no-lambda": false,
     "variable-name": [false, "ban-keywords", "check-format", "allow-leading-underscore","allow-snake-case"]  
   },
   "linterOptions": {
