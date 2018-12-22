@@ -24,6 +24,6 @@ export class Substrate {
 
     @JsonProperty("pmids",[String])
     public pmids: string [] = [];
-
 }
+
 

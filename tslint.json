@@ -7,7 +7,12 @@
     "object-literal-sort-keys": false,
     "no-console": false,
     "jsx-no-lambda": false,
-    "variable-name": [false, "ban-keywords", "check-format", "allow-leading-underscore","allow-snake-case"]  
+    "variable-name": [false, "ban-keywords", "check-format", "allow-leading-underscore","allow-snake-case"],
+    "comment-format": false,
+    "no-unused-imports": false,
+    "object-literal-shorthand": false,
+    "max-classes-per-file": false,
+    "no-empty": false
   },
   "linterOptions": {
     "exclude": [

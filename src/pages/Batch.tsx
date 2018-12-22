@@ -2,15 +2,45 @@ import * as React from 'react';
 import { css,StyleSheet,minify } from 'aphrodite';
 import Navbar from '../views/Navbar';
 import Footer from '../views/Footer';
-import { BatchPageState } from 'src/redux/states/BatchPageState';
+import { BatchOutputType } from 'src/redux/states/BatchPageState';
+import store from 'src/redux/store';
+import { ThunkDispatch } from 'redux-thunk';
+import { Store, Action } from 'redux';
+import { loadPTMEnzymes } from 'src/redux/actions/BatchActions';
 
 minify(false);
 
-class Batch extends React.Component<{},BatchPageState> {
+interface IBatchProps {
+  history: any;
+}
 
-  constructor(props:{}) {
+class BatchState {
+  
+  public static defaultKinasesStr(): string {
+      return  `Q15796,K,19
+Q15796,T,8
+P04637,K,120
+P04637,S,140
+P04637,S,378
+P04637,S,392
+P04637,S,199`;
+  }
+
+  public readonly kinasesStr: string;
+  public readonly selectedType: BatchOutputType;
+
+  constructor() {
+      this.kinasesStr = "";
+      this.selectedType = BatchOutputType.PTM_ENZYMES
+  }
+ 
+}
+
+class Batch extends React.Component<IBatchProps,BatchState> {
+
+  constructor(props:IBatchProps) {
     super(props);
-    this.state = new BatchPageState();
+    this.state = new BatchState();
   }
 
   public render() {
@@ -77,6 +107,8 @@ class Batch extends React.Component<{},BatchPageState> {
                       name="output" 
                       value="ptm_enzyme"
                       className={css(styles.outputRadioButton)}
+                      checked={this.state.selectedType === BatchOutputType.PTM_ENZYMES}
+                      onChange={(_event: any) => {this.onSelectedTypeChanged(BatchOutputType.PTM_ENZYMES)}}
                       />
                       PTM Enzymes
                 </label>
@@ -87,11 +119,13 @@ class Batch extends React.Component<{},BatchPageState> {
                       name="output" 
                       value="ptm_dep_ppi"
                       className={css(styles.outputRadioButton)}
+                      checked={this.state.selectedType === BatchOutputType.PTM_DEP_PPI}
+                      onChange={(_event: any) => {this.onSelectedTypeChanged(BatchOutputType.PTM_DEP_PPI)}}
                       />
                       PTM Dependent PPI
                 </label>
                 
-                <div className={css(styles.btnSubmit,styles.noselect)} >
+                <div className={css(styles.btnSubmit,styles.noselect)} onClick={this.onSubmitButtonClicked} >
                   Submit
                 </div>
 
@@ -109,7 +143,7 @@ class Batch extends React.Component<{},BatchPageState> {
   }
 
   private onInputExamplesClicked = () => (event: any) => {
-    const newState = {...this.state,kinasesStr: BatchPageState.defaultKinasesStr()}
+    const newState = {...this.state,kinasesStr: BatchState.defaultKinasesStr()}
     this.setState(newState);
   }
 
@@ -139,6 +173,23 @@ class Batch extends React.Component<{},BatchPageState> {
   private ontextAreaChanged = (event: any) => {
     const newState = {...this.state,kinasesStr: event.target.value}
     this.setState(newState); 
+  }
+
+  private onSelectedTypeChanged = (selectedType: BatchOutputType) => {
+    const newState = {...this.state, selectedType: selectedType}
+    this.setState(newState)
+  }
+
+  private onSubmitButtonClicked = (event: any) => {
+    //go the batch results page
+    const thunkDispatch : ThunkDispatch<Store,void,Action> = store.dispatch;
+    if(this.state.selectedType === BatchOutputType.PTM_ENZYMES){
+      thunkDispatch(loadPTMEnzymes(this.state.kinasesStr));
+      this.props.history.push("batch_result_enzymes");
+    }else{
+
+    } 
+    
   }
 
 }

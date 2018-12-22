@@ -16,6 +16,7 @@ import { Store } from 'redux';
 import Entry from './pages/Entry';
 import SearchResults from './pages/SearchResults';
 import Batch from './pages/Batch';
+import { BatchResultEnzymeConnected } from './pages/BatchResultEnzyme';
 
 
 class App extends React.Component {
@@ -27,13 +28,14 @@ class App extends React.Component {
         <Route path="/search/:query" exact={true} render={this.buildSearchResults} />
         <Route path="/home" exact={true} component={Home} />
         <Route path="/browse/:query" exact={true} render={this.buildBrowsePage} />
-        <Route path="/batch" exact={true} component={Batch} />
+        <Route path="/batch" exact={true} component={this.buildBatchPage} />
         <Route path="/statistics" exact={true} component={Statistics} /> 
         <Route path="/api" exact={true} component={Api} /> 
         <Route path="/license" exact={true} component={License} />
         <Route path="/citation" exact={true} component={Citation} />
         <Route path="/about" exact={true} component={About} /> 
         <Route path="/entry/:id" exact={true} render={this.buildEntry} /> 
+        <Route path="/batch_result_enzymes" exact={true} component={BatchResultEnzymeConnected} />
       </div>
     );
   }
@@ -54,6 +56,10 @@ class App extends React.Component {
   private buildBrowsePage(prop:RouteComponentProps<any>) {
     const query = prop.match.params.query;
     return <Browse query={query} history={prop.history}/>
+  }
+
+  private buildBatchPage(prop:RouteComponentProps<any>) {
+    return <Batch history={prop.history}/>
   }
 
 }

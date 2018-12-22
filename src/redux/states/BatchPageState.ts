@@ -1,21 +1,29 @@
+import { RequestState } from "./RequestState";
+
+export enum BatchOutputType {
+    PTM_ENZYMES,
+    PTM_DEP_PPI
+}
 
 export class BatchPageState {
-    
-    public static defaultKinasesStr(): string {
-        return  `Q15796,K,19
-Q15796,T,8
-P04637,K,120
-P04637,S,140
-P04637,S,378
-P04637,S,392
-P04637,S,199`;
-    }
-
-    public readonly kinasesStr: string;
-
+    public readonly enzymes : BatchResultEnzymeState 
     constructor() {
-        this.kinasesStr = "";
+        this.enzymes = new BatchResultEnzymeState();
     }
-   
 }
+
+export class BatchResultEnzymeState {
+    public readonly status: RequestState
+    public readonly error: string
+    public readonly data: any 
+    constructor(status: RequestState =  RequestState.NOTASKED, error: string = "", data: any = {}){
+        this.status = status;
+        this.error = error;
+        this.data = data;
+    }
+}
+
+
+
+export const initialState: BatchPageState = new BatchPageState();
 
