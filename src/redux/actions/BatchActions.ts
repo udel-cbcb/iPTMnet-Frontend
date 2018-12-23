@@ -4,6 +4,8 @@ import { State } from "../state";
 import { Action } from "./action";
 import { Store } from "redux";
 import { Kinase } from "src/models/Kinase";
+import { BatchEnzyme } from "src/models/BatchEnzyme";
+import { JsonConvert } from "json2typescript";
 
 export enum ActionTypes {
     FETCH_PTM_ENZYMES_STARTED = "FETCH_PTM_ENZYMES_STARTED",
@@ -31,7 +33,7 @@ export function FetchPTMEnzymesError(payload: string): IBatchAction {
     }
 }
 
-export function FetchPTMEnzymesSuccess(payload: any) : IBatchAction {
+export function FetchPTMEnzymesSuccess(payload: BatchEnzyme[]) : IBatchAction {
     return {
         type: ActionTypes.FETCH_PTM_ENZYMES_SUCCESS,
         payload: payload
@@ -58,13 +60,15 @@ export function loadPTMEnzymes(kinase_csv: string) : ThunkAction<void,Store,void
         const kinases = csvToKinases(kinase_csv);
         axios.post(`https://research.bioinformatics.udel.edu/iptmnet/api/batch_ptm_enzymes`,kinases).then((res)=> {
             if(res.status === 200){
-                console.log(res.data)
-                dispatch(FetchPTMEnzymesSuccess(""));
+                const jsonConvert: JsonConvert = new JsonConvert();
+                const batchEnzymes = jsonConvert.deserializeArray(res.data,BatchEnzyme);
+                console.log(batchEnzymes)
+                dispatch(FetchPTMEnzymesSuccess(batchEnzymes));
             }else{
-                console.log(res.statusText + ":" + res.data);
                 dispatch(FetchPTMEnzymesError(res.statusText + ":" + res.data))
             }    
         }).catch((err)=>{
+            console.log(err)
             console.log(JSON.stringify(err.response));
             dispatch(FetchPTMEnzymesError(JSON.stringify(err.response)));
         });

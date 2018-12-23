@@ -102,6 +102,13 @@
     "@types/history" "*"
     "@types/react" "*"
 
+"@types/react-table@^6.7.20":
+  version "6.7.20"
+  resolved "https://registry.yarnpkg.com/@types/react-table/-/react-table-6.7.20.tgz#ebecd60194be637181dda92f9a3cdd78ce289eb6"
+  integrity sha512-nWLZYGV2WM+DKorC76sZp3yjVljjmIddDNAhdMhw6OCLhVsnM6oo0vPEDCKYaZCIW7C1hUfHg+yOiOCxhsI1dg==
+  dependencies:
+    "@types/react" "*"
+
 "@types/react@*", "@types/react@^16.4.8":
   version "16.4.8"
   resolved "https://registry.yarnpkg.com/@types/react/-/react-16.4.8.tgz#ff0440429783df0927bdcd430fa1225f7c08cf36"
@@ -6816,6 +6823,13 @@ react-spinkit@^3.0.0:
     loaders.css "^0.1.2"
     object-assign "^4.1.0"
     prop-types "^15.5.8"
+
+react-table@^6.8.6:
+  version "6.8.6"
+  resolved "https://registry.yarnpkg.com/react-table/-/react-table-6.8.6.tgz#a0ad8b4839319052d5befc012603fb161e52ede3"
+  integrity sha1-oK2LSDkxkFLVvvwBJgP7Fh5S7eM=
+  dependencies:
+    classnames "^2.2.5"
 
 "react@15.x.x - 16.x.x", react@^16.4.2:
   version "16.4.2"

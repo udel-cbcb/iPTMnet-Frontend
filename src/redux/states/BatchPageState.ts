@@ -1,4 +1,5 @@
 import { RequestState } from "./RequestState";
+import { BatchEnzyme } from "src/models/BatchEnzyme";
 
 export enum BatchOutputType {
     PTM_ENZYMES,
@@ -15,8 +16,8 @@ export class BatchPageState {
 export class BatchResultEnzymeState {
     public readonly status: RequestState
     public readonly error: string
-    public readonly data: any 
-    constructor(status: RequestState =  RequestState.NOTASKED, error: string = "", data: any = {}){
+    public readonly data: BatchEnzyme[] 
+    constructor(status: RequestState =  RequestState.NOTASKED, error: string = "", data: BatchEnzyme[] = []){
         this.status = status;
         this.error = error;
         this.data = data;
