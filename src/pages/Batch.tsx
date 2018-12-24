@@ -6,7 +6,7 @@ import { BatchOutputType } from 'src/redux/states/BatchPageState';
 import store from 'src/redux/store';
 import { ThunkDispatch } from 'redux-thunk';
 import { Store, Action } from 'redux';
-import { loadPTMEnzymes } from 'src/redux/actions/BatchActions';
+import { loadPTMEnzymes, loadPTMPPI } from 'src/redux/actions/BatchActions';
 
 minify(false);
 
@@ -187,7 +187,8 @@ class Batch extends React.Component<IBatchProps,BatchState> {
       thunkDispatch(loadPTMEnzymes(this.state.kinasesStr));
       this.props.history.push("batch_result_enzymes");
     }else{
-
+      thunkDispatch(loadPTMPPI(this.state.kinasesStr));
+      this.props.history.push("batch_result_ppi");
     } 
     
   }

@@ -6,6 +6,7 @@ import { Store } from "redux";
 import { Kinase } from "src/models/Kinase";
 import { BatchEnzyme } from "src/models/BatchEnzyme";
 import { JsonConvert } from "json2typescript";
+import { BatchPTMPPI } from "src/models/BatchPTMPPI";
 
 export enum ActionTypes {
     FETCH_PTM_ENZYMES_STARTED = "FETCH_PTM_ENZYMES_STARTED",
@@ -40,18 +41,6 @@ export function FetchPTMEnzymesSuccess(payload: BatchEnzyme[]) : IBatchAction {
     }
 }
 
-export function FetchPTMDepPPIStarted() :IBatchAction {
-    return {type: ActionTypes.FETCH_PTM_DEP_PPI_STARTED, payload: ""}
-}
-
-export function FetchPTMDepPPIError(payload: string): IBatchAction {
-    return {type: ActionTypes.FETCH_PTM_DEP_PPI_ERROR, payload: payload}
-}
-
-export function FetchPTMDepPPISuccess(payload: any) : IBatchAction {
-    return {type: ActionTypes.FETCH_PTM_DEP_PPI_SUCCESS, payload: payload}
-}
-
 export function loadPTMEnzymes(kinase_csv: string) : ThunkAction<void,Store,void,Action> {
     return async (dispatch: ThunkDispatch<State,void,Action>) => {
         dispatch(FetchPTMEnzymesStarted());
@@ -74,6 +63,48 @@ export function loadPTMEnzymes(kinase_csv: string) : ThunkAction<void,Store,void
         });
     }
 }
+
+export function FetchPTMDepPPIStarted() :IBatchAction {
+    return {type: ActionTypes.FETCH_PTM_DEP_PPI_STARTED, payload: ""}
+}
+
+export function FetchPTMDepPPIError(payload: string): IBatchAction {
+    return {type: ActionTypes.FETCH_PTM_DEP_PPI_ERROR, payload: payload}
+}
+
+export function FetchPTMDepPPISuccess(payload: BatchPTMPPI[]) : IBatchAction {
+    return {type: ActionTypes.FETCH_PTM_DEP_PPI_SUCCESS, payload: payload}
+}
+
+
+export function loadPTMPPI(kinase_csv: string) : ThunkAction<void,Store,void,Action> {
+    return async (dispatch: ThunkDispatch<State,void,Action>) => {
+        dispatch(FetchPTMDepPPIStarted());
+
+        //convert csv values to kinase objects
+        const kinases = csvToKinases(kinase_csv);
+        axios.post(`https://research.bioinformatics.udel.edu/iptmnet/api/batch_ptm_ppi`,kinases).then((res)=> {
+            if(res.status === 200){
+                const jsonConvert: JsonConvert = new JsonConvert();
+                const batchPPI = jsonConvert.deserializeArray(res.data,BatchPTMPPI);
+                console.log(batchPPI)
+                dispatch(FetchPTMDepPPISuccess(batchPPI));
+            }else{
+                dispatch(FetchPTMDepPPIError(res.statusText + ":" + res.data))
+            }    
+        }).catch((err)=>{
+            console.log(err)
+            console.log(JSON.stringify(err.response));
+            dispatch(FetchPTMDepPPIError(JSON.stringify(err.response)));
+        });
+    }
+}
+
+
+
+
+
+
 
 function csvToKinases(csv: string) : Kinase[] {
 

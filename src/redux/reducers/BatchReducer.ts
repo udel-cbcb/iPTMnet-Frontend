@@ -1,4 +1,4 @@
-import { BatchPageState, initialState, BatchResultEnzymeState } from "../states/BatchPageState";
+import { BatchPageState, initialState, BatchResultEnzymeState, BatchResultPPIState } from "../states/BatchPageState";
 import { IBatchAction, ActionTypes } from "../actions/BatchActions";
 import { RequestState } from "../states/RequestState";
 
@@ -8,18 +8,24 @@ export function reducer (state: BatchPageState = initialState, action: IBatchAct
     }else{
         switch (action.type) {
             case ActionTypes.FETCH_PTM_ENZYMES_STARTED:
-                console.log("started")
                 const newStateEnzymesLoading = new BatchResultEnzymeState(RequestState.LOADING,"");
                 return {...state,enzymes: newStateEnzymesLoading};
             case ActionTypes.FETCH_PTM_ENZYMES_ERROR:
-                console.log("error")
                 const newStateEnzymesError = new BatchResultEnzymeState(RequestState.ERROR,action.payload);
                 return {...state,enzymes: newStateEnzymesError};
             case ActionTypes.FETCH_PTM_ENZYMES_SUCCESS:
-                console.log("success")
                 const newStateEnzymesSuccess = new BatchResultEnzymeState(RequestState.SUCCESS,"",action.payload);
                 return {...state,enzymes: newStateEnzymesSuccess};
-            default:
+            case ActionTypes.FETCH_PTM_DEP_PPI_STARTED:
+                const newStatePPILoading = new BatchResultPPIState(RequestState.LOADING,"");
+                return {...state,ppi: newStatePPILoading};
+            case ActionTypes.FETCH_PTM_DEP_PPI_ERROR:
+                const newStatePPIError = new BatchResultPPIState(RequestState.ERROR,action.payload);
+                return {...state,ppi: newStatePPIError};
+            case ActionTypes.FETCH_PTM_DEP_PPI_SUCCESS:
+                const newStatePPISuccess = new BatchResultPPIState(RequestState.SUCCESS,"",action.payload);
+                return {...state,ppi: newStatePPISuccess};
+                default:
                 return new BatchPageState();  
         }
     }

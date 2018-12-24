@@ -17,6 +17,7 @@ import Entry from './pages/Entry';
 import SearchResults from './pages/SearchResults';
 import Batch from './pages/Batch';
 import { BatchResultEnzymeConnected } from './pages/BatchResultEnzyme';
+import { BatchResultPPIConnected } from './pages/BatchResultPPI';
 
 
 class App extends React.Component {
@@ -36,6 +37,7 @@ class App extends React.Component {
         <Route path="/about" exact={true} component={About} /> 
         <Route path="/entry/:id" exact={true} render={this.buildEntry} /> 
         <Route path="/batch_result_enzymes" exact={true} component={BatchResultEnzymeConnected} />
+        <Route path="/batch_result_ppi" exact={true} component={BatchResultPPIConnected} />
       </div>
     );
   }
